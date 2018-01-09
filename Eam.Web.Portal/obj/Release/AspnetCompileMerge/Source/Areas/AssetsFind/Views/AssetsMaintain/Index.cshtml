@@ -1,0 +1,1626 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "资产维护";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+
+    <!--最顶部的标题栏-->
+    @*<h1>
+        固定资产
+        <small>资产维护</small>
+    </h1>*@
+
+    <!--顶部标题栏右侧的层级显示栏-->
+    @*<ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+        <li><a href="#">Examples</a></li>
+        <li class="active">Blank page</li>
+    </ol>*@
+</section>
+
+<!-- 条件检索面板 -->
+<section class="content">
+    <div class="row">
+        <!-- 条件检索面板 -->
+        <div class="col-lg-12">
+            <!-- 条件检索面板 -->
+            <div class="box box-danger">
+
+                <!-- 表头 -->
+                <div class="box-header with-border">
+                    <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">检索条件</h3>
+                    <div class="box-tools pull-right">
+                        @*<span class="label label-danger">执行北京市公共事业单位固定资产分类标准</span>*@
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        @*<button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>*@
+                    </div>
+                </div><!-- /.box-header -->
+                <!-- body -->
+                <div class="box-body content">
+                    <form method="get" id="frmSearch" name="frmSearch">
+                        <!-- 检索条件输入区域 -->
+                        <div class="row">
+                            <!-- 第一列检索条件 -->
+                            <div class="col-lg-4">
+                                <div class="col-lg-12">
+                                    <br />
+                                    <label>资产名称：</label>
+                                    <input class="form-control" type="text" placeholder="资产名称" maxlength="20" name="GoodsName" id="GoodsName" />
+                                    <br />
+                                    <label>资产编号：</label>
+                                    <input class="form-control" type="text" placeholder="资产编号" maxlength="20" name="AssetsNum" id="AssetsNum" />
+                                    <br />
+                                    <label>取得方式：</label>
+                                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;"
+                                            tabindex="-1" aria-hidden="true" name="GetWay" id="GetWay">
+                                        <option selected="selected">购置</option>
+                                        <option>调拨</option>
+                                        <option>自建</option>
+                                        <option>捐赠</option>
+                                        <option>划拨</option>
+                                        <option>置换</option>
+                                        <option>自行研制</option>
+                                        <option>其他</option>
+                                        <option>有偿取得</option>
+                                        <option>租凭</option>
+                                    </select>
+                                    @*<br />
+                        <label>经办人：</label>
+                         <input class="form-control" type="text" placeholder="经办人" maxlength="5" name="Agent" id="Agent" />*@
+                                </div>
+                            </div>
+
+                            <!-- 第二列检索条件 -->
+                            <div class="col-lg-4">
+                                <div class="col-lg-12">
+                                    <br />
+                                    <label>使用状况：</label>
+                                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" id="UsingState" name="UsingState">
+                                        <option selected="selected">在用</option>
+                                        <option>闲置</option>
+                                        <option>摧毁待报废</option>
+                                        <option>其他</option>
+                                    </select>
+                                    <br />
+                                    <label>存放地点：</label><input class="form-control" type="text" placeholder="存放地点" id="StorePlace" name="StorePlace">
+                                    @*<br />
+                        <label>会计凭证号：</label><input class="form-control" type="text" placeholder="Default input">*@
+                                    <br />
+                                    <label>使用人：</label><input class="form-control" type="text" placeholder="使用人" id="User" name="User">
+                                </div>
+                            </div>
+
+                            <!-- 第三列检索条件 -->
+                            <div class="col-lg-4">
+                                <div class="col-lg-12">
+                                    <br />
+                                    <label>价值类型：</label>
+                                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" id="ValueType" name="ValueType">
+                                        <option selected="selected">原值</option>
+                                        <option>暂估值</option>
+                                        <option>重置值</option>
+                                        <option>无价值</option>
+                                        <option>评估值</option>
+                                    </select>
+                                    <br />
+                                    <label>价值范围：</label>
+                                    <div class="row">
+                                        <div class="col-lg-5"><input class="form-control" type="text" placeholder="0.00" id="ValueSearchStart" name="ValueSearchStart"></div>
+                                        <div class="col-lg-2"><hr style="color:black;width:100%;border:0.5px solid black;" /></div>
+                                        <div class="col-lg-5"><input class="form-control" type="text" placeholder="0.00" id="ValueSearchEnd" name="ValueSearchEnd"></div>
+                                    </div>
+                                    @*<br />
+                        <label>使用人：</label><input class="form-control" type="text" placeholder="Default input">*@
+                                    <br />
+                                    <label>使用属性：</label>
+                                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" id="UsingAttribute" name="UsingAttribute">
+                                        <option selected="selected">办公设备</option>
+                                        <option>专用设备</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <br />
+                            <input type="hidden" name="PageIndex" id="PageIndex" value="1" />
+                            <input type="hidden" name="PageSize" id="PageSize" value="20" />
+                            <button type="submit" class="btn btn-primary col-lg-offset-4" id="btnSearch">筛选资产</button>
+                            <button type="reset" class="btn btn-primary col-lg-offset-2">清除条件</button>
+                        </div>
+                    </form>
+                </div><!--/.box -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 资产列表面板 -->
+<section class="content">
+    <div class="row">
+        <!--资产列表面板 -->
+        <div class="col-lg-12">
+            <!-- 资产列表面板 -->
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">资产列表</h3>
+                    <div class="box-tools pull-right">
+                        @*<span class="label label-danger">执行北京市公共事业单位固定资产分类标准</span>*@
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        @*<button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>*@
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="box-body">
+                        <div id="example1_wrapper" class="dataTables_wrapper form-inline">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="dataTables_length" id="example1_length">
+                                        <select name="perPageSize" id="perPageSize" class="form-control input-sm">
+                                            <option value="10">10</option>
+                                            <option value="20" selected>20</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table id="tableAssets" class="table table-bordered table-striped dataTable" role="grid">
+                                        <thead>
+                                            <tr role="row">
+                                                <th colspan="1" style="width: 293px;">资产编号</th>
+                                                <th rowspan="1" colspan="1" style="width: 359px;">资产名称</th>
+                                                <th class="sorting" rowspan="1" colspan="1" style="width: 318px;">资产类别</th>
+                                                <th class="sorting" rowspan="1" colspan="1" style="width: 256px;">单价</th>
+                                                <th class="sorting" rowspan="1" colspan="1" style="width: 256px;">数量</th>
+                                                <th class="sorting" rowspan="1" colspan="1" style="width: 256px;">计量单位</th>
+                                                <th class="sorting" rowspan="1" colspan="1" style="width: 191px;">使用状况</th>
+                                                <th class="sorting" rowspan="1" colspan="1">&nbsp;</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="dataTables_info" id="example1_info" role="status" aria-live="polite"></div>
+                            </div>
+                            <div class="col-sm-9">
+                                <ul id="divAssetsPager"></ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <button id="addAssetsToMaintainList" class="btn btn-primary btn-sm btn-flat">添加到维护列表</button>
+                            </div>
+                        </div>
+                    </div><!-- /.box-body -->
+                </div><!-- /.box-body -->
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- 资产详情面板 -->
+<section class="content">
+    <div class="row">
+        <!-- 资产详情 -->
+        <div class="col-lg-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">资产详情</h3>
+                    <div class="box-tools pull-right">
+                        <div class="input-group" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control input-sm pull-right" placeholder="Search">
+                            <div class="input-group-btn">
+                                <button class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+                            </div>
+                            @*<button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>*@
+                        </div>
+                    </div>
+
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <!-- 资产详情 -->
+                    <div class="col-lg-6">
+                        <div class="nav-tabs-custom">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a href="#tab_1" data-toggle="tab">资产卡片</a></li>
+                                <li><a href="#tab_2" data-toggle="tab">资产领用</a></li>
+                                <li><a href="#tab_3" data-toggle="tab">资产借用</a></li>
+                                <li><a href="#tab_4" data-toggle="tab">资产报修</a></li>
+                                <li><a href="#tab_5" data-toggle="tab">资产维修</a></li>
+                                <li><a href="#tab_6" data-toggle="tab">资产盘点</a></li>
+                                <li><a href="#tab_7" data-toggle="tab">资产变更</a></li>
+                                <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <!-- 资产卡片 -->
+                                <div class="tab-pane active" id="tab_1">
+                                    <div class="box">
+                                        <!-- 标题 -->
+                                        <div class="row col-lg-offset-4">
+                                            <label style="font-size:30px;">资产卡片（通用设备）</label>
+                                        </div>
+
+                                        <!-- 时间和二维码 -->
+                                        <div class="row col-lg-offset-0">
+                                            <!-- 取得日期 -->
+                                            <div class="col-lg-3">
+                                                <label style="font-size:10px;">取得日期：2016-01-12</label>
+                                                <label style="font-size:10px;">取得方式：购置</label>
+                                                <label style="font-size:10px;">资产编号：DXT1726457</label>
+                                            </div>
+                                            <div class="col-lg-6"></div>
+                                            <!-- 二维码 -->
+                                            <div class="col-lg-3">
+                                                <img class="img-responsive" src="/Image/erweima.jpg">
+                                            </div>
+                                        </div>
+
+                                        <!-- 基础信息标题 -->
+                                        <div class="row col-lg-offset-0">
+                                            <label style="font-size:20px;">基础信息</label>
+                                        </div>
+                                        <!-- 基础信息表 -->
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">资产名称</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">资产分类</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">计量单位</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">单价</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">存放地点</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">入库日期</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">批次号</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">复制数量</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">□是否低值资产</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 财务信息标题 -->
+                                        <div class="row col-lg-offset-0">
+                                            <label style="font-size:20px;">财务信息</label>
+                                        </div>
+                                        <!-- 财务信息表 -->
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">入账形式</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">入账日期</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">维修费用合计</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">价值类型</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">非财政性资金</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">财政性资金</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">会计凭证号</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 折旧信息标题 -->
+                                        <div class="row col-lg-offset-0">
+                                            <label style="font-size:20px;">折旧信息</label>
+                                        </div>
+                                        <!-- 折旧信息表 -->
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">折旧状态</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">净值</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">月折旧</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">累计折旧</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 使用信息标题 -->
+                                        <div class="row col-lg-offset-0">
+                                            <label style="font-size:20px;">使用信息</label>
+                                        </div>
+                                        <!-- 使用信息表 -->
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">使用属性</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">使用方向</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">使用年限</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">设备用途</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">使用/管理人</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">保修截止日期</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">投入使用日期</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 其他信息标题 -->
+                                        <div class="row col-lg-offset-0">
+                                            <label style="font-size:20px;">其他信息</label>
+                                        </div>
+                                        <!-- 其他信息表 -->
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">品牌型号</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">生产厂家</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">供货单位</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">出借对方单位</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">资产所属部门</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px">其他</label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label style="font-size:10px"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div><!-- /.tab-pane -->
+                                <!-- 资产领用 -->
+                                <div class="tab-pane" id="tab_2">
+                                    <!-- 领用记录表 -->
+                                    <div class="row">
+                                        <div class="box">
+                                            <div class="box-header">
+                                                <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">领用记录</h3>
+                                            </div><!-- /.box-header -->
+                                            <div class="box-body">
+                                                <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                                                    <div class="row"><div class="col-sm-6"><div class="dataTables_length" id="example1_length"><label>Show <select name="example1_length" aria-controls="example1" class="form-control input-sm"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> entries</label></div></div><div class="col-sm-6"><div id="example1_filter" class="dataTables_filter"><label>Search:<input type="search" class="form-control input-sm" placeholder="" aria-controls="example1"></label></div></div></div><div class="row">
+                                                        <div class="col-sm-12">
+                                                            <table id="example1" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                                                <thead>
+                                                                    <tr role="row"><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending" style="width: 81px;">序号</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 105px;">领用时间</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending" style="width: 90px;">领用人</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending" style="width: 68px;">使用地点</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending" style="width: 45px;">备注</th></tr>
+                                                                </thead>
+                                                                <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 1.0</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 1.5</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 2.0</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 3.0</td>
+                                                                        <td>Win 2k+ / OSX.3+</td>
+                                                                        <td>1.9</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Camino 1.0</td>
+                                                                        <td>OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Camino 1.5</td>
+                                                                        <td>OSX.3+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape 7.2</td>
+                                                                        <td>Win 95+ / Mac OS 8.6-9.2</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape Browser 8</td>
+                                                                        <td>Win 98SE+</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape Navigator 9</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Mozilla 1.0</td>
+                                                                        <td>Win 95+ / OSX.1+</td>
+                                                                        <td>1</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr><th rowspan="1" colspan="1">Rendering engine</th><th rowspan="1" colspan="1">Browser</th><th rowspan="1" colspan="1">Platform(s)</th><th rowspan="1" colspan="1">Engine version</th><th rowspan="1" colspan="1">CSS grade</th></tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div><div class="row"><div class="col-sm-5"><div class="dataTables_info" id="example1_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div></div><div class="col-sm-7"><div class="dataTables_paginate paging_simple_numbers" id="example1_paginate"><ul class="pagination"><li class="paginate_button previous disabled" id="example1_previous"><a href="#" aria-controls="example1" data-dt-idx="0" tabindex="0">Previous</a></li><li class="paginate_button active"><a href="#" aria-controls="example1" data-dt-idx="1" tabindex="0">1</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="2" tabindex="0">2</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="3" tabindex="0">3</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="4" tabindex="0">4</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="5" tabindex="0">5</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="6" tabindex="0">6</a></li><li class="paginate_button next" id="example1_next"><a href="#" aria-controls="example1" data-dt-idx="7" tabindex="0">Next</a></li></ul></div></div></div>
+                                                </div>
+                                            </div><!-- /.box-body -->
+                                        </div>
+                                    </div>
+                                    <!-- 领用操作面板 -->
+                                    <div class="row">
+                                        <div class="col-lg-offset-5">
+                                            <button class="btn btn-primary btn-sm btn-flat">领用</button>
+                                        </div>
+                                    </div>
+                                </div><!-- /.tab-pane -->
+                                <!-- 资产借用 -->
+                                <div class="tab-pane" id="tab_3">
+                                    <!-- 借用记录表 -->
+                                    <div class="row">
+                                        <div class="box">
+                                            <div class="box-header">
+                                                <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">借用记录</h3>
+                                            </div><!-- /.box-header -->
+                                            <div class="box-body">
+                                                <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                                                    <div class="row"><div class="col-sm-6"><div class="dataTables_length" id="example1_length"><label>Show <select name="example1_length" aria-controls="example1" class="form-control input-sm"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> entries</label></div></div><div class="col-sm-6"><div id="example1_filter" class="dataTables_filter"><label>Search:<input type="search" class="form-control input-sm" placeholder="" aria-controls="example1"></label></div></div></div><div class="row">
+                                                        <div class="col-sm-12">
+                                                            <table id="example1" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                                                <thead>
+                                                                    <tr role="row"><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending" style="width: 81px;">序号</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 105px;">借用时间</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending" style="width: 90px;">借用人</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending" style="width: 68px;">使用地点</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending" style="width: 45px;">备注</th></tr>
+                                                                </thead>
+                                                                <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 1.0</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 1.5</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 2.0</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 3.0</td>
+                                                                        <td>Win 2k+ / OSX.3+</td>
+                                                                        <td>1.9</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Camino 1.0</td>
+                                                                        <td>OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Camino 1.5</td>
+                                                                        <td>OSX.3+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape 7.2</td>
+                                                                        <td>Win 95+ / Mac OS 8.6-9.2</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape Browser 8</td>
+                                                                        <td>Win 98SE+</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape Navigator 9</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Mozilla 1.0</td>
+                                                                        <td>Win 95+ / OSX.1+</td>
+                                                                        <td>1</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr><th rowspan="1" colspan="1">Rendering engine</th><th rowspan="1" colspan="1">Browser</th><th rowspan="1" colspan="1">Platform(s)</th><th rowspan="1" colspan="1">Engine version</th><th rowspan="1" colspan="1">CSS grade</th></tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div><div class="row"><div class="col-sm-5"><div class="dataTables_info" id="example1_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div></div><div class="col-sm-7"><div class="dataTables_paginate paging_simple_numbers" id="example1_paginate"><ul class="pagination"><li class="paginate_button previous disabled" id="example1_previous"><a href="#" aria-controls="example1" data-dt-idx="0" tabindex="0">Previous</a></li><li class="paginate_button active"><a href="#" aria-controls="example1" data-dt-idx="1" tabindex="0">1</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="2" tabindex="0">2</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="3" tabindex="0">3</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="4" tabindex="0">4</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="5" tabindex="0">5</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="6" tabindex="0">6</a></li><li class="paginate_button next" id="example1_next"><a href="#" aria-controls="example1" data-dt-idx="7" tabindex="0">Next</a></li></ul></div></div></div>
+                                                </div>
+                                            </div><!-- /.box-body -->
+                                        </div>
+                                    </div>
+                                    <!-- 借用操作面板 -->
+                                    <div class="row">
+                                        <div class="col-lg-offset-0">
+                                            <button class="btn btn-primary btn-sm btn-flat col-lg-offset-4">借用</button>
+                                            <button class="btn btn-primary btn-sm btn-flat col-lg-offset-2">归还</button>
+                                        </div>
+                                    </div>
+                                </div><!-- /.tab-pane -->
+                                <!-- 资产报修 -->
+                                <div class="tab-pane" id="tab_4">
+                                    <!-- 资产报修录表 -->
+                                    <div class="row">
+                                        <div class="box">
+                                            <div class="box-header">
+                                                <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">报修记录</h3>
+                                            </div><!-- /.box-header -->
+                                            <div class="box-body">
+                                                <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                                                    <div class="row"><div class="col-sm-6"><div class="dataTables_length" id="example1_length"><label>Show <select name="example1_length" aria-controls="example1" class="form-control input-sm"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> entries</label></div></div><div class="col-sm-6"><div id="example1_filter" class="dataTables_filter"><label>Search:<input type="search" class="form-control input-sm" placeholder="" aria-controls="example1"></label></div></div></div><div class="row">
+                                                        <div class="col-sm-12">
+                                                            <table id="example1" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                                                <thead>
+                                                                    <tr role="row"><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending" style="width: 81px;">序号</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 105px;">报修时间</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending" style="width: 90px;">报修人</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending" style="width: 68px;">故障描述</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending" style="width: 45px;">备注</th></tr>
+                                                                </thead>
+                                                                <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 1.0</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 1.5</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 2.0</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 3.0</td>
+                                                                        <td>Win 2k+ / OSX.3+</td>
+                                                                        <td>1.9</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Camino 1.0</td>
+                                                                        <td>OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Camino 1.5</td>
+                                                                        <td>OSX.3+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape 7.2</td>
+                                                                        <td>Win 95+ / Mac OS 8.6-9.2</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape Browser 8</td>
+                                                                        <td>Win 98SE+</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape Navigator 9</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Mozilla 1.0</td>
+                                                                        <td>Win 95+ / OSX.1+</td>
+                                                                        <td>1</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr><th rowspan="1" colspan="1">Rendering engine</th><th rowspan="1" colspan="1">Browser</th><th rowspan="1" colspan="1">Platform(s)</th><th rowspan="1" colspan="1">Engine version</th><th rowspan="1" colspan="1">CSS grade</th></tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div><div class="row"><div class="col-sm-5"><div class="dataTables_info" id="example1_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div></div><div class="col-sm-7"><div class="dataTables_paginate paging_simple_numbers" id="example1_paginate"><ul class="pagination"><li class="paginate_button previous disabled" id="example1_previous"><a href="#" aria-controls="example1" data-dt-idx="0" tabindex="0">Previous</a></li><li class="paginate_button active"><a href="#" aria-controls="example1" data-dt-idx="1" tabindex="0">1</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="2" tabindex="0">2</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="3" tabindex="0">3</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="4" tabindex="0">4</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="5" tabindex="0">5</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="6" tabindex="0">6</a></li><li class="paginate_button next" id="example1_next"><a href="#" aria-controls="example1" data-dt-idx="7" tabindex="0">Next</a></li></ul></div></div></div>
+                                                </div>
+                                            </div><!-- /.box-body -->
+                                        </div>
+                                    </div>
+                                    <!-- 借用操作面板 -->
+                                    <div class="row">
+                                        <div class="col-lg-offset-0">
+                                            <button class="btn btn-primary btn-sm btn-flat col-lg-offset-5">报修</button>
+                                        </div>
+                                    </div>
+                                </div><!-- /.tab-pane -->
+                                <!-- 资产维修 -->
+                                <div class="tab-pane" id="tab_5">
+                                    <!-- 资产报修录表 -->
+                                    <div class="row">
+                                        <div class="box">
+                                            <div class="box-header">
+                                                <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">维修记录</h3>
+                                            </div><!-- /.box-header -->
+                                            <div class="box-body">
+                                                <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                                                    <div class="row"><div class="col-sm-6"><div class="dataTables_length" id="example1_length"><label>Show <select name="example1_length" aria-controls="example1" class="form-control input-sm"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> entries</label></div></div><div class="col-sm-6"><div id="example1_filter" class="dataTables_filter"><label>Search:<input type="search" class="form-control input-sm" placeholder="" aria-controls="example1"></label></div></div></div><div class="row">
+                                                        <div class="col-sm-12">
+                                                            <table id="example1" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                                                <thead>
+                                                                    <tr role="row"><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending" style="width: 81px;">序号</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 105px;">维修时间</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending" style="width: 90px;">维修人</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending" style="width: 68px;">故障描述</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending" style="width: 45px;">备注</th></tr>
+                                                                </thead>
+                                                                <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 1.0</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 1.5</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 2.0</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 3.0</td>
+                                                                        <td>Win 2k+ / OSX.3+</td>
+                                                                        <td>1.9</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Camino 1.0</td>
+                                                                        <td>OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Camino 1.5</td>
+                                                                        <td>OSX.3+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape 7.2</td>
+                                                                        <td>Win 95+ / Mac OS 8.6-9.2</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape Browser 8</td>
+                                                                        <td>Win 98SE+</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape Navigator 9</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Mozilla 1.0</td>
+                                                                        <td>Win 95+ / OSX.1+</td>
+                                                                        <td>1</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr><th rowspan="1" colspan="1">Rendering engine</th><th rowspan="1" colspan="1">Browser</th><th rowspan="1" colspan="1">Platform(s)</th><th rowspan="1" colspan="1">Engine version</th><th rowspan="1" colspan="1">CSS grade</th></tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div><div class="row"><div class="col-sm-5"><div class="dataTables_info" id="example1_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div></div><div class="col-sm-7"><div class="dataTables_paginate paging_simple_numbers" id="example1_paginate"><ul class="pagination"><li class="paginate_button previous disabled" id="example1_previous"><a href="#" aria-controls="example1" data-dt-idx="0" tabindex="0">Previous</a></li><li class="paginate_button active"><a href="#" aria-controls="example1" data-dt-idx="1" tabindex="0">1</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="2" tabindex="0">2</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="3" tabindex="0">3</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="4" tabindex="0">4</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="5" tabindex="0">5</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="6" tabindex="0">6</a></li><li class="paginate_button next" id="example1_next"><a href="#" aria-controls="example1" data-dt-idx="7" tabindex="0">Next</a></li></ul></div></div></div>
+                                                </div>
+                                            </div><!-- /.box-body -->
+                                        </div>
+                                    </div>
+                                    <!-- 借用操作面板 -->
+                                    <div class="row">
+                                        <div class="col-lg-offset-0">
+                                            <button class="btn btn-primary btn-sm btn-flat col-lg-offset-5">维修</button>
+                                        </div>
+                                    </div>
+                                </div><!-- /.tab-pane -->
+                                <!-- 资产盘点 -->
+                                <div class="tab-pane" id="tab_6">
+                                    <!-- 借用记录表 -->
+                                    <div class="row">
+                                        <div class="box">
+                                            <div class="box-header">
+                                                <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">盘点记录</h3>
+                                            </div><!-- /.box-header -->
+                                            <div class="box-body">
+                                                <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                                                    <div class="row"><div class="col-sm-6"><div class="dataTables_length" id="example1_length"><label>Show <select name="example1_length" aria-controls="example1" class="form-control input-sm"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> entries</label></div></div><div class="col-sm-6"><div id="example1_filter" class="dataTables_filter"><label>Search:<input type="search" class="form-control input-sm" placeholder="" aria-controls="example1"></label></div></div></div><div class="row">
+                                                        <div class="col-sm-12">
+                                                            <table id="example1" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                                                <thead>
+                                                                    <tr role="row"><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending" style="width: 81px;">序号</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 105px;">盘点时间</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending" style="width: 90px;">盘点人</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending" style="width: 68px;">盘点结果</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending" style="width: 45px;">备注</th></tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 1.0</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 1.5</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 2.0</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 3.0</td>
+                                                                        <td>Win 2k+ / OSX.3+</td>
+                                                                        <td>1.9</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Camino 1.0</td>
+                                                                        <td>OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Camino 1.5</td>
+                                                                        <td>OSX.3+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape 7.2</td>
+                                                                        <td>Win 95+ / Mac OS 8.6-9.2</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape Browser 8</td>
+                                                                        <td>Win 98SE+</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape Navigator 9</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Mozilla 1.0</td>
+                                                                        <td>Win 95+ / OSX.1+</td>
+                                                                        <td>1</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr><th rowspan="1" colspan="1">Rendering engine</th><th rowspan="1" colspan="1">Browser</th><th rowspan="1" colspan="1">Platform(s)</th><th rowspan="1" colspan="1">Engine version</th><th rowspan="1" colspan="1">CSS grade</th></tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div><div class="row"><div class="col-sm-5"><div class="dataTables_info" id="example1_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div></div><div class="col-sm-7"><div class="dataTables_paginate paging_simple_numbers" id="example1_paginate"><ul class="pagination"><li class="paginate_button previous disabled" id="example1_previous"><a href="#" aria-controls="example1" data-dt-idx="0" tabindex="0">Previous</a></li><li class="paginate_button active"><a href="#" aria-controls="example1" data-dt-idx="1" tabindex="0">1</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="2" tabindex="0">2</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="3" tabindex="0">3</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="4" tabindex="0">4</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="5" tabindex="0">5</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="6" tabindex="0">6</a></li><li class="paginate_button next" id="example1_next"><a href="#" aria-controls="example1" data-dt-idx="7" tabindex="0">Next</a></li></ul></div></div></div>
+                                                </div>
+                                            </div><!-- /.box-body -->
+                                        </div>
+                                    </div>
+                                    <!-- 借用操作面板 -->
+                                    <div class="row">
+                                        <div class="col-lg-offset-0">
+                                            <button class="btn btn-primary btn-sm btn-flat col-lg-offset-5">盘点</button>
+                                        </div>
+                                    </div>
+                                </div><!-- /.tab-pane -->
+                                <!-- 资产变更 -->
+                                <div class="tab-pane" id="tab_7">
+                                    <!-- 资产报修录表 -->
+                                    <div class="row">
+                                        <div class="box">
+                                            <div class="box-header">
+                                                <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">变更记录</h3>
+                                            </div><!-- /.box-header -->
+                                            <div class="box-body">
+                                                <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                                                    <div class="row"><div class="col-sm-6"><div class="dataTables_length" id="example1_length"><label>Show <select name="example1_length" aria-controls="example1" class="form-control input-sm"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> entries</label></div></div><div class="col-sm-6"><div id="example1_filter" class="dataTables_filter"><label>Search:<input type="search" class="form-control input-sm" placeholder="" aria-controls="example1"></label></div></div></div><div class="row">
+                                                        <div class="col-sm-12">
+                                                            <table id="example1" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                                                <thead>
+                                                                    <tr role="row"><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending" style="width: 81px;">序号</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 105px;">变更时间</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending" style="width: 90px;">变更人</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending" style="width: 68px;">变更内容</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending" style="width: 45px;">备注</th></tr>
+                                                                </thead>
+                                                                <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 1.0</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 1.5</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 2.0</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Firefox 3.0</td>
+                                                                        <td>Win 2k+ / OSX.3+</td>
+                                                                        <td>1.9</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Camino 1.0</td>
+                                                                        <td>OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Camino 1.5</td>
+                                                                        <td>OSX.3+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape 7.2</td>
+                                                                        <td>Win 95+ / Mac OS 8.6-9.2</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape Browser 8</td>
+                                                                        <td>Win 98SE+</td>
+                                                                        <td>1.7</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="odd">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Netscape Navigator 9</td>
+                                                                        <td>Win 98+ / OSX.2+</td>
+                                                                        <td>1.8</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                    <tr role="row" class="even">
+                                                                        <td class="sorting_1">Gecko</td>
+                                                                        <td>Mozilla 1.0</td>
+                                                                        <td>Win 95+ / OSX.1+</td>
+                                                                        <td>1</td>
+                                                                        <td>A</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr><th rowspan="1" colspan="1">Rendering engine</th><th rowspan="1" colspan="1">Browser</th><th rowspan="1" colspan="1">Platform(s)</th><th rowspan="1" colspan="1">Engine version</th><th rowspan="1" colspan="1">CSS grade</th></tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div><div class="row"><div class="col-sm-5"><div class="dataTables_info" id="example1_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div></div><div class="col-sm-7"><div class="dataTables_paginate paging_simple_numbers" id="example1_paginate"><ul class="pagination"><li class="paginate_button previous disabled" id="example1_previous"><a href="#" aria-controls="example1" data-dt-idx="0" tabindex="0">Previous</a></li><li class="paginate_button active"><a href="#" aria-controls="example1" data-dt-idx="1" tabindex="0">1</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="2" tabindex="0">2</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="3" tabindex="0">3</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="4" tabindex="0">4</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="5" tabindex="0">5</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="6" tabindex="0">6</a></li><li class="paginate_button next" id="example1_next"><a href="#" aria-controls="example1" data-dt-idx="7" tabindex="0">Next</a></li></ul></div></div></div>
+                                                </div>
+                                            </div><!-- /.box-body -->
+                                        </div>
+                                    </div>
+                                    <!-- 借用操作面板 -->
+                                    <div class="row">
+                                        <div class="col-lg-offset-0">
+                                            <button class="btn btn-primary btn-sm btn-flat col-lg-offset-5">变更</button>
+                                        </div>
+                                    </div>
+                                </div><!-- /.tab-pane -->
+                            </div><!-- /.tab-content -->
+                        </div>
+
+                    </div>
+
+                    <!-- 资产照片 -->
+                    <div class="col-lg-6">
+                        <!-- 资产照片标题 -->
+                        <div class="row">
+                            <label>资产照片</label>
+                        </div>
+                        <!-- 资产照片 -->
+                        <div class="row">
+                            <br />
+                            <br />
+                            <img class="img-responsive" src="/Image/photo2.png">
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+                <div class="box-footer clearfix">
+                    <ul class="pagination pagination-sm no-margin pull-right">
+                        <li><a href="#">«</a></li>
+                        <li><a href="#">1</a></li>
+                        <li><a href="#">2</a></li>
+                        <li><a href="#">3</a></li>
+                        <li><a href="#">»</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 资产操作面板 -->
+<section class="content">
+    @RenderBody()
+</section>
+
+<script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+<script type="text/javascript">
+
+    function queryData(pageIndex) {
+        $("#PageIndex").val(pageIndex);
+        var d = $("#frmSearch").serialize();
+        $.post("@Url.Action("AssetsQuery")", d, function(result) {
+            $("#tableAssets tbody").empty();
+            $(result.Items).each(function(index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td><a target="_blank" href="/AssetsFind/AssetsFind/ViewDetail?entityId=' + item.EntityId + '">' + item.AssetsNum + '</a></td>');
+                row.append('<td>' + item.GoodsName + '</td>');
+                row.append('<td>' + item.CatCode + '</td>');
+                row.append('<td>' + item.Price + '</td>');
+                row.append('<td>' + item.Counts + '</td>');
+                row.append('<td>' + item.MeasurementUnits + '</td>');
+                row.append('<td>' + item.UsingState + '</td>');
+                row.append('<td><input type="checkbox" data-id=' + item.EntityId + '></td>');
+                $("#tableAssets").append(row);
+            });
+            $("#example1_info").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " ,总共 " + result.TotalItemCount);
+            $(".orderlist").click(function () {
+                var val = $(this).attr("data-id");
+                addToOrderList(val);
+            });
+            if (result.TotalPageCount <= 1) {
+                $('#divAssetsPager').empty();
+                return;
+            }
+            var options = {
+                bootstrapMajorVersion: 3, //版本
+                numberOfPages: 8,
+                currentPage: result.CurrentPageIndex,
+                totalPages: result.TotalPageCount,
+                itemTexts: function(type, page, current) {
+                    switch (type) {
+                    case "first":
+                        return "首页";
+                    case "prev":
+                        return "上一页";
+                    case "next":
+                        return "下一页";
+                    case "last":
+                        return "末页";
+                    case "page":
+                        return page;
+                    }
+                }, //点击事件，用于通过Ajax来刷新整个list列表
+                onPageClicked: function(event, originalEvent, type, page) {
+                    queryData(page);
+                }
+            };
+            $('#divAssetsPager').bootstrapPaginator(options);
+        }, "json");
+    }
+
+    function addToOrderList(entityId) {
+        $.post("@Url.Action("Add", "OrderList", new {area = "Account"})",{EntityId:entityId}, function(result) {
+            if (result)
+                alert("添加成功");
+            else
+                alert("添加失败");
+        }, "json");
+   }
+
+    $(function() {
+        $("#perPageSize").change(function() {
+            alert($(this).val());
+            $("#PageSize").val($(this).val());
+            queryData(1);
+        });
+
+        queryData(1);
+        $("#btnSearch").click(function() { //点击查询按钮后从第一页开始查询
+            queryData(1);
+            return false;
+        });
+    });
+</script>

@@ -1,0 +1,30 @@
+﻿------------------------------------------------------------------------------
+出错时间：2017-06-08 17:23:17
+错误信息：未将对象引用设置到对象的实例。
+Controller：Eam.Web.Portal.Areas.AssetsInput.Controllers.SingleInputController
+错误源：System
+堆栈信息：   在 System.Collections.Generic.LinkedList`1.AddFirst(T value)
+   在 Microsoft.VisualStudio.Web.PageInspector.Runtime.Tracing.BrowserLinkExecutionListener.OpenRenderRange(PageExecutionContext context, Int32 renderedStartPosition)
+   在 Microsoft.VisualStudio.Web.PageInspector.Runtime.Tracing.BrowserLinkExecutionListener.BeginContext(PageExecutionContext context)
+   在 CallSite.Target(Closure , CallSite , Object , Object )
+   在 System.Web.WebPages.Instrumentation.PageExecutionListenerAdapter.BeginContext(PageExecutionContextAdapter context)
+   在 System.Web.WebPages.Instrumentation.InstrumentationService.BeginContext(HttpContextBase context, String virtualPath, TextWriter writer, Int32 startPosition, Int32 length, Boolean isLiteral)
+   在 System.Web.WebPages.HelperPage.BeginContext(TextWriter writer, String virtualPath, Int32 startPosition, Int32 length, Boolean isLiteral)
+   在 ASP.UIHelper.<>c__DisplayClass1.<DispDevUse>b__0(TextWriter __razor_helper_writer) 位置 c:\Users\Oriel\AppData\Local\Temp\Temporary ASP.NET Files\root\d8c81fd8\1cebae77\App_Code.nqbfhguh.0.cs:行号 0
+   在 System.Web.WebPages.HelperResult.WriteTo(TextWriter writer)
+   在 System.Web.WebPages.WebPageExecutingBase.WriteTo(TextWriter writer, HelperResult content)
+   在 System.Web.WebPages.WebPageBase.Write(HelperResult result)
+   在 ASP._Page_Areas_AssetsInput_Views_SingleInput_SingleInput_cshtml.Execute() 位置 e:\项目\固资改版\开发源码\EAM\Eam.Web.Portal\Areas\AssetsInput\Views\SingleInput\SingleInput.cshtml:行号 806
+   在 System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   在 System.Web.Mvc.WebViewPage.ExecutePageHierarchy()
+   在 System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   在 System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance)
+   在 System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
+   在 System.Web.Mvc.ViewResultBase.ExecuteResult(ControllerContext context)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)
+   在 System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass21.<>c__DisplayClass2b.<BeginInvokeAction>b__1c()
+   在 System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass21.<BeginInvokeAction>b__1e(IAsyncResult asyncResult)
+------------------------------------------------------------------------------

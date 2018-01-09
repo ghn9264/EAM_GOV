@@ -1,0 +1,247 @@
+﻿@using Eam.Web.Portal.Areas
+@{
+    
+    Layout = "~/Areas/AssetsFind/Views/AssetsFind/_AssetsFindLayout.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">报废申请</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 资产报废申请单 -->
+<section class="content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box">
+                <!-- 表头 -->
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">资产报废申请单</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-primary top_a" id="AddAsset" name="AddAsset">添加资产</button>
+                        <span></span>
+                        <button class="btn btn-primary top_a" id="CloseAdd" name="CloseAdd">关闭添加</button>
+                    </div>
+                </div><!-- /.box-header -->
+                <!-- box content -->
+                <div class="box-body content">
+                    <form id="ScrapForm" method="POST">
+                        <!-- 盘点左侧栏/盘点信息 -->
+                        <div class="col-lg-3">
+                            <!-- 报废信息 -->
+                            <div class="row" style="margin-left:0px;">
+                                <br />
+                                @*<label>报废申请人：</label><input class="form-control" type="text" placeholder="报废申请人" id="ScrapPerson" name="ScrapPerson">*@
+                                <label>报废申请人：</label><select class="form-control" type="text" name="ScrapPerson" id="ScrapPerson"></select>
+                                <script src="~/Assets/select2/select2.js"></script>
+                                <script>
+                                    $.post("/sysManage/sysManage/GetAllUsersMax", function (data) {
+                                        $("#ScrapPerson").select2({
+                                            placeholder: "报废申请人",
+                                            data: data
+                                        });
+                                    })
+                                </script>
+                                <br />
+                                <label>报废申请人联系方式：</label><input class="form-control" type="text" placeholder="报废申请人联系方式" id="ScrapPersonPhone" name="ScrapPersonPhone">
+                                <br />
+                                <label>报废申请单位：</label><input class="form-control" type="text" placeholder="报废申请单位" id="ScrapUnit" name="ScrapUnit" readonly="readonly" value="@PortalSetting.QrCodeTitle">
+                                <br />
+                                <label>报废时间：</label><input class="form-control" type="text" placeholder="报废申请时间" id="ScrapDate" name="ScrapDate" readonly="readonly" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")">
+                            </div>
+                            <!-- 报废操作 -->
+                            <div class="row">
+                                <br />
+                                <div class="col-lg-offset-5">
+                                    <button class="btn btn-default btn-all" id="a-scrap">申请报废</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 盘点右侧栏/待盘点资产 -->
+                        <div class="col-lg-9">
+                            <table id="ScrapApplyTable" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                <thead>
+                                    <tr role="row" class="row-bkg">
+                                        <th style="width: 300px;">资产编号</th>
+                                        <th style="width: 359px;">资产名称</th>
+                                        <th style="width: 318px;">资产类别</th>
+                                        <th style="width: 256px;">单价</th>
+                                        <th style="width: 256px;">数量</th>
+                                        <th style="width: 256px;">计量单位</th>
+                                        <th style="width: 191px;"><button id="btnRemoveAll" type="button" class="btn btn-default btn-all">批量删除</button></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 资产报废申请记录 -->
+<section class="content">
+    <div class="row">
+        <!--资产列表面板 -->
+        <div class="col-lg-12">
+            <!-- 资产列表面板 -->
+            <div class="box">
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">资产报废申请记录</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        <input type="hidden" name="ScrapRecordPageIndex" id="ScrapyRecordPageIndex" value="1" />
+                        <input type="hidden" name="ScrapRecordPageSize" id="ScrapRecordPageSize" value="20" />
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="ScrapRecordTable" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                    <thead>
+                                        <tr role="row">
+                                            <th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending" style="width: 293px;">序号</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 359px;">报废申请人</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending" style="width: 318px;">报废申请单位</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending" style="width: 318px;">报废申请人联系方式</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending" style="width: 256px;">报废申请日期</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending" style="width: 256px;">&nbsp;</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending" style="width: 256px;">&nbsp;</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending" style="width: 256px;"><button type="button" onclick="return window.location.href = '/AssetsFind/DoAssets/DeleteAllScrapApplyRecord';" class="btn btn-default btn-all">批量删除</button></th>
+
+                                                </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="dataTables_info" id="ScrapRecordTableInfo" role="status" aria-live="polite"></div>
+                            </div>
+                            <div class="col-sm-9">
+                                <ul id="ScrapRecordPager"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+            </div>
+        </div>
+    </div>
+</section>
+<script src="~/Assets/datatables/datatables.min.js"></script>
+<!-- 将资产列表中的资产添加到待报废列表 -->
+<script type="text/javascript">
+
+    window.AddToOrderListCallBack = loadData;
+
+    var serviceUrl2 = "@Url.Action("Query", "OrderList", new {area = "Account"})";
+    var ascrap;
+    function loadData() {
+        $.post(serviceUrl2, { "type": "@ConstTag.Scrap" }, function (result) {
+            ascrap = result;
+            $("#ScrapApplyTable tbody").empty();
+            $(result).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td><input type="hidden" name="AssetsNum" value="' + item.AssetsNum + '"/> ' + item.UsedNum1 + '</td>');
+                row.append('<td>' + item.GoodsName + '</td>');
+                row.append('<td>' + item.CatCode + '</td>');
+                row.append('<td>' + item.Price + '</td>');
+                row.append('<td>' + item.Counts + '</td>');
+                row.append('<td>' + item.MeasurementUnits + '</td>');
+                row.append('<td><span class="btn btn-default btn-all remove" data-id="' + item.EntityId + '">删除</span></td>');
+                $("#ScrapApplyTable tbody").append(row);
+            });
+            $("#ScrapApplyTable").DataTable();
+            $(".remove").click(function () {
+                var serviceUrlRemove = "@Url.Action("RemoveOne", "OrderList", new {area = "Account"})";
+                $.post(serviceUrlRemove, { "id": $(this).attr("data-id") }, function () {
+                    loadData();
+                });
+            });
+        });
+    }
+    function RemoveFormOrderList() {
+        $("#btnRemoveAll").click(function () {
+            var serviceUrlRemove = "@Url.Action("RemoveOne", "OrderList", new { area = "Account" })";
+            $.post(serviceUrlRemove, { "type": "@ConstTag.Scrap" }, function () {
+                loadData();
+            });
+        });
+    }
+
+    //初始加载
+    $(function () {
+        $("#a-scrap").click(function () {
+            if (ascrap.length == 0) { alert('请不要提交一张空的报废单') }
+        });
+        loadData();
+        RemoveFormOrderList();
+    });
+</script>
+
+
+<!-- 资产报废申请记录显示 -->
+<script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+<script type="text/javascript">
+
+    var scrapQueryUrl = "@Url.Action("AllScrapRecordQuery", "AssetsFind", new { area = "AssetsFind" })";
+
+    function queryScrapRecordData(pageIndex) {
+        $("#ScrapRecordPageIndex").val(pageIndex);
+        var pageSize = $("#ScrapRecordPageSize").val();
+        $.post(scrapQueryUrl, { pageSize: pageSize, pageIndex: pageIndex }, function (result) {
+            $("#ScrapRecordTable tbody").empty();
+            $(result.Items).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td><a target="_blank" href="/AssetsFind/AssetsFind/ViewDetail?entityId=' + item.EntityId + '">' + item.EntityId + '</a></td>');
+                row.append('<td>' + item.ScrapPerson + '</td>');
+                row.append('<td>' + item.ScrapUnit + '</td>');
+                row.append('<td>' + item.ScrapPersonPhone + '</td>');
+                row.append('<td>' + item.ScrapDate + '</td>');
+
+                row.append('<td><a href="/AssetsFind/DoAssetsExport/DownloadScrapPlanInfo?doAssetsId=' + item.EntityId + '" class="btn btn-default btn-all">下载报废表(信息)</button></td>');
+                row.append('<td><a href="/AssetsFind/DoAssetsExport/DownloadScrapPlanBack?doAssetsId=' + item.EntityId + '" class="btn btn-default btn-all">下载报废表(后勤)</button></td>');
+                row.append('<td><a href="/AssetsFind/DoAssets/DeleteScrapApplyRecord?doAssetsId=' + item.EntityId + '" class="btn btn-default btn-all">删除</button></td>');
+                //row.append('<td><input type="checkbox" data-id=' + item.EntityId + '></td>');
+                $("#ScrapRecordTable").append(row);
+            });
+            $("#ScrapRecordTable").DataTable();
+            //$(".orderlist").click(function() {
+            //    var val = $(this).attr("data-id");
+            //    addToOrderList(val);
+            //});
+        }, "json");
+    }
+
+    @*function addToOrderList(entityId) {
+        $.post("@Url.Action("Add", "OrderList", new {area = "Account"})",{EntityId:entityId}, function(result) {
+            if (result)
+                alert("添加成功");
+            else
+                alert("添加失败");
+        }, "json");
+   }*@
+
+    $(function () {
+        $("#ScrapRecordPerPageSize").change(function () {
+            alert($(this).val());
+            $("#ScrapRecordPageSize").val($(this).val());
+            queryScrapRecordData(1);
+        });
+
+        queryScrapRecordData(1);
+        //$("#btnSearch").click(function() { //点击查询按钮后从第一页开始查询
+        //    queryData(1);
+        //    return false;
+        //});
+    });
+</script>

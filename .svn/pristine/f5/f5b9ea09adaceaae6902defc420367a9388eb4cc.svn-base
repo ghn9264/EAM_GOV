@@ -1,0 +1,180 @@
+﻿@model Eam.Web.Portal.Areas.SycData.ImportResultModel
+
+@{
+    ViewBag.Title = "数据同步界面";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">动态导出</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- Content Header (Page header) -->
+@*<section class="content-header">
+
+        <!--最顶部的标题栏-->
+        <h1>
+            固定资产
+            <small>数据同步\动态导出</small>
+        </h1>
+
+        <!--顶部标题栏右侧的层级显示栏-->
+        @*<ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Examples</a></li>
+            <li class="active">Blank page</li>
+        </ol>
+    </section>*@
+
+<!--动态导入 -->
+<section class="content">
+  <!-- 动态数据导出 -->
+    <div class="col-lg-12">
+        <!-- 动态导入信息 -->
+        <div class="box box-danger">
+            <div class="box-header new-box-header">
+                <h3 class="box-title title-a">动态导出</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                </div>
+            </div><!-- /.box-header -->
+           
+            
+            <!-- 资产类别表内容 -->
+            <div class="box-body no-padding">
+                <ul class="users-list clearfix">
+                    <!-- 土地 -->
+                    <li>
+                        <a class="users-list-name" href="@Url.Action("Export", new { type = "LAND" })">
+                            <img src="/Image/土地.png" alt="User Image">
+                            <div class="row">导出土地</div>
+                        </a>
+                        <span class="users-list-date">资产代码：101</span>
+                    </li>
+
+                    <!-- 房屋 -->
+                    <li>
+                        <a class="users-list-name" href="@Url.Action("Export", new { type = "HOUSE" })">
+                            <img src="/Image/房屋.png" alt="User Image">
+                            <div class="row">导出房屋</div>
+                        </a>
+                        <span class="users-list-date">资产代码：102</span>
+                    </li>
+
+                    <!-- 构筑物 -->
+                    <li>
+                        <a class="users-list-name" href="@Url.Action("Export",new{type="BUILDING"})">
+                            <img src="/Image/构建物.png" alt="User Image">
+                            <div class="row">导出构筑物</div>
+                        </a>
+                        <span class="users-list-date">资产代码：103</span>
+                    </li>
+
+                    <!-- 车辆 -->
+                    <li>
+                        <a class="users-list-name" href="@Url.Action("Export",new{type="CAR"})">
+                            <img src="/Image/汽车.png" alt="User Image">
+                            <div class="row">导出车辆</div>
+                        </a>
+                        <span class="users-list-date">资产代码：203</span>
+                    </li>
+
+                    <!-- 通用设备 -->
+                    <li>
+                        <a class="users-list-name" href="@Url.Action("Export",new{type="GENERAL"})">
+                            <img src="/Image/通用设备.png" alt="User Image">
+                            <div class="row">导出通用设备</div>
+                        </a>
+                        <span class="users-list-date">资产代码：201</span>
+                    </li>
+
+                    <!-- 专用设备 -->
+                    <li>
+                        <a class="users-list-name" href="@Url.Action("Export",new{type="SPECIAL"})">
+                            <img src="/Image/专用设备.png" alt="User Image">
+                            <div class="row">导出专用设备</div>
+                        </a>
+                        <span class="users-list-date">资产代码：301</span>
+                    </li>
+
+                    <!-- 文物陈列品 -->
+                    <li>
+                        <a class="users-list-name" href="@Url.Action("Export", new { type = "CULTURALRELIC" })">
+                            <img src="/Image/文物陈列品.png" alt="User Image">
+                            <div class="row">导出文物陈列品</div>
+                        </a>
+                        <span class="users-list-date">资产代码：401</span>
+                    </li>
+
+                    <!-- 家具、用具及装具 -->
+                    <li>
+                        <a class="users-list-name" href="@Url.Action("Export",new{type="FURNITURE"})">
+                            <img src="/Image/家具、用具、装具.png" alt="User Image">
+                            <div class="row">导出家具、用具及装具</div>
+                        </a>
+                        <span class="users-list-date">资产代码：601</span>
+                    </li>
+
+                    <!-- 图书档案 -->
+                    <li>
+                        <a class="users-list-name" href="@Url.Action("Export",new{type="BOOK"})">
+                            <img src="/Image/图书档案.jpg" alt="User Image">
+                            <div class="row">导出图书档案</div>
+                        </a>
+                        <span class="users-list-date">资产代码：501</span>
+                    </li>
+
+                    <!-- 特种植物 -->
+                    <li>
+                        <a class="users-list-name" href="@Url.Action("Export",new{type="ANIMALANDPLANT"})">
+                            <img src="/Image/动植物.png" alt="User Image">
+                            <div class="row">导出特种植物</div>
+                        </a>
+                        <span class="users-list-date">资产代码：603</span>
+                    </li>
+                    @*<li>
+                        <a class="users-list-name" id="All">
+                            <img src="/Image/Animal.jpg" alt="User Image">
+                            <div class="row">全部</div>
+                        </a>
+                        <span class="users-list-date"></span>
+                    </li>*@
+                </ul><!-- /.users-list -->
+            
+                <div class="row">
+                    <div class="col-lg-10">
+                        <br />
+                        @Model.ErrorMessage
+                        <br />
+                    </div>
+                </div>
+            </div><!-- /.box-body -->
+        </div>
+    </div>
+
+</section>
+@*<script>
+    $("#All")[0].onclick = function () {
+        var content = ["ANIMALANDPLANT", "FURNITURE", "BOOK", "CULTURALRELIC", "SPECIAL", "GENERAL", "CAR", "BUILDING", "HOUSE", "LAND"];
+        for (var i in content) {
+            console.log(content[i]);
+           downloadFile(content[i], "/SycData/Syc/Export?type="+content[i]);
+        }
+    }
+
+    function downloadFile(fileName, content) {
+        var aLink = document.createElement("a"),
+            evt = document.createEvent("HTMLEvents");
+
+        evt.initEvent("click");
+        aLink.download = fileName;
+        aLink.href = content;
+
+        aLink.dispatchEvent(evt);
+    }
+</script>*@

@@ -1,0 +1,184 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "界面管理";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">综合管理</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- Content Header (Page header) -->
+@*<section class="content-header">
+
+    <!--最顶部的标题栏-->
+    <h1>
+        系统管理
+        <small>界面管理</small>
+    </h1>*@
+
+    <!--顶部标题栏右侧的层级显示栏-->
+    @*<ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Examples</a></li>
+            <li class="active">Blank page</li>
+        </ol>
+    </section>*@
+
+<!--办学导入 -->
+<section class="content">
+
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="box box-info">
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">数据备份</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+
+                <div class="box-body" style="margin-left:30px;">
+                    @*<div class="form-group">
+                        <label>数据备份</label>
+                        <input type="text" class="form-control" id="OwnershipCertificate" name="OwnershipCertificate" placeholder="数据备份">
+                    </div>*@
+                    <h2>恢复</h2>
+                    
+                    <form>
+                        <!-- 选择文件 -->
+                        <div class="form-group" style="display:block;width:100px;">
+                            <img src="../../img/changefile.PNG" style="position:absolute;" />
+                            <input type="file" id="file" name="file" style="display:block; opacity: 0;filter: alpha(opacity=0);height: 114px;width: 114px;right: 0px;z-index: 9;float:left;">
+                            <p class="help-block">请选择文件备份位置</p>
+                        </div>
+                        <div class="form-group">
+                            <a id="upload" class="btn btn-default btn-all">上传并恢复备份</a>
+                        </div>
+                    </form>
+                    <hr />
+                    <h2>备份</h2>
+                    <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
+                        <a href="BackUpDataBase" class="btn btn-default btn-all">下载当前备份</a>
+                    </div>
+                    <hr />
+                    <h2>清空</h2>
+                    <div class="form-group">
+                        <a id="clear" class="btn btn-default btn-all">清空</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<div class="modal fade" id="UpLoadModel" tabindex="-1" role="dialog" aria-labelledby="UpLoadModelLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">文件上传</h4>
+            </div>
+            <div class="modal-body">
+                <div class="progress">
+                    <div class="progress-bar" id="progressNumber" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="recipient-name" class="control-label">文件名</label>
+                    <div class="form-control" id="fileName"></div>
+                </div>
+                <div class="form-group">
+                    <label for="recipient-name" class="control-label">文件大小</label>
+                    <div class="form-control" id="fileSize"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $("#file")[0].onchange = fileSelected;
+    $("#upload")[0].onclick = uploadFile;
+    $("#clear")[0].onclick = function clear() {
+       
+        $.post("/SysManage/SysManage/Reset").success(function (e) {
+           
+            if (e.type=="0") {
+                alert("清空成功!");
+            }
+            console.log(e);
+            
+        });
+    }
+    
+    function fileSelected() {
+        var file = $('#file')[0].files[0];
+        if (file) {
+            var fileSize = 0;
+            if (file.size > 1024 * 1024)
+                fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+            else
+                fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+            $('#fileName')[0].innerHTML = file.name;
+            $('#fileSize')[0].innerHTML = fileSize;
+        }
+    }
+    var xhr;
+    function uploadFile() {
+        $('#UpLoadModel').modal('show');
+        var fd = new FormData($("form")[0]);
+         xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener("progress", uploadProgress, false);
+        xhr.addEventListener("load", uploadComplete, false);
+        xhr.addEventListener("error", uploadFailed, false);
+        xhr.addEventListener("abort", uploadCanceled, false);
+
+        xhr.open("POST", "/SysManage/SysManage/Recovery");//修改成自己的接口
+        xhr.send(fd);
+    }
+    function uploadProgress(evt) {
+        if (evt.lengthComputable) {
+            var percentComplete = Math.round(evt.loaded * 100 / evt.total);
+            document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
+            $("#progressNumber").css("width", percentComplete.toString() + '%');
+            $("#progressNumber").attr("aria-valuenow", percentComplete.toString());
+            if (percentComplete==100) {
+                document.getElementById('progressNumber').innerHTML = "文件上传完成，正在处理，请稍等";
+
+            }
+        }
+        else {
+            document.getElementById('progressNumber').innerHTML = 'unable to compute';
+        }
+    }
+    var tableBxUnImported, tableBxImported;
+    function uploadComplete(evt) {
+        $('#UpLoadModel').modal('hide');
+        var result = JSON.parse(xhr.response);
+        console.log(result);
+        if (result.type == 0) {
+            alert("已经恢复完成");
+        } else {
+            alert(result.msg);
+        }
+    }
+   
+        function uploadFailed(evt) {
+            alert("上传文件时出错");
+        }
+        function uploadCanceled(evt) {
+            alert("取消上传");
+        }
+
+</script>

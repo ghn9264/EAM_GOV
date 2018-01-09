@@ -1,0 +1,106 @@
+#importPeo{
+	display: none;
+}
+.new-PM{
+	/*margin-top: 15px;*/
+	padding-left:0;
+	padding-right:0;
+}
+.title-a{
+	font-weight: bold;
+	color: rgb(51,51,51);
+	font-size: 20px !important;
+}	
+.new-box-header{
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-left: 30px;
+}
+.new-box-body{
+	padding: 0;
+}
+.btn-people-add{
+	background-color: rgb(87,102,125);
+	border: 0;
+	border-radius: 4px;
+	color: white;
+}
+.pull-right{
+	margin-top: 10px;
+}
+.box hr{
+	margin: 0;
+}
+.new-row-people{
+	margin: 0;
+}
+.newTable{
+	border-spacing: 0px 2px;
+}
+.people-tr{
+	border: 1px solid rgb(238,238,238);
+	margin-top: 5px;
+	display: block;
+	
+}
+.people-tr td{
+	background-color: white;
+	line-height: 35px !important;
+	
+}
+.box-body p a{
+	color: rgb(171,171,171);
+}
+.col-lg-offset-0 input{
+	opacity:0;
+    filter:alpha(opacity=0);
+    height: 114px;
+    width: 114px;
+    position: absolute;
+    right:0px;
+    z-index: 9;
+}
+.new-people-btn{
+	margin-top: 150px;
+    height: 80px;
+    width: 100%;
+    padding-left: 33px;
+}
+.content{
+	padding-top: 0px;
+}
+.td-content{
+	color: rgb(162,162,162);
+	width: 165px;
+}
+.progressBar-People{
+	margin-top: 25px;
+}
+.progressBar-People h2{
+	color: rgb(135,135,135);
+}
+.progressBar-People .progress{
+	margin-top: 25px;
+	border-radius: 9px;
+	height: 15px;
+}
+.progressBar-People .progress .progress-bar{
+	border-radius: 9px;
+}
+.progressBar-Manage{
+	margin-bottom: 100px;
+}
+.progressBar-Manage h2{
+	color: rgb(135,135,135);
+}
+.progressBar-Manage .progress{
+	margin-top: 25px;
+	border-radius: 9px;
+	height: 15px;
+}
+.progressBar-Manage .progress .progress-bar{
+	border-radius: 9px;
+}
+.permission{
+	padding-top: 15px;
+}

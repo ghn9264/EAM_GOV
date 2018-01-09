@@ -1,0 +1,78 @@
+﻿<html>
+<head> 
+    <script src="jquery-1.8.2.min.js"></script>
+    <script src="base64.min.js"></script>
+    <script type="text/javascript">
+        var serviceUri = "http://127.0.0.1:7080/PrintService";
+        $(document).ready(function () {
+
+            $("#btnBase64").click(function() {
+                alert(Base64.encode('dankogai'));
+            });
+
+            $("#btnTest").click(function () {
+                $.ajax({
+                    type: "get",
+                    async: false,
+                    url: serviceUri + "/Test",
+                    dataType: "jsonp",
+                    jsonCallback: "callback",
+                    success: function (data) {
+                        alert(data.Message);
+                    },
+                    error: function (e) {
+                         alert(e);
+                    }
+                });
+            });
+            $("#TestQuery").click(function () {
+                var p = Base64.encode('http://localhost:26671/QrCodes/231070100000001.jpg');
+                var uri = serviceUri + "/TestQuery/" + p;
+                alert(uri);
+                $.ajax({
+                    type: "get",
+                    async: false,
+                    url: uri,
+                    dataType: "jsonp",
+                    jsonCallback: "callback",
+                    success: function (data) {
+                        alert(data.Message);
+                    },
+                    error: function (e) {
+                        alert(e);
+                    }
+                });
+            });
+            
+            $("#btnWrite").click(function () {
+                var uri = serviceUri + "/Print";
+                jQuery.ajax({
+                    url: uri,
+                    type: "POST",
+                    crossDomain: true,
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: '{"AssetsNum":"1000098382","QrPath":"http://localhost:26671/QrCodes/231070100000001.jpg"}',
+                    success: function(de) {
+                        alert(de.Message);
+                    }
+                });
+            });
+
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <input type="button" value="Test" id="btnTest" />
+        <input type="button" value="TestQuery" id="TestQuery" />
+        <p>
+            资产编号:<span id="spCardNo"></span><br />
+            图片地址:<span id="spCheck"></span><br />
+        </p>
+     
+        <input type="button" value="写卡" id="btnWrite" />
+        <input type="button" value="base64" id="btnBase64" />
+    </div>
+</body>
+</html>

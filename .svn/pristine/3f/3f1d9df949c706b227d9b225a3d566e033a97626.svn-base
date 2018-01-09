@@ -1,0 +1,149 @@
+﻿@using Eam.Web.Portal._Comm
+@model  EAM.Data.Domain.UserInfo
+
+@{
+    ViewBag.Title = "用户管理";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+<link href="~/Assets/css/search_main.css" rel="stylesheet" />
+<link href="~/Assets/css/peopleMa-main.css" rel="stylesheet" />
+<!-- Content Header (Page header) -->
+@*<section class="content-header">
+
+    <!--最顶部的标题栏-->
+    <h1>
+        系统管理
+        <small>用户管理</small>
+    </h1>
+
+    <!--顶部标题栏右侧的层级显示栏-->
+    @*<ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Examples</a></li>
+            <li class="active">Blank page</li>
+        </ol>*@
+@*</section>*@
+<div class="content-wrapper">
+    <section class="content">
+
+        <div class="row">
+            <!-- 部门人员表 -->
+            <div class="col-lg-12  new-PM">
+                <form method="post">
+                    <div class="box box-danger">
+                        <!-- body Header -->
+                        <div class="box-header new-box-header">
+                            <h3 class="box-title title-a" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">编辑人员</h3>
+                        </div><!-- /.box-header -->
+
+                        <div class="box-body">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label>用户ID</label>
+                                    <input type="text" class="form-control" id="UserId" name="UserId" placeholder="用户ID" maxlength="20" value="@Model.UserId">
+                                </div>
+                                <div class="form-group">
+                                    <label>姓名</label>
+                                    <input type="text" class="form-control" id="UserName" name="UserName" placeholder="姓名" maxlength="20" value="@Model.UserName">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>所在部门</label>
+                                    @*<a href="#" data-toggle="control-sidebar">*@
+                                    <input type="text" class="form-control" id="DeptName" name="DeptName" placeholder="所在部门" maxlength="20" readonly="readonly" value="@Model.DepartMent" />
+                                    <input type="hidden" class="form-control" id="DeptId" name="DeptId" value="@Model.DeptId" />
+                                    <script src="~/Assets/select2/select2.js"></script>
+                                    <script>
+                                        //buildTreeEx("treediv2", "placeTree2", "DeptName", "DeptId", "/SysManage/SysManage/ListDept?t=" + new Date(), "name", "id");
+                                        buildTree("treediv3", "placeTree3", "DeptName", "/SysManage/SysManage/ListDept?t=" + new Date(), "name");
+                                    </script>
+
+                                    @*</a>*@
+                                </div>
+
+                                <div class="form-group">
+                                    <label>联系方式</label>
+                                    <input type="text" class="form-control" id="Tel" name="Tel" placeholder="联系方式" value="@Model.Tel" maxlength="20" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label>登陆密码</label>
+                                    <input type="password" class="form-control" id="Password" name="Password" maxlength="20" placeholder="登陆密码" />
+                                </div>
+
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <label>权限</label><br />
+                                        <div id="PermissionList">
+                                            @Html.CheckBoxList("BusinessPermissionList")
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <button type="button" id="SelectAllItem" name="SelectAllItem">全选</button>
+                                    <button type="button" id="CancelSelectAllItem" name="CancelSelectAllItem">反选</button>
+                                    <script>
+                                        $("#SelectAllItem").click(function () {
+                                            var coll = document.getElementsByName("BusinessPermissionList")
+
+                                            for (var i = 0; i < coll.length; i++)
+                                                coll[i].checked = true;
+                                        });
+                                        $("#CancelSelectAllItem").click(function () {
+                                            var coll = document.getElementsByName("BusinessPermissionList")
+
+                                            for (var i = 0; i < coll.length; i++)
+                                                coll[i].checked = !coll[i].checked;
+                                        });
+                                    </script>
+                                </div>
+
+                                <br />
+                                <br />
+                                <br />
+                                <div class="row">
+                                    <div class="form-group">
+                                        <label>角色</label><br />
+                                        <div id="">
+                                            <select class="form-control" id="Role" name="Role">
+                                                <option>资产管理员</option>
+                                                <option>部门负责人</option>
+                                                <option>普通用户</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div><div class="col-lg-4"></div>
+                        </div><!-- /.box-body -->
+
+                        <div class="box-footer">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">保存</button>
+                                <br />
+                                <font color="red"> @Html.ValidationSummary()</font>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+
+        </div>
+        <script type="text/javascript">
+            window.OnDeptSelected = function (dept) {
+                $("#DeptName").val(dept.DeptName);
+                $("#DeptId").val(dept.DeptId);
+            };
+
+            $("#SelectAllItem").click(function () {
+                $("#BusinessPermissionList").checked = true
+            });
+        </script>
+
+    </section>
+
+</div>

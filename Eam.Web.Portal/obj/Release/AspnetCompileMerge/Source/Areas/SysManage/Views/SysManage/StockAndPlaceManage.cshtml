@@ -1,0 +1,325 @@
+﻿@using Eam.Web.Portal._Comm
+@model dynamic
+
+@{
+    ViewBag.Title = "用户管理";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">位置管理</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+@*<section class="content-header">
+        <!--最顶部的标题栏-->
+        <h1>
+                固定资产
+                <small>位置管理</small>
+            </h1>
+        <!--顶部标题栏右侧的层级显示栏-->
+        <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#">Examples</a></li>
+                <li class="active">Blank page</li>
+            </ol>
+    </section>*@
+<!-- 位置导入 --><!-- 2017-05-26 wnn -->
+<div class="col-sm-8">
+    <div class="box box-danger">
+        <!-- body Header -->
+        <!-- 表头 -->
+        <div class="box-header new-box-header">
+            <h3 class="box-title title-a">位置导入</h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            </div>
+        </div><!-- /.box-header -->
+        <!-- body -->
+        <form method="post" id=" frmDtUpload" enctype="multipart/form-data">
+            <div class="box-body content">
+                <div class="row">
+                    <div class="=box-body" style="margin-left:40px;">
+                        <!-- 文件上传 -->
+                        <p style="font-size: 16px">
+                            上传位置表之前请下载"<a href="@Url.Action("DownLoadPlaceSample")" style="color:rgb(50,50,50);">位置导入模板.xls</a>"。
+                        </p>
+                    </div>
+                    <br />
+
+                    <!-- 数据上传 -->
+                    <div class="box-body">
+                        <!-- 文件上传 -->
+                        <img src="../../img/changefile.PNG" style="position:absolute;margin-left:40px;" />
+                        <input type="file" id="file" name="file" style="display:block; opacity: 0;filter: alpha(opacity=0);height: 114px;width: 114px;right: 0px;z-index: 9;float:left;margin-left:40px;">
+                    </div>
+
+                    <!-- 数据上传 -->
+                    <div class="box-body col-lg-3" style="margin-left:40px;margin-top:10px;">
+                        <a class="btn btn-default btn-all" id="upload">上传位置列表</a>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+<script src="~/Assets/datatables/datatables.min.js"></script>
+
+<script>
+    $("#file")[0].onchange = fileSelected;
+    $("#upload")[0].onclick = uploadFile;
+    function fileSelected() {
+        var file = $('#file')[0].files[0];
+        if (file) {
+            var fileSize = 0;
+            if (file.size > 1024 * 1024)
+                fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+            else
+                fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+            $('#fileName')[0].innerHTML = file.name;
+            $('#fileSize')[0].innerHTML = fileSize;
+        }
+    }
+    var xhr;
+    function uploadFile() {
+        $('#UpLoadModel').modal({ backdrop: 'static', keyboard: false });
+        var fd = new FormData($("form")[0]);
+        xhr = new XMLHttpRequest();
+        xhr.addEventListener("load", uploadComplete, false);
+        xhr.addEventListener("error", uploadFailed, false);
+        xhr.addEventListener("abort", uploadCanceled, false);
+
+        xhr.open("POST", "/SycData/Syc/PlaceDataInput");//修改成自己的接口
+        xhr.send(fd);
+
+        $("#progressNumber").css("width", 0 + '%');
+        $("#progressNumber").attr("aria-valuenow", 0);
+        intervalProcess = setInterval("uploadProgress()", 100);
+    }
+    var intervalProcess;
+    function uploadProgress() {
+
+        $.post("/SycData/syc/QueryProgress", null, function (e) {
+
+            $("#progressNumber").css("width", e.ImportedPercentVal.toString() + '%');
+            $("#progressNumber").attr("aria-valuenow", e.ImportedPercentVal.toString());
+            document.getElementById('progressNumber').innerHTML = e.ImportedPercentVal.toString() + '%  (' + e.ImportedAssetsNum + '/' + e.TotalAssetsNum + ')';
+
+        });
+    }
+    var tableDtImported, tableDtUnImported;
+    function uploadComplete(evt) {
+        $('#UpLoadModel').modal('hide');
+        var result = JSON.parse(xhr.response);
+        clearInterval(intervalProcess);
+        if (result.type == 0) {
+            alert("已经导入" + result.ImportedNum + "未导入" + result.UnImportedNum);
+            queryDtHistory(1);
+            queryDtImported(1, result.LastImportedId);
+            queryDtUnImported(1, result.LastImportedId);
+            loadUser(1);
+        } else {
+            queryDtUnImported(1, result.LastImportedId);//更新本次未导入详细信息
+        }
+    }
+    function uploadFailed(evt) {
+        clearInterval(intervalProcess);
+        alert("上传文件时出错");
+    }
+    function uploadCanceled(evt) {
+        clearInterval(intervalProcess);
+        alert("取消上传");
+    }
+</script>
+<div class="row">
+
+    <div class="col-lg-8">
+        <!-- 部门树 -->
+        <div class="col-lg-12">
+            <div class="box box-danger">
+                <!-- body Header -->
+                <div class="box-header with-border">
+                    <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">
+                        <a href="?placeType=loc" class="btn btn-default btn-all active @if (@ViewBag.Type == "loc")
+                                                                   {
+                                                                       <text>btn-primary</text>
+                                                                   }">位置管理</a>
+                        @*<a href="?placeType=house" class="btn active @if (@ViewBag.Type == "house")
+                            {
+                                <text>btn-primary</text>
+                            }">房间管理</a>*@
+                    </h3>
+                </div><!-- /.box-header -->
+                <!-- 部门树 -->
+                <div class="box-body no-padding">
+                    <ul id="placeTree" class="ztree"></ul>
+                </div><!-- /.box-body -->
+                <div class="box-footer text-center">
+                    <button class="btn btn-default btn-all" id="btnNew">新增</button>
+                    <button class="btn btn-default btn-all" id="btnEdit">编辑</button>
+                    <button class="btn btn-default btn-all" id="btnDelete">删除</button>
+                </div><!-- /.box-footer -->
+            </div>
+        </div>
+    </div>
+    <!-- 新增/编辑 部门-->
+    <div class="modal fade" id="deptModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="deptModalLabel">新增</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="placeForm" name="placeForm" method="post">
+                        <div class="form-group">
+                            <label>父级</label>
+                            <input type="text" class="form-control" readonly="readonly" id="ParentName" name="ParentName" placeholder="父级名称" />
+                            <input type="text" class="form-control" readonly="readonly" id="ParentCode" name="ParentCode" placeholder="父级编码" />
+                            <input type="hidden" class="form-control" readonly="readonly" id="ParentId" name="ParentId" />
+                        </div>
+                        <div class="form-group">
+                            <label>名称</label>
+                            <input type="text" class="form-control" id="placeName" name="placeName" placeholder="名称" maxlength="20" />
+                            <input type="text" class="form-control" id="placeCode" name="placeCode" placeholder="编码" maxlength="20" />
+                            <input type="hidden" id="EntityId" name="EntityId" />
+                            <input type="hidden" id="PlaceType" name="PlaceType" value="@ViewBag.Type" />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="btnSave">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        var selectPlaceNode = null;
+        function buildTree() {
+            selectPlaceNode = null;
+            $.fn.zTree.destroy("placeTree");
+            var setting = {
+                callback: {
+                    onClick: nodeClick
+                }
+            };
+            $.getJSON("/SysManage/SysManage/ListPlace?placeType=@ViewBag.Type&t=" + new Date(), function (result) {
+                $.fn.zTree.init($("#placeTree"), setting, result);
+
+                $.fn.zTree.getZTreeObj("placeTree").expandAll(false);
+            });
+        }
+
+        function nodeClick(event, treeId, treeNode) {
+            selectPlaceNode = treeNode;
+        }
+
+        $(function () {
+            buildTree();
+            $("#btnNew").click(function () {
+                $("#ParentName").val("");
+                $("#ParentCode").val("");
+                $("#ParentId").val(0);
+                $("#placeName").val("");
+                $("#placeCode").val("");
+                $("#EntityId").val(0);
+
+                if (null != selectPlaceNode) {
+                    $("#ParentName").val(selectPlaceNode.realName);
+                    $("#ParentCode").val(selectPlaceNode.code);
+                    $("#ParentId").val(selectPlaceNode.id);
+                }
+
+                $("#deptModalLabel").text("新增");
+                $('#deptModal').modal('show');
+            });
+            $("#btnEdit").click(function () {
+                if (null == selectPlaceNode) {
+                    alert("请选择一个项目");
+                    return;
+                }
+                $("#deptModalLabel").text("编辑");
+
+                $("#ParentName").val(selectPlaceNode.pName);
+                $("#ParentCode").val(selectPlaceNode.pCode);
+                $("#ParentId").val(selectPlaceNode.pId);
+                $("#placeName").val(selectPlaceNode.realName);
+                $("#placeCode").val(selectPlaceNode.code);
+                $("#EntityId").val(selectPlaceNode.id);
+                $('#deptModal').modal('show');
+            });
+
+            $("#btnSave").click(function () {
+                if ($("#placeName").val() == "") {
+                    alert("名称不能为空");
+                    return;
+                }
+                if ($("#placeCode").val() == "") {
+                    alert("编码不能为空");
+                    return;
+                }
+                var formData = $("#placeForm").serialize();
+                $.post("/SysManage/SysManage/SavePlace", formData, function (result) {
+                    if (result == "ok") {
+                        alert("操作成功");
+                        $('#deptModal').modal('hide');
+                        var zTree = $.fn.zTree.getZTreeObj("placeTree");
+                        if ($("#deptModalLabel").text() == "新增") {
+
+                            var parentOrgId = $("#ParentId").val();
+                            var orgId = $("#EntityId").val();
+                            var name = $("#placeName").val();
+
+                            var childZNode = [
+{ "id": orgId, "pId": parentOrgId, "name": name }
+                            ]
+                            var parentZNode = zTree.getNodeByParam("id", parentOrgId, null); //获取父节点
+
+
+                            zTree.addNodes(parentZNode, childZNode, true);
+
+                        } else {
+
+                            var zNode = zTree.getNodeByParam("id", selectPlaceNode.id, null);
+                            zNode.name = $("#placeName").val();
+                            zTree.updateNode(zNode);
+                        }
+
+                        return;
+                    }
+                    alert(result);
+                });
+            });
+            $("#btnDelete").click(function () {
+                if (null == selectPlaceNode) {
+                    alert("请选择一个项目！");
+                    return;
+                }
+                if (selectPlaceNode.isParent) {
+                    alert("存在子项目，不能删除！");
+                    return;
+                }
+                if (confirm('确定要删除【' + selectPlaceNode.name + '】吗?')) {
+                    $.post("/SysManage/SysManage/DeletePlace?placeId=" + selectPlaceNode.id, function (result) {
+                        if (result == "ok") {
+                            alert("删除成功");
+
+                            var zTree = $.fn.zTree.getZTreeObj("placeTree");
+
+                            zTree.removeNode(selectPlaceNode);
+                            return;
+                        }
+                        alert(result);
+                    });
+                }
+            });
+        });
+    </script>
+</div>

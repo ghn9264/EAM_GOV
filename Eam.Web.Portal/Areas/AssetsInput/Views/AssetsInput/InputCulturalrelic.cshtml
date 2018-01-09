@@ -1,0 +1,74 @@
+﻿@model EAM.Data.Domain.CulturalrelicAttribute
+@{
+    ViewBag.Title = "条目输入界面";
+    Layout = "~/Areas/AssetsInput/Views/AssetsInput/Input.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">文物</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 文物与陈列品资产差异化属性 -->
+<div class="col-lg-12">
+    <div class="box box-info">
+        <!-- Header -->
+        <div class="box-header with-border">
+            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">文物与陈列品</h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button> 
+            </div>
+        </div>
+        <!-- Body -->
+        <div class="box-body">
+            <div class="box-body">
+                <!-- 文物等级 -->
+                <div class="form-group">
+                    <label>文物等级</label>
+                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" id="GoodsLevel" name="GoodsLevel">
+                        <option selected="selected">一级</option>
+                        <option>二级</option>
+                        <option>三级</option>
+                        <option>一般</option>
+                    </select>
+                </div>
+
+                <!-- 藏品年代 -->
+                <div class="form-group">
+                    <label>藏品年代</label>
+                    <input type="text" class="form-control" id="Years" name="Years" placeholder="藏品年代" value="@Model.Years">
+                </div>
+
+                <!-- 来源地 -->
+                <div class="form-group">
+                    <label>来源地</label>
+                    <input type="text" class="form-control" id="SourcePlace" name="SourcePlace" placeholder="来源地" value="@Model.SourcePlace">
+                </div>
+
+                <!-- 数量 -->
+                @*<div class="form-group">
+                    <label>数量</label>
+                    <input type="text" class="form-control" id="inputPassword3" placeholder="数量">
+                </div>*@
+
+                <!-- 使用方向 -->
+                <div class="form-group">
+                    <label>使用方向</label>
+                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                        <option selected="selected">自用</option>
+                        <option>出借</option>
+                        <option>出租</option>
+                        <option>其他</option>
+                    </select>
+                </div>
+
+            </div><!-- /.box-body -->
+         
+        </div><!-- /.box-body -->
+    </div>
+</div> 
+<input type="hidden" name="AttrId" value="@Model.AttrId">

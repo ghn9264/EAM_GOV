@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/AssetsFind/Views/AssetsFind/_AssetsFindLayout.cshtml";
+}
+
+<h2>Index</h2>
+
+<input  id="menu_parent" type="text"/>
+
+
+<script src="~/Assets/SelectTree.js"></script>
+
+<script>
+    var toshow = "treediv1";//要显示的层的id
+    var tree = "placeTree1";
+    var target = "menu_parent";//目标控件----也就是想要点击后弹出树形菜单的那个控件id
+    var url = "/SysManage/SysManage/ListDept?t=" + new Date();
+    $(function () {
+        buildTree(toshow,tree,target,url,"id");
+    })
+
+</script>

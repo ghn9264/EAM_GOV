@@ -1,0 +1,74 @@
+﻿@model EAM.Data.Domain.GeneralAttribute
+
+@{
+    ViewBag.Title = "条目输入界面";
+    Layout = "~/Areas/AssetsInput/Views/AssetsInput/Input.cshtml";
+}
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">通用设备</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 通用设备资产差异化属性 -->
+<div class="col-lg-12">
+    <div class="box box-info">
+        <!-- Header -->
+        <div class="box-header with-border">
+            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">通用设备</h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            </div>
+        </div>
+        <!-- Body -->
+        <div class="box-body">
+            <div class="box-body">
+                <!-- 品牌及规格型号 -->
+                <div class="form-group">
+                    <label>品牌及规格型号</label>
+                    <input type="text" class="form-control" id="GeneralBrand" name="GeneralBrand" placeholder="品牌及规格型号" maxlength="20" value="@Model.GeneralBrand" />
+                </div>
+
+                <!-- 设备用途 -->
+                <div class="form-group">
+                    <label>设备用途</label>
+                    @UIHelper.DispDevUse("DevUse", Model.DevUse)
+                </div>
+
+                <!-- 生产厂家 -->
+                <div class="form-group">
+                    <label>生产厂家</label>
+                    <input type="text" class="form-control" id="DevFactory" name="DevFactory" placeholder="生产厂家" maxlength="20" value="@Model.DevFactory" />
+                </div>
+
+                <!-- 保修截至日期 -->
+                <div class="form-group">
+                    <label>保修截至日期</label>
+                    <input type="text" class="form-control" id="WarrantyDate" name="WarrantyDate" placeholder="保修截至日期" maxlength="20"
+                           data-provide="datepicker" data-date-format="yyyy-mm-dd" value="@Model.WarrantyDate.ToString("yyyy-MM-dd")" />
+                </div>
+
+                <!-- 保修联系电话 -->
+                <div class="form-group">
+                    <label>保修联系电话</label>
+                    <input type="text" class="form-control" id="WarrantyPhone" name="WarrantyPhone" placeholder="保修联系电话" maxlength="20" value="@Model.WarrantyPhone" />
+                </div>
+
+                <!-- 使用方向 -->
+                <div class="form-group">
+                    <label>使用方向</label>
+                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;">
+                        <option selected="selected">自用</option>
+                        <option>出借</option>
+                        <option>出租</option>
+                        <option>其他</option>
+                    </select>
+                </div>
+            </div><!-- /.box-body -->
+        </div><!-- /.box-body -->
+    </div>
+</div>
+<input type="hidden" name="AttrId" value="@Model.AttrId">

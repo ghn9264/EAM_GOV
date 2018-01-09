@@ -1,0 +1,13 @@
+﻿@{
+    ViewBag.Title = "条目输入界面";
+    Layout = "~/Areas/AssetsInput/Views/AssetsInput/Input.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">家具</a></li></ol>');
+        //alert("YES");
+    });
+</script>

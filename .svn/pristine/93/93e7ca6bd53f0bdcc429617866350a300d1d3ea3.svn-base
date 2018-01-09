@@ -1,0 +1,227 @@
+﻿@model EAM.Data.Domain.AseetsGeneral
+
+@{
+    ViewBag.Title = "后台首页";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+
+<link href="~/Assets/css/Home_main.css" rel="stylesheet" />
+<!--最新版本首页0608-->
+<!-- 首页面板 -->
+<!--  快捷按钮面板 -->
+<div id="right-box">
+    <!--<div class="right-bt">
+        <h3>测试学校</h3>
+    </div>-->
+    <ol>
+        <li>
+            <div>
+                <p>总资产数目</p>
+                <p>@Model.LocalAllCounts</p>
+            </div>
+            <div>
+                <p>总资产数额</p>
+                <p>¥@Model.LocalAllMoney</p>
+            </div>
+        </li>
+        <li>
+            <div>
+                <a href="/AssetsFind/DoAssets/QueryAssets">
+                    <img src="/img/i_ico1.png" alt="">
+                    <p class="li_p">打印条款</p>
+                </a>
+            </div>
+            <div>
+                <a href="/SycData/Syc/DynamicDataInput">
+                    <img src="/img/i_ico2.png" alt="">
+                    <p class="li_p">动态导入</p>
+                </a>
+            </div>
+            <div>
+                <a href="/SycData/Syc/Index">
+                    <img src="/img/i_ico3.png" alt="">
+                    <p class="li_p">入学导入</p>
+                </a>
+            </div>
+            <div>
+                <a href="/AssetsInput/SingleInput/SingleInput">
+                    <img src="/img/i_ico4.png" alt="">
+                    <p class="li_p">资产录入</p>
+                </a>
+            </div>
+        </li>
+        <li>
+            <div>
+                <a href="/AssetsFind/DoAssets/InventoryAssets">
+                    <img src="/img/i_ico5.png" alt="">
+                    <p class="li_p">资产盘点</p>
+                </a>
+            </div>
+            <div>
+                <a href="/AssetsFind/DoAssets/InventoryPlanAssets">
+                    <img src="/img/i_ico6.png" alt="">
+                    <p class="li_p">盘点计划</p>
+                </a>
+            </div>
+            <div>
+                <a href="/AssetsFind/DoAssets/ScrapAssets">
+                    <img src="/img/i_ico7.png" alt="">
+                    <p class="li_p">资产报废</p>
+                </a>
+            </div>
+            <div>
+                <a href="/AssetsFind/DoAssets/ScrapApply">
+                    <img src="/img/i_ico8.png" alt="">
+                    <p class="li_p">申请报废</p>
+                </a>
+            </div>
+        </li>
+        <li>
+            <div>
+                <a href="/SysManage/SysManage/InterfaceManage">
+                    <img src="/img/i_ico9.png" alt="">
+                    <p class="li_p">系统设置</p>
+                </a>
+            </div>
+            <div>
+                <a href="/SysManage/SysManage/UserAndDepartmenManage">
+                    <img src="/img/i_ico10.png" alt="">
+                    <p class="li_p">用户管理</p>
+                </a>
+            </div>
+            <div>
+                <a href="/AssetsFind/DoAssets/ServiceAssets">
+                    <img src="/img/i_ico11.png" alt="">
+                    <p class="li_p">资产维护</p>
+                </a>
+            </div>
+            <div>
+                <a href="/AssetsFind/DoAssets/RepairAssets">
+                    <img src="/img/i_ico12.png" alt="">
+                    <p class="li_p">资产报修</p>
+                </a>
+            </div>
+        </li>
+    </ol>
+    <div class="box box-success" id="main">
+    </div>
+    <script src="~/Assets/js/echarts.js"></script>
+    <script>
+        var myChart = echarts.init(document.getElementById('main'));
+        var dataAxis = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+        var data = [@ViewBag.echarsValue];
+        //var yMax = 0;
+        var dataShadow = [];
+
+        //for (var i = 0; i < data.length; i++) {
+        //    dataShadow.push(yMax);
+        //}
+
+        option = {
+            title: {
+                text: '固定资产增减明细',
+                subtext: ''
+            },
+            xAxis: {
+
+                data: [@Html.Raw(ViewBag.echarsKey)],
+                axisLabel: {
+                    inside: true,
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLine: {
+                    show: false
+                },
+                z: 10
+            },
+            yAxis: {
+                type: 'value',
+                name: '数量',
+                min: 0,
+                max: @ViewBag.maxNum,
+                interval: @ViewBag.interval,
+                axisLine: {
+                    show: false
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLabel: {
+                    textStyle: {
+                        color: '#999'
+                    }
+                }
+            },
+            dataZoom: [
+		        {
+		            type: 'inside'
+		        }
+            ],
+            series: [
+		        { // For shadow
+		            type: 'bar',
+		            itemStyle: {
+		                normal: { color: 'rgba(0,0,0,0.05)' }
+		            },
+		            barGap: '-100%',
+		            barCategoryGap: '40%',
+		            data: dataShadow,
+		            animation: false
+		        },
+		        {
+		            type: 'bar',
+		            itemStyle: {
+		                normal: {
+		                    color: new echarts.graphic.LinearGradient(
+		                        0, 0, 0, 1,
+		                        [
+		                            { offset: 0, color: '#83bff6' },
+		                            { offset: 0.5, color: '#188df0' },
+		                            { offset: 1, color: '#188df0' }
+		                        ]
+		                    )
+		                },
+		                emphasis: {
+		                    color: new echarts.graphic.LinearGradient(
+		                        0, 0, 0, 1,
+		                        [
+		                            { offset: 0, color: '#2378f7' },
+		                            { offset: 0.7, color: '#2378f7' },
+		                            { offset: 1, color: '#83bff6' }
+		                        ]
+		                    )
+		                }
+		            },
+		            data: data
+		        }
+            ]
+        };
+
+        // Enable data zoom when user click bar.
+        var zoomSize = 6;
+        myChart.on('click', function (params) {
+            console.log(dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)]);
+            myChart.dispatchAction({
+                type: 'dataZoom',
+                startValue: dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)],
+                endValue: dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
+            });
+        });
+        myChart.setOption(option);
+    </script>
+    <!--  底部占位 -->
+
+</div>
+
+
+
+
+
+
+
+

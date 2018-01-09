@@ -1,0 +1,601 @@
+﻿@using EAM.Data.Domain
+@using Eam.Web.Portal.Areas
+@using Newtonsoft.Json;
+@model EAM.Data.Services.Query.LedgerQuery
+@{
+    ViewBag.Title = "资产操作";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+<style type="text/css">
+    .content {
+        min-height: 0px;
+    }
+</style>
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产台账</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.core.js"></script>
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.exedit.js"></script>
+<script src="~/Assets/SelectTree.js"></script>
+<form method="get" id="frmSearch" name="frmSearch">
+    <!-- 条件检索面板 -->
+
+    <!-- 资产检索 -->
+    <section>
+        <div class="row col-lg-12">
+            <!-- 左边树状检索栏 -->
+            <div class="col-lg-3" id="TreeIndexPanel" style="display:">
+                <div class="nav-tabs-custom">
+                    <ul class=" nav nav-tabs">
+                        <li class="active"><a href="#activity" data-toggle="tab" aria-expanded="true">资产类别</a></li>
+                        <li class=""><a href="#timeline" data-toggle="tab" aria-expanded="false">使用部门</a></li>
+                        <li class=""><a href="#settings" data-toggle="tab" aria-expanded="false">存放地点</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <!-- 资产类别树/.tab-pane -->
+                        <div class="tab-pane active" id="activity">
+                            <div class="box box-danger">
+                                <!-- body Header -->
+                                <div class="box-header with-border">
+                                    <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);"></h3>
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                    </div>
+                                </div><!-- /.box-header -->
+                                <!-- 资产类型列表 -->
+                                <div class="box-body no-padding">
+                                    @*<h3 class="control-sidebar-heading">资产分类</h3>*@
+                                    <section class="sidebar">
+                                        <!-- 资产类别树 -->
+                                        <ul id="_classTree" class="ztree"></ul>
+                                    </section>
+                                    <script type="text/javascript">
+                                        var CatSetting = { callback: { onDblClick: onCatNodeDblClick } };
+
+                                        //
+                                        // 资产类树点击回调函数
+                                        //
+                                        function onCatNodeDblClick(event, treeId, treeNode) {
+
+                                            //alert(treeNode.id);
+                                            $("#IndexClass").val(treeNode.id);
+                                            queryData(1);
+                                        }
+
+                                        //
+                                        // ajax呈现资产树
+                                        //
+                                        $(document).ready(function () {
+
+                                            //
+                                            // 从数据库取资产类别树
+                                            //
+                                            $.post("/Account/DeskTop/GetClassCodeTree?t=" + new Date(),
+                                                function (result) {
+
+                                                    //
+                                                    // 根据取回来的数据创建资产树
+                                                    //
+                                                    $.fn.zTree.init($("#_classTree"), CatSetting, result);
+                                                }, "json");
+                                        });
+                                    </script>
+
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div>
+                        <!-- 归属部门树/.tab-pane -->
+                        <div class="tab-pane" id="timeline">
+                            <div class="box box-danger">
+                                <!-- body Header -->
+                                <div class="box-header with-border">
+                                    <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);"></h3>
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                    </div>
+                                </div><!-- /.box-header -->
+                                <!-- 资产类型列表 -->
+                                <div class="box-body no-padding">
+                                    @*<h3 class="control-sidebar-heading">资产分类</h3>*@
+                                    <section class="sidebar">
+                                        <!-- 资产类别树 -->
+                                        <ul id="departmentTree" class="ztree"></ul>
+                                    </section>
+
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div><!-- /.tab-pane -->
+                        <!-- 存放地点树/.tab-pane -->
+                        <div class="tab-pane" id="settings">
+                            <div class="box box-danger">
+                                <!-- body Header -->
+                                <div class="box-header with-border">
+                                    <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);"></h3>
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                    </div>
+                                </div><!-- /.box-header -->
+                                <!-- 资产类型列表 -->
+                                <div class="box-body no-padding">
+                                    @*<h3 class="control-sidebar-heading">资产分类</h3>*@
+                                    <section class="sidebar">
+                                        <!-- 资产类别树 -->
+                                        <ul id="placeTree" class="ztree"></ul>
+                                    </section>
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div><!-- /.tab-pane -->
+                    </div><!-- /.tab-content -->
+                </div>
+            </div>
+            <!-- 右边检索面板和资产呈现面板 -->
+            <div class="col-lg-9" id="ExpandPannel">
+                <!-- 条件检索面板 -->
+                <section  id="IndexPanel" style="display:">
+                    <div class="row">
+                        <!-- 条件检索面板 -->
+                        <div class="col-lg-12">
+                            <!-- 条件检索面板 -->
+                            <div class="box box-danger">
+                                <!-- 表头 -->
+                                <div class="box-header new-box-header">
+                                    <h3 class="box-title title-a">检索条件</h3>
+
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-box-tool" data-widget="collapse">
+                                            <i class="fa fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div><!-- /.box-header -->
+                                <!-- body -->
+                                <div class="box-body content">
+
+                                    <input class="hidden" id="PageType" name="PageType" value="@ViewBag.DoAction" />
+                                    <input class="hidden" id="IndexClass" name="IndexClass" value="" />
+                                    <input class="hidden" id="IndexDept" name="IndexDept" value="" />
+                                    <input class="hidden" id="IndexPlace" name="IndexPlace" value="" />
+                                    <!-- 检索条件输入区域 -->
+                                    <div class="row">
+                                        <!-- 第一列检索条件 -->
+                                        <div class="col-lg-3">
+                                            <div class="col-lg-12">
+                                                <br />
+                                                <label>资产名称：</label>
+                                                <input class="form-control" type="text" placeholder="资产名称" maxlength="20" name="GoodsName" id="GoodsName" />
+                                                <br />
+                                                <label>资产编号：</label>
+                                                <input class="form-control" type="text" placeholder="资产编号" maxlength="20" name="AssetsNum" id="AssetsNum" />
+                                                <br />
+                                                <label>动态编码：</label>
+                                                <input class="form-control" type="text" placeholder="动态编码" maxlength="20" name="UsedNum1" id="UsedNum1" />
+                                                @*<select class="form-control select2 select2-hidden-accessible" style="width: 100%;" name="UsedNum1" id="UsedNum1">
+                                                        <option value="" selected="selected">不限</option>
+                                                        <option>购置</option>
+                                                        <option>调拨</option>
+                                                        <option>自建</option>
+                                                        <option>捐赠</option>
+                                                        <option>划拨</option>
+                                                        <option>置换</option>
+                                                        <option>自行研制</option>
+                                                        <option>其他</option>
+                                                        <option>有偿取得</option>
+                                                        <option>租凭</option>
+                                                    </select>*@
+                                            </div>
+                                        </div>
+                                        <!-- 第二列检索条件 -->
+                                        <div class=" col-lg-3">
+                                            <div class="col-lg-12">
+                                                <br />
+                                                <label>使用状况：</label>
+                                                <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" id="UsingState" name="UsingState">
+                                                    <option value="" selected="selected">不限</option>
+                                                    <option>在用</option>
+                                                    <option>闲置</option>
+                                                    <option>摧毁待报废</option>
+                                                    <option>其他</option>
+                                                </select>
+                                                <br />
+                                                <label>存放地点：</label><input class="form-control" type="text" placeholder="存放地点" id="StorePlace" name="StorePlace">
+                                                <br />
+                                                @*<label>使用人：</label><input class="form-control" type="text" placeholder="使用人" id="UsePeople" name="UsePeople">*@
+                                                <label>使用人：</label><select class="form-control" type="text" name="UsePeople" id="UsePeople"></select>
+                                                @*<link rel="stylesheet" href="~/Assets/select2/select2.css"/>*@
+                                                <script src="~/Assets/select2/select2.js"></script>
+                                                <script>
+                                                    $.post("/sysManage/sysManage/GetAllUsersMax", function (data) {
+                                                        $("#UsePeople").select2({
+                                                            placeholder: "使用人",
+                                                            data: data
+                                                        });
+                                                    })
+
+                                                    $("#UsePeople").append("<option value=''></option>");
+
+                                                    //var count = $("#UsePeople option").length;
+
+
+                                                    $("#UsePeople option[text='jQuery']").attr("selected", true);
+                                                </script>
+                                            </div>
+                                        </div>
+
+                                        <!-- 第三列检索条件 -->
+                                        <div class="col-lg-5">
+                                            <div class="col-lg-12">
+                                                <br />
+                                                <label>入账日期范围：</label>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </div>
+                                                            @if (Model.BeginDate.HasValue)
+                                                            {
+                                                                <input class="form-control" type="text" placeholder="开始日期" data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                                                       maxlength="20" name="BeginDate" id="BeginDate" value="@Model.BeginDate.Value.ToString("yyyy-MM-dd")" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <input class="form-control" type="text" placeholder="开始日期" data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                                                       maxlength="20" name="BeginDate" id="BeginDate" />
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-2"><hr style="color:black;width:100%;border:0.5px solid black;" /></div>
+                                                    <div class="col-lg-5">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </div>
+                                                            @if (Model.EndDate.HasValue)
+                                                            {
+                                                                <input class="form-control" type="text" placeholder="截止日期" data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                                                       maxlength="20" name="EndDate" id="EndDate" value="@Model.EndDate.Value.ToString("yyyy-MM-dd")" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <input class="form-control" type="text" placeholder="截止日期" data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                                                       maxlength="20" name="EndDate" id="EndDate" />
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <br />
+                                                <label>价值范围：</label>
+                                                <div class="row">
+                                                    <div class="col-lg-5"><input class="form-control" type="text" placeholder="0.00" id="MoneyMin" name="MoneyMin"></div>
+                                                    <div class="col-lg-2"><hr style="color:black;width:100%;border:0.5px solid black;" /></div>
+                                                    <div class="col-lg-5"><input class="form-control" type="text" placeholder="0.00" id="MoneyMax" name="MoneyMax"></div>
+                                                </div>
+                                                <br />
+                                                <label>取得日期范围：</label>
+                                                <div class="row">
+                                                    <div class="col-lg-5">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </div>
+                                                            <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd" value=""
+                                                                   data-inputmask="'alias': 'yyyy-mm-dd'" data-mask="yyyy-mm-dd" id="GetDateStart" name="GetDateStart" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-2"><hr style="color:black;width:100%;border:0.5px solid black;" /></div>
+                                                    <div class="col-lg-5">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </div>
+                                                            <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd" value=""
+                                                                   data-inputmask="'alias': 'yyyy-mm-dd'" data-mask="yyyy-mm-dd" id="GetDateEnd" name="GetDateEnd" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- 隐藏条件 -->
+                                        <input type="hidden" id="UserName" name="UserName" />
+                                        <input type="hidden" id="Role" name="Role" />
+                                        <input type="hidden" id="UseDepartment" name="UseDepartment" />
+                                    </div>
+
+                                    <div class="row">
+                                        <br />
+                                        <div class="col-lg-5"></div>
+                                        <div class="col-lg-1">
+                                            <input type="hidden" name="PageIndex" id="PageIndex" value="1" />
+                                            <input type="hidden" name="PageSize" id="PageSize" value="10" />
+                                            <button type="button" class="btn btn-default btn-all" id="btnSearch">筛选资产</button>
+                                        </div>
+                                        <div class="col-lg-1">
+                                            <button type="reset" class="btn btn-default btn-all">清除条件</button>
+                                        </div>
+                                        <div class="col-lg-5"></div>
+                                    </div>
+
+                                </div>
+                            </div><!--/.box -->
+                        </div>
+
+                    </div>
+                </section>
+
+                <!--???-->
+                <div class="row" style="display:">
+                    <div class="modal fade" id="ajax" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                                </div>
+                                <div class="modal-body">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 资产台账列表面板 -->
+                <section class="content">
+                    <div class="row">
+                        <!--资产列表面板 -->
+                        <div class="col-lg-12">
+                            <!-- 资产列表面板 -->
+                            <div class="box">
+                                <div class="box-body">
+                                    <table id="LedgerTable" style="border-color: darkslategray" class=" table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <td rowspan="2" style="font-weight: bolder;border-color:darkslategray">资产名称</td>
+                                                <td rowspan="2" style="font-weight: bolder;border-color: darkslategray">资产编号</td>
+                                                <td colspan="7" style="font-weight: bolder;border-color: darkslategray">购&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;进&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;或&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;拨&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;入</td>
+                                                <td colspan="2" style="font-weight: bolder;border-color: darkslategray">报 &nbsp;废&nbsp;&nbsp;  或&nbsp;&nbsp;  转&nbsp; 出</td>
+                                                <td colspan="2" style="font-weight: bolder;border-color: darkslategray">余&nbsp;&nbsp;   额</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bolder;border-color: darkslategray">购置日期</td>
+                                                <td style="font-weight: bolder;border-color: darkslategray">品牌型号</td>
+                                                <td style="font-weight: bolder;border-color: darkslategray">数量</td>
+                                                <td style="font-weight: bolder;border-color: darkslategray">单价</td>
+                                                <td style="font-weight: bolder;border-color: darkslategray">金额</td>
+                                                <td style="font-weight: bolder;border-color: darkslategray">使用地点</td>
+                                                <td style="font-weight: bolder;border-color: darkslategray">使用(保管)人</td>
+                                                <td style="font-weight: bolder;border-color: darkslategray">数量</td>
+                                                <td style="font-weight: bolder;border-color: darkslategray">金额</td>
+                                                <td style="font-weight: bolder;border-color: darkslategray">数量</td>
+                                                <td style="font-weight: bolder;border-color: darkslategray">金额</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @*@{
+                                                    List<LedgerItem> ledgerItems = ViewBag.Result as List<LedgerItem>;
+                                                    if (ledgerItems == null)
+                                                    {
+                                                        ledgerItems = new List<LedgerItem>();
+                                                    }
+                                                    foreach (var item in ledgerItems)
+                                                    {
+                                                        var boldCls = "";
+                                                        if (item.Year == 0)
+                                                        {
+                                                            boldCls = "tdbold";
+                                                        }
+                                                <tr class="@boldCls">
+                                                    <td style="width: 100px">@item.GoodsName</td>
+                                                    <td style="width: 100px">@item.AssetsNum</td>
+                                                    <td style="width: 100px">@item.GetDate</td>
+                                                    <td style="width: 100px">@item.Brand @item.ModelSpecification</td>
+                                                    <td style="max-width:50px">@UIHelper.NumberToString(item.InCount)</td>
+                                                    <td style="max-width:50px">@UIHelper.NumberToString(item.InPrice)</td>
+                                                    <td style="width: 60px">@UIHelper.NumberToString(item.InMoney)</td>
+                                                    <td style="max-width:150px">@item.StorePlace</td>
+                                                    <td style="max-width:60px">@item.UsePeople</td>
+                                                    <td style="max-width:50px">@UIHelper.NumberToString(item.OutCount)</td>
+                                                    <td style="max-width:60px">@UIHelper.NumberToString(item.OutMoney)</td>
+                                                    <td style="max-width:50px">@UIHelper.NumberToString(item.Count)</td>
+                                                    <td style="max-width:60px">@UIHelper.NumberToString(item.Money)</td>
+                                                </tr>
+                                                    }
+                                                }*@
+                                        </tbody>
+                                    </table>
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="box">
+                    <!-- 表头 -->
+                    <div class="box-header new-box-header">
+                        <h3 class="box-title title-a">台账导出</h3>
+                        <div class="box-tools pull-right">
+                            @*<button class="btn btn-primary" id="AddAsset" name="AddAsset">添加资产</button>
+                                <button class="btn btn-primary" id="CloseAdd" name="CloseAdd">关闭添加</button>*@
+                        </div>
+                    </div><!-- /.box-header -->
+                    <!-- box content -->
+                    <div class="box-body content">
+
+                        <!-- 借用右侧栏/待借用资产 -->
+                        <div class="col-lg-12" style="text-align:center; width:100%;height:100%;margin:0px; ">
+                            <a style="display: none" class="btn btn-danger btn-sm btn-flat " href="/AssetsFind/DoAssetsExport/DownLoadCurrentAsset"><span style="display: none" id="currentAssets"></span></a>
+                            <button type="button" class="btn btn-default btn-all" id="ExportCurrentAssets" name="ExportCurrentAssets">导出当前资产</button>
+                            <a class="btn btn-default btn-all" href="/AssetsFind/DoAssetsExport/ExportCurrentAsset"><span id="currentAssets">导出所有资产</span></a>
+                            @*<button type="button" class="btn btn-primary" id="ExportAllAssets" name="ExportAllAssets">导出所有资产</button>*@
+                            <script language="javascript">
+
+                                var ExportCurrentAssetsUrl = "@Url.Action("ExportCurrentAsset", "DoAssetsExport", new { area = "AssetsFind" })";
+
+                                var ExportAllAssetsUrl = "@Url.Action("Query", "DoAssetsExport", new { area = "AssetsFind" })";
+
+                                $("#ExportCurrentAssets").click(function() {
+                                    var d = $("#frmSearch").serialize();
+                                    $.post(ExportCurrentAssetsUrl, d, function(result) {
+                                        $("#currentAssets").click();
+                                    });
+                                });
+
+                                $("#ExportAllAssets").click(function () {
+                                    alert("222");
+                                });
+
+                            </script>
+                        </div>
+                        @*</form>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+<style type="text/css">
+    #LedgerTable td {
+        text-align: center;
+    }
+
+    .tdbold {
+        font-weight: bold;
+    }
+</style>
+
+
+<script src="~/Assets/datatables/datatables.min.js"></script>
+<link href="~/Assets/datatables/datatables.min.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(document).ready(function(){
+            $("#Role").val($("#ARole").val());
+            $("#UserName").val($("#AUserName").val());
+            $("#UseDepartment").val($("#AUserDept").val());
+        });
+
+
+
+    //$("#LedgerTable").DataTable({});
+    window.OnClassCodeSelected = function (classCode) {
+        $("#CatCode").val(classCode.ClassCode);
+        $("#CatName").val(classCode.ClassName);
+    }
+    var table = null;
+    $(function () {
+        $("#btnClearCat").click(function () {
+            $("#CatCode").val("");
+            $("#CatName").val("");
+        });
+        $("#btnSearch").click(function () {
+            //alert("AAA");
+            //document.frmSearch.action = "/AssetsFind/Statistics/Ledger";
+            //document.frmSearch.submit();
+            var Url = "@Url.Action("Ledger", "Statistics", new { area = "AssetsFind" })";
+            var d = $("#frmSearch").serialize();
+            $.post(Url, d, function(result) {
+                //$("#currentAssets").click();\
+                if (table != null) {
+                    table.destroy();
+                }
+              table=  $("#LedgerTable").DataTable({
+                    "searching": false,
+                    "pageLength": 10,
+                    "bSort": false,
+                    data: result.result,
+                "order": [[1, "desc"]],
+                columns: [
+                    { title: "资产名称", data: "GoodsName" },
+                    { title: "资产编号", data: "AssetsNum" },
+                    { title: "购置日期", data: "Brand" },
+                    { title: "品牌型号", data: "StorePlace" },
+                    { title: "数量", data: "InCount" },
+                    { title: "单价", data: "InPrice" },
+                    { title: "金额", data: "InMoney" },
+                    { title: "使用地点", data: "StorePlace" },
+                    { title: "使用(保管)人", data: "UsePeople" },
+                    { title: "数量", data: "OutCount" },
+                    { title: "金额", data: "OutMoney" },
+                    { title: "数量", data: "Count" },
+                    { title: "金额", data: "Money" }
+                ],
+                });
+            });
+
+        });
+        $("#btnExport").click(function () {
+            document.frmSearch.action = "/AssetsFind/Statistics/LedgerExport";
+            document.frmSearch.submit();
+        });
+    });
+</script>
+
+<!-- 存放地点树函数 -->
+<script type="text/javascript">
+    var selectPlaceNode = null;
+    function buildTree() {
+        selectPlaceNode = null;
+        $.fn.zTree.destroy("placeTree");
+        var setting = {
+            callback: {
+                onDblClick: placeClick
+            }
+        };
+        $.getJSON("/SysManage/SysManage/ListPlace?placeType=loc&t=" + new Date(), function (result) {
+            $.fn.zTree.init($("#placeTree"), setting, result);
+        });
+    }
+
+    function placeClick(event, treeId, treeNode) {
+        //alert(treeNode);
+        //selectPlaceNode = treeNode;
+        $("#IndexPlace").val(treeNode.name);
+        queryData(1);
+    }
+
+    $(function () {
+        buildTree();
+    });
+</script>
+
+<!-- 归属部门树函数 -->
+<script type="text/javascript">
+    var selectDeptNode = null;
+    function buildDeptTree() {
+        $.fn.zTree.destroy("departmentTree");
+        var deptsetting = {
+            callback: {
+                onDblClick: deptClick
+            }
+        };
+        $.getJSON("/SysManage/SysManage/ListDept?t=" + new Date(), function (result) {
+            $.fn.zTree.init($("#departmentTree"), deptsetting, result);
+        });
+    }
+
+    function deptClick(event, treeId, treeNode) {
+        //selectDeptNode = treeNode;
+        $("#IndexDept").val(treeNode.name);
+
+        queryData(1);
+    }
+
+
+    $(function () {
+        buildDeptTree();
+    });
+</script>

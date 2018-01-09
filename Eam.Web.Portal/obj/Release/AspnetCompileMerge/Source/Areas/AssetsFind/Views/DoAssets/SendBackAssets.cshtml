@@ -1,0 +1,290 @@
+﻿@{
+
+    Layout = Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产退还</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+                    <!-- 资产领用记录表 -->
+                    <section class="content">
+                        <div class="row">
+                            <!--资产领用记录表 -->
+                            <div class="col-lg-12">
+                                <!-- 资产领用记录表 -->
+                                <div class="box">
+                                    <div class="box-header new-box-header">
+                                        <h3 class="box-title title-a">资产领用记录</h3>
+                                        <div class="box-tools pull-right">
+                                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                            <form name="noneForm" id="noneForm">
+                                                <input type="hidden" name="PageIndex" id="PageIndex" value="1" />
+                                                <input type="hidden" name="PageSize" id="PageSize" value="10" />
+                                            </form>
+                                        </div>
+                                    </div><!-- /.box-header -->
+                                    <div class="box-body">
+                                        <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <table id="BorrowRecordTable" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                                        <thead>
+                                                            <tr role="row" class="row-bkg">
+                                                                <th>序号</th>
+                                                                <th>领用人</th>
+                                                                <th>领用时间</th>
+                                                                <th>领用人联系方式</th>
+                                                                <th>领用人部门</th>
+                                                                <th>退还状态</th>
+                                                                <th>退还人</th>
+                                                                <th>退还时间</th>
+                                                                <th>&nbsp;</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody></tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-3">
+                                                    <div class="dataTables_info" id="BorrowRecordTableInfo" role="status" aria-live="polite"></div>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    <ul id="BorrowRecordPager"></ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!-- /.box-body -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 资产退还单 -->
+                    <section class="content">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="box">
+                                    <!-- 表头 -->
+                                    <div class="box-header new-box-header">
+                                        <h3 class="box-title title-a">资产退还单</h3>
+                                        <div class="box-tools pull-right">
+                                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div><!-- /.box-header -->
+                                    <!-- box content -->
+                                    <div class="box-body content">
+                                        <form method="post" id="fromReturn" name="fromReturn">
+                                            <!-- 归还左侧栏/归还信息 -->
+                                            <div class="col-lg-3">
+                                                <!-- 归还信息 -->
+                                                <div class="row" style="margin-left:0px;">
+                                                    @*<label>归还人：</label><input class="form-control" type="text" id="ReturnPerson" name="ReturnPerson" maxlength="20" placeholder="归还人">*@
+                                                    <label>退还人：</label><select class="form-control" type="text" name="SendBackPerson" id="SendBackPerson"></select>
+                                                    <script src="~/Assets/select2/select2.js"></script>
+                                                    <script>
+                                                        $.post("/sysManage/sysManage/GetAllUsersMax", function (data) {
+                                                            $("#SendBackPerson").select2({
+                                                                placeholder: "退还人",
+                                                                data: data
+                                                            });
+                                                        })
+                                                    </script>
+                                                    <br />
+                                                    <br />
+                                                    <label>退还日期：</label><input class="form-control" type="text" id="SendBackDate" name="SendBackDate" placeholder="退还日期" readonly="readonly" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")">
+                                                    <br />
+                                                    <label>备注：</label><input class="form-control" type="text" id="SendBackMemo" name="SendBackMemo" maxlength="250" placeholder="备注" />
+                                                </div>
+                                                <!-- 归还操作 -->
+                                                <div class="row">
+                                                    <br />
+                                                    <br />
+                                                    <div class="col-lg-offset-5">
+                                                        <input type="hidden" id="BorrowId" name="BorrowId">
+                                                        <button type="button" class="btn btn-default btn-all" id="btnReturn">退还</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- 归还右侧栏/待归还资产 -->
+                                            <div class="col-lg-8 col-lg-offset-1">
+                                                <!-- 资产借出单 -->
+                                                <div class="row">
+                                                    <!-- 标题 -->
+                                                    <div class="row">
+                                                        <div class="row col-lg-offset-4">
+                                                            <label style="font-size:25px;">资产领用单</label>
+                                                        </div>
+                                                    </div>
+                                                    <!-- 借用单详情 -->
+                                                    <div class="row">
+                                                        <div class="col-lg-3">
+                                                            <label style="font-size:10px">领用人:</label>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <label style="font-size:10px" id="AcquirePerson"></label>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <label style="font-size:10px">领用日期:</label>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <label style="font-size:10px" id="AcquireDate"></label>
+                                                        </div>
+                                                    </div>
+                                                    @*<div class="row">
+                                                        <div class="col-lg-3">
+                                                            <label style="font-size:10px">借用用途:</label>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <label style="font-size:10px" id="BorrowUse"></label>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <label style="font-size:10px">预计归还日期:</label>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <label style="font-size:10px" id="BorrowLong"></label>
+                                                        </div>
+                                                    </div>*@
+                                                    <div class="row">
+                                                        <div class="col-lg-3">
+                                                            <label style="font-size:10px">领用人联系方式:</label>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <label style="font-size:10px" id="AcquirePersonPhone"></label>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <label style="font-size:10px">领用人所在部门:</label>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <label style="font-size:10px" id="AcquireDepartment"></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 资产领用列表 -->
+                                                <div class="row">
+                                                    <table id="BorrowDetailListTable" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                                        <thead> 
+                                                            <tr role="row" class="row-bkg">
+                                                                <th>资产编号</th>
+                                                                <th>资产名称</th>
+                                                                <th>计量单位</th>
+                                                                <th>数量</th>
+                                                                <th>资产状况</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody></tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+<script src="~/Assets/datatables/datatables.min.js"></script>
+<!-- 资产借用列表显示 -->
+<script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+                    <!-- 资产借用列表显示 -->
+                    <script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+                    <script type="text/javascript">
+
+                        //借用列表当前显示的页数，用于归还后刷新借用列表
+                        var borrowPageIndex = 1;
+
+                        var borrowQueryUrl = "@Url.Action("AllAquireRecordQuery", "AssetsFind", new { area = "AssetsFind" })";
+
+                        function queryBorrowRecordData(pageIndex) {
+                            $("#PageIndex").val(pageIndex);
+                            var d = $("#noneForm").serialize();
+                            $.post(borrowQueryUrl, d, function (result) {
+                                $("#BorrowRecordTable tbody").empty();
+                                $(result.Items).each(function (index, item) {
+                                    var row = $(" <tr role='row'>");
+                                    row.append('<td>' + item.EntityId + '</td>');
+                                    row.append('<td>' + item.AcquirePerson + '</td>');
+                                    row.append('<td>' + item.AcquireDate + '</td>');
+                                    row.append('<td>' + item.AcquirePersonPhone + '</td>');
+                                    row.append('<td>' + item.AcquireDepartment + '</td>');
+
+                                    if (item.HasSendBack == 0)
+                                        row.append('<td>未退还</td>');
+                                    else
+                                        row.append('<td>已退还</td>');
+
+                                    row.append('<td>' + item.SendBackPerson + '</td>');
+                                    row.append('<td>' + item.SendBackDate + '</td>');
+
+                                    if (item.HasSendBack == 0)
+                                        row.append('<td><span class="btn btn-default btn-all" data-id=' + item.EntityId + '>退还</span></td>');
+                                    else
+                                        row.append('<td><a class="btn btn-default btn-all" href="/AssetsFind/DoAssetsExport/ExportSendBack?doAssetsId=' + item.EntityId + '">打印退还单</a></td>');
+
+                                    $("#BorrowRecordTable").append(row);
+                                });
+                                $("#BorrowRecordTable").DataTable();
+
+                                // 归还按钮事件注册
+                                $(".return").click(function () {
+                                    var val = $(this).attr("data-id");// 传递这个控件的data-id的属性值，实际上你可以看到就是通过这个按钮把资产借出记录表中的序号传递过去
+                                    showBorrowInfo(val);// 点击归还按钮后调用这个函数，我们来看一下这个函数的作用效果
+                                }); // 这个就是归还按钮事件注册，$(".inventory")表示选中所有class属性中有inventory标志控件
+                            }, "json");
+                        }
+
+                        function showBorrowInfo(borrowId) {
+                            $.post("/AssetsFind/DoAssets/AquireDetail", { borrowId: borrowId }, function (result) {
+                                $("#BorrowId").val(result.AquairInfo.EntityId);
+                                $("#AcquirePerson").text(result.AquairInfo.AcquirePerson);
+                                $("#AcquireDate").text(result.AquairInfo.AcquireDate);
+                                //$("#BorrowUse").text(result.BorrowInfo.BorrowUse);
+                                //$("#BorrowLong").text(result.BorrowInfo.BorrowLong);
+                                $("#AcquirePersonPhone").text(result.AquairInfo.AcquirePersonPhone);
+                                $("#AcquireDepartment").text(result.AquairInfo.AcquireDepartment);
+
+                                $("#BorrowDetailListTable tbody").empty();
+                                $(result.Details).each(function (index, item) {
+                                    var row = $(" <tr role='row'>");
+                                    row.append('<td>' + item.AssetsNo + '</td>');
+                                    row.append('<td>' + item.GoodsName + '</td>');
+                                    row.append('<td>' + item.MeasurementUnits + '</td>');
+                                    row.append('<td>' + item.AquairCounts + '</td>');
+                                    row.append('<td><input type="text" maxlength="50" width="20" name="_STATUS_' + item.AssetsNo + '"/><td>');
+                                    $("#BorrowDetailListTable").append(row);
+                                });
+                                $("#BorrowDetailListTable").DataTable();
+                            });
+                        }
+
+                        $(function () {
+                            $("#BorrowRecordPerPageSize").change(function () {
+                                $("#PageSize").val($(this).val());
+                                queryBorrowRecordData(1);
+                            });
+                            queryBorrowRecordData(1);
+
+                            $("#btnReturn").click(function () {
+                                var d = $("#fromReturn").serialize();
+                                $.post("/AssetsFind/DoAssets/SendBackAssets", d, function (result) {
+                                    if (result == "ok") {
+                                        alert("操作成功");
+                                        //document.getElementById("fromReturn").reset();
+                                        //queryBorrowRecordData($("#PageIndex").val());
+                                        window.location.reload();
+                                        return;
+                                    }
+                                    alert(result);
+                                }, "json");
+                            });
+
+                        });
+                    </script>

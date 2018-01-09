@@ -1,0 +1,289 @@
+﻿using System.Collections.Generic;
+using System.Globalization;
+using EAM.Data.Domain;
+using EAM.Data.Services;
+using EAM.Data.Services.Impl;
+using NPOI.HSSF.UserModel;
+using System;
+using System.Data;
+using System.IO;
+
+using NPOI.XSSF.UserModel;
+using NPOI.SS.UserModel;
+
+namespace EAM.Data.ImportAndExport.Import
+{
+    public static class BxReader
+    {
+        // private static IUnImportAssetsService _unImportAssetsService= ;
+        // private static IImportHistoryService _importHistoryService;
+        //  _importHistoryService
+        private static int rows = 0;
+        private static DataTable ReadFromFile(string filePath)
+        {
+            IWorkbook hssfworkbook;
+
+            #region 初始化信息
+
+            using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                hssfworkbook = WorkbookFactory.Create(file) as IWorkbook;
+            }
+
+            #endregion
+
+            NPOI.SS.UserModel.ISheet sheet = hssfworkbook.GetSheetAt(0);
+            System.Collections.IEnumerator rows = sheet.GetRowEnumerator();
+            DataTable dt = new DataTable();
+            rows.MoveNext();
+            IRow row = rows.Current as IRow;
+            for (int j = 0; j < (sheet.GetRow(0).LastCellNum); j++)
+            {
+                //将第一列作为列表头
+                DataColumn dtc = new DataColumn(row.GetCell(j).ToString(), typeof(string));
+                dt.Columns.Add(dtc);
+            }
+            Console.WriteLine();
+
+            while (rows.MoveNext())
+            {
+                try
+                {
+                    row = (IRow)rows.Current;
+                    DataRow dr = dt.NewRow();
+                    for (int i = 0; i < row.LastCellNum; i++)
+                    {
+                        NPOI.SS.UserModel.ICell cell = row.GetCell(i);
+                        Console.WriteLine(cell == null ? "" : cell + "\t\t");
+                        Console.WriteLine();
+
+                        if (cell == null)
+                            dr[i] = null;
+                        else
+                            dr[i] = cell.ToString();
+                    }
+                    dt.Rows.Add(dr);
+                }
+                catch (Exception ex)
+                {
+                    continue;
+                    //  throw;
+                }
+
+            }
+            return dt;
+        }
+
+        public static List<AssetsMain> ReadData(string filePath, ref ProgressInfo importProgress, IImportHistoryService importHistoryService, IUnImportAssetsService unImportAssetsService)
+        {
+            DataTable data = ReadFromFile(filePath);
+
+                importProgress.TotalAssetsNum = data.Rows.Count;
+                
+            if (importProgress.TotalAssetsNum > 200) {                    
+                    return null;
+                }
+
+
+            var list = new List<AssetsMain>();
+
+            double total = data.Rows.Count;
+            double percent = 0.5;
+            int idx = 0;
+
+            foreach (DataRow row in data.Rows)
+            {
+                idx++;
+                var assetsMain = new AssetsMain();
+                var unImportAssets = new UnImportAssets();
+                try
+                {
+
+
+                    assetsMain.SchoolNum = Convert.ToString(row[Mappings.BxAssetsMapping["SchoolNumber"]]);
+                    assetsMain.UsedNum2 = Convert.ToString(row[Mappings.BxAssetsMapping["StockNumber"]]);
+                    // assetsMain.StockNumber = Convert.ToString(row[Mappings.BxAssetsMapping["StockNumber"]]);
+                    assetsMain.GoodsName = Convert.ToString(row[Mappings.BxAssetsMapping["GoodsName"]]);
+                    assetsMain.GoodsName2 = Convert.ToString(row[Mappings.BxAssetsMapping["GoodsName2"]]);
+                    #region 如果资产名称以其它开头就以扩展名为资产名称,如果存在扩展名，则以扩展名为资产名称
+
+                    if (assetsMain.GoodsName.Contains("其它"))
+                        assetsMain.GoodsName = Convert.ToString(row[Mappings.BxAssetsMapping["GoodsName2"]]);
+                    if (!assetsMain.GoodsName2.Equals(""))
+                        assetsMain.GoodsName = Convert.ToString(row[Mappings.BxAssetsMapping["GoodsName2"]]);
+
+                    #endregion
+
+                    #region 抽取数据
+                    assetsMain.CatCode = Convert.ToString(row[Mappings.BxAssetsMapping["CatCode"]]).PadRight(9, '0');
+                    assetsMain.AssetBlonged = Convert.ToString(row[Mappings.BxAssetsMapping["AssetBlonged"]]);
+                    assetsMain.AddType = Convert.ToString(row[Mappings.BxAssetsMapping["AddType"]]);
+                    assetsMain.Memo = Convert.ToString(row[Mappings.BxAssetsMapping["GoodsName"]]);
+                    assetsMain.Brand = Convert.ToString(row[Mappings.BxAssetsMapping["Brand"]]);
+                    assetsMain.MeasurementUnits = Convert.ToString(row[Mappings.BxAssetsMapping["MeasurementUnits"]]);
+                    assetsMain.AcountDocNum = Convert.ToString(row[Mappings.BxAssetsMapping["AcountDocNum"]]);
+                    assetsMain.ModelSpecification = Convert.ToString(row[Mappings.BxAssetsMapping["ModelSpecification"]]);
+                    assetsMain.InstNum = Convert.ToString(row[Mappings.BxAssetsMapping["InstNum"]]);
+                    assetsMain.IsFixAssets = Convert.ToString(row[Mappings.BxAssetsMapping["IsFixAssets"]]) == "是" ? 1 : 0;
+                    assetsMain.GetDate = Convert.ToDateTime(row[Mappings.BxAssetsMapping["GetDate"]]);
+                    assetsMain.PostingDate = Convert.ToDateTime(row[Mappings.BxAssetsMapping["PostingDate"]]);
+                    assetsMain.CeqmtNum = Convert.ToString(row[Mappings.BxAssetsMapping["CeqmtNum"]]);
+                    if (!string.IsNullOrEmpty(row[Mappings.BxAssetsMapping["Price"]].ToString()))
+                        assetsMain.Price = Convert.ToDecimal(row[Mappings.BxAssetsMapping["Price"]]);
+                    if (!string.IsNullOrEmpty(row[Mappings.BxAssetsMapping["EngineeringMaterial"]].ToString()))
+                        assetsMain.EngineeringMaterial = Convert.ToDecimal(row[Mappings.BxAssetsMapping["EngineeringMaterial"]]);
+                    if (!string.IsNullOrEmpty(row[Mappings.BxAssetsMapping["GovMoney"]].ToString()))
+                        assetsMain.GovMoney = Convert.ToDecimal(row[Mappings.BxAssetsMapping["GovMoney"]]);
+                    if (!string.IsNullOrEmpty(row[Mappings.BxAssetsMapping["Counts"]].ToString()))
+                        assetsMain.Counts = Convert.ToInt32(row[Mappings.BxAssetsMapping["Counts"]]);
+                    assetsMain.Agent = Convert.ToString(row[Mappings.BxAssetsMapping["Agent"]]);
+                    assetsMain.CanapplyNum = Convert.ToInt32(row[Mappings.BxAssetsMapping["CanapplyNum"]]);
+
+                    assetsMain.NetWorth = assetsMain.Money = assetsMain.GovMoney;
+
+                    #endregion
+
+                    #region 填充默认值
+
+                    assetsMain.UsingAttribute = "01|办公设备";
+                    assetsMain.UsingState = "01|在用";
+                    assetsMain.UsingStyle = "01|自用";
+                    assetsMain.GetWay = "01|购置";
+                    assetsMain.ValueType = "01|原值";
+                    assetsMain.NoneGovMoney = 0;
+                    assetsMain.AccumulateDepreciation = 0;
+                    assetsMain.Depreciation = 0;
+                    assetsMain.Memo = "";                       // 将备注栏清空
+
+                    #endregion
+
+                    #region 处理特殊设备
+
+                    //
+                    // 所有专用设备和通用设备全部拆分
+                    //
+                    if ((assetsMain.CatCode.StartsWith("3") || assetsMain.CatCode.StartsWith("2")) && assetsMain.Counts > 1)
+                    {
+                        //
+                        // 价值、财政性资金、净值全部均分
+                        //
+                        assetsMain.GovMoney = assetsMain.NetWorth = assetsMain.Money
+                            = assetsMain.GovMoney = assetsMain.GovMoney / assetsMain.Counts;
+
+                        //
+                        // 数量为1
+                        //
+                        int loopTime = assetsMain.Counts;
+                        assetsMain.Counts = 1;
+                        //int fillSaterIndex = list.Count;
+                        for (int count = 0; count < loopTime; count++)
+                        {
+                            //
+                            // 对于需要做拆分的资产，需要在备注栏里面填写库存号和拆分序号
+                            // 借助备注栏里的信息，当重复数据导入到系统后，系统是做覆盖的
+                            // 而判重的标准如果只有库存号，被拆分的资产库存号都是一样的，所以借助备注栏信息进行二次判重：
+                            // 首先判断库存号是否已经存在，如果已近存在，则做覆盖，在做覆盖之前，再进行备注栏信息判重
+                            // 如果备注栏里没有信息则直接覆盖，如果备注栏有信息则进行二次判重
+                            // 备注栏信息在数据库中存在该条目，则对该条目进行覆盖
+                            // 否则就新增条目。通过上述机制，既能够保证数据拆分能够完全录入到系统，又能保证数据二次倒入的覆盖。
+                            //
+
+                            list.Add(new AssetsMain()
+                            {
+                                AssetsNum = assetsMain.AssetsNum,
+                                GoodsName = assetsMain.GoodsName,
+                                CatCode = assetsMain.CatCode,
+                                UsedNum1 = assetsMain.UsedNum1,
+                                UsedNum2 = assetsMain.UsedNum2,
+                                GetWay = assetsMain.GetWay,
+                                GetDate = assetsMain.GetDate,
+                                Agent = assetsMain.Agent,
+                                UsingAttribute = assetsMain.UsingAttribute,
+                                UsingState = assetsMain.UsingState,
+                                UsingStyle = assetsMain.UsingStyle,
+                                StorePlace = assetsMain.StorePlace,
+                                ValueType = assetsMain.ValueType,
+                                Money = assetsMain.Money,
+                                GovMoney = assetsMain.GovMoney,
+                                NoneGovMoney = assetsMain.NoneGovMoney,
+                                PostingDate = assetsMain.PostingDate,
+                                Depreciation = assetsMain.Depreciation,
+                                AccumulateDepreciation = assetsMain.AccumulateDepreciation,
+                                NetWorth = assetsMain.NetWorth,
+                                AcountDocNum = assetsMain.AcountDocNum,
+                                MeasurementUnits = assetsMain.MeasurementUnits,
+                                InputPerson = assetsMain.InputPerson,
+                                StockNumber = assetsMain.StockNumber,
+                                Counts = assetsMain.Counts,
+                                Price = assetsMain.Price,
+                                Brand = assetsMain.Brand,
+                                ModelSpecification = assetsMain.ModelSpecification,
+                                EngineeringMaterial = assetsMain.EngineeringMaterial,
+                                IsFixAssets = assetsMain.IsFixAssets,
+                                IsDelete = assetsMain.IsDelete,
+                                IsUse = assetsMain.IsUse,
+                                IsBorrow = assetsMain.IsBorrow,
+                                AssetsPicPath = assetsMain.AssetsPicPath,
+                                Memo = assetsMain.UsedNum2 + "@" + count.ToString(CultureInfo.InvariantCulture),
+                                InputTime = assetsMain.InputTime,
+                                ExtDataTable = assetsMain.ExtDataTable,
+                                UsePeople = assetsMain.UsePeople,
+                                ImportId = assetsMain.ImportId,
+                                ImportType = assetsMain.ImportType
+                            });
+                        }
+                        continue;
+                    }
+
+                    #endregion
+
+                    list.Add(assetsMain);
+                    //percent = percent + 40.0/total;
+                    //importProgress.ImportedPercentVal = (int)percent;
+
+                }
+                catch (Exception ex)
+                {
+
+                    unImportAssets.Exception = ex.ToString();
+                    unImportAssets.GoodsName = assetsMain.GoodsName;
+                    unImportAssets.StoreNum = assetsMain.UsedNum2;
+                    unImportAssets.TableName = data.TableName;
+                    unImportAssets.TableRow = idx + 1;
+                    unImportAssets.ImportType = 1;//(int) assetsMain.ImportType;
+                    unImportAssets.ImportPerson = importHistoryService.LastHistory().UserId;
+                    unImportAssets.ImportId = importHistoryService.LastHistory().EntityId;  //Id
+                    unImportAssets.ImportType = importHistoryService.LastHistory().ImportType; //type
+                    unImportAssets.ImportTime = importHistoryService.LastHistory().ImportTime;
+                    unImportAssets.Exception = unImportAssets.Exception.Substring(0, 255);// += ex.ToString();
+                    unImportAssetsService.Add(unImportAssets); //增加为导入资产 
+                    unImportAssetsService.Update(unImportAssets);
+
+
+
+
+                }
+                //异常仍然算进度
+                percent = percent + 40.0 / total;
+                try
+                {
+                    importProgress.ImportedPercentVal = (int)percent;
+                }
+                catch (Exception)
+                {
+
+                }
+
+
+            } //for each
+            rows = idx;
+            return list;
+
+        }
+
+        public static int GetRows() {
+            return rows;
+        }
+
+    }
+}

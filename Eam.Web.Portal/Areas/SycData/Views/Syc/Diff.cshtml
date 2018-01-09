@@ -1,0 +1,348 @@
+﻿@model Eam.Web.Portal.Areas.SycData.Models.DiffModel
+
+@{
+    ViewBag.Title = "数据比对界面";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">数据比对</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- Content Header (Page header) -->
+@*<section class="content-header">
+
+        <!--最顶部的标题栏-->
+        <h1>
+                固定资产
+                <small>数据比对</small>
+            </h1>
+
+        <!--顶部标题栏右侧的层级显示栏-->
+        @*<ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#">Examples</a></li>
+                <li class="active">Blank page</li>
+            </ol>
+    </section>*@
+
+<!-- 三库数据信息面板 -->
+<section class="content">
+    <div class="row">
+        <!-- 动态数据信息面板 -->
+        <div class="col-lg-6">
+            <div class="box box-danger">
+                <!-- 表头 -->
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">办学数据信息</h3>
+                </div><!-- /.box-header -->
+                <!-- body -->
+                <div class="box-body content">
+                    <div class="col-lg-4">
+                        <br />
+                        <label>更新文件：</label>
+                        <br />
+                        <br />
+                        <label>最后一次更新时间：</label>
+                        <br />
+                        <br />
+                        <label>数据更新总行数：</label>
+                        <br />
+                        <br />
+                        <label>更新人：</label>
+                    </div>
+                    <div class="col-lg-8">
+                        <br />
+                        <label>@Model.LastBanxue.ImportFile</label>
+                        <br />
+                        <br />
+                        <label>@Model.LastBanxue.ImportTime.ToString("yyyy-MM-dd HH:mm:ss")</label>
+                        <br />
+                        <br />
+                        <label>@Model.LastBanxue.ImportRows</label>
+                        <br />
+                        <br />
+                        <label>@Model.LastBanxue.UserId</label>
+                    </div>
+                </div>
+            </div><!--/.box -->
+        </div>
+        <!-- 办学数据信息面板 -->
+        <div class="col-lg-6">
+            <!-- 办学数据信息面板 -->
+            <div class="box box-danger">
+
+                <!-- 表头 -->
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">动态数据信息</h3>
+                </div><!-- /.box-header -->
+                <!-- body -->
+                <div class="box-body content">
+                    <div class="col-lg-4">
+                        <br />
+                        <label>更新文件：</label>
+                        <br />
+                        <br />
+                        <label>最后一次更新时间：</label>
+                        <br />
+                        <br />
+                        <label>数据更新总行数：</label>
+                        <br />
+                        <br />
+                        <label>更新人：</label>
+                    </div>
+                    <div class="col-lg-8">
+                        <br />
+                        <label>@Model.LastDynamic.ImportFile</label>
+                        <br />
+                        <br />
+                        <label>@Model.LastDynamic.ImportTime.ToString("yyyy-MM-dd HH:mm:ss")</label>
+                        <br />
+                        <br />
+                        <label>@Model.LastDynamic.ImportRows</label>
+                        <br />
+                        <br />
+                        <label>@Model.LastDynamic.UserId</label>
+                    </div>
+                </div>
+            </div><!--/.box -->
+        </div>
+    </div>
+</section>
+
+<!-- 数据比对结果 -->
+<section class="content">
+    <div class="row">
+        <!--数据比对结果面板 -->
+        <div class="col-lg-12">
+            <!-- 数据比对结果面板 -->
+            <div class="box">
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">数据比对结果</h3>
+
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+
+                    <div id="example1_wrapper" class="dataTables_wrapper form-inline">
+                        <div class="row">
+                            <form method="get" id="frmSearch" name="frmSearch">
+                                <div class="col-sm-4">
+                                    <div class="dataTables_length" id="example1_length">
+                                        <select name="perPageSize" id="perPageSize" class="form-control input-sm" style="display: none">
+                                            <option value="10" selected>10</option>
+                                            <option value="20">20</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- 比对基准选取 -->
+                            <form method="post">
+                                <div class="col-lg-6">
+                                    <div class="col-lg-6">
+                                        <select class="form-control" id="DiffBase" name="DiffBase">
+                                            <option>本库</option>
+                                            <option>办学库</option>
+                                            <option>动态库</option>
+                                        </select>
+                                    </div>
+                                    <!-- 比对按钮 -->
+                                    <div class="col-lg-4">
+
+                                        <!-- 开始比对 -->
+                                        <input type="hidden" name="PageIndex" id="PageIndex" value="1" />
+                                        <input type="hidden" name="PageSize" id="PageSize" value="20" />
+                                        <input type="hidden" value="@Model.LastBanxue.ImportFile" name="banxueFile" />
+                                        <input type="hidden" value="@Model.LastDynamic.ImportFile" name="dynamicFile" />
+                                        <button type="submit" class="btn btn-default btn-all">
+                                            @*<i class="fa fa-repeat"></i>*@ 开始比对
+                                        </button>
+                                        <a href="@Url.Action("DownLoadDiffResult")">
+                                            <button type="button" class="btn btn-default btn-all" id="ExportDiffResultBtn">
+                                                @*<i class="fa fa-repeat"></i>*@ 导出比对结果
+                                            </button>
+                                        </a>
+                                            
+
+</div>
+                                </div>
+                            </form>
+                             @*比对错误信息显示*@ 
+                            <div class="col-lg-2">
+                                <span style="color:red;">@Model.ErrMessage</span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table id="DiffResultTable" class="table table-bordered table-striped dataTable" role="grid">
+                                <thead>
+                                    <tr role="row" class="row-bkg">
+                                        <th width="4%">序号</th>
+                                        <th width="6%">匹配状态</th>
+                                        <th width="6%">本库状态</th>
+                                        <th width="5%">本库编码</th>
+                                        <th width="6%">本库名称</th>
+                                        <th width="6%">本库价值</th>
+                                        <th width="6%">本库规格</th>
+                                        <th width="6%">办学状态</th>
+                                        <th width="6%">办学编码</th>
+                                        <th width="6%">办学名称</th>
+                                        <th width="6%">办学价值</th>
+                                        <th width="6%">办学规格</th>
+                                        <th width="6%">动态状态</th>
+                                        <th width="6%">动态编码</th>
+                                        <th width="6%">动态名称</th>
+                                        <th width="6%">动态价值</th>
+                                        <th width="6%">动态规格</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="dataTables_info" id="example1_info" role="status" aria-live="polite"></div>
+                        </div>
+                        <div class="col-sm-8  text-center">
+                            <ul id="DiffResultPager"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.box-body -->
+        </div>
+
+    </div>
+
+</section>
+<link href="~/Assets/datatables/datatables.min.css" rel="stylesheet" />
+<script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+<script src="~/Assets/datatables/datatables.min.js"></script>
+
+<script type="text/javascript">
+    var serviceUrl = " @Url.Action("DiffResultQuery", "Syc", new { area = "SycData" }) ";
+    queryData();
+
+    function queryData() {
+        var d = $("#frmSearch").serialize();
+        $.post(serviceUrl, d, function(result) {
+            console.log(result);
+            $("#DiffResultTable").DataTable({
+                data: result.Items,
+                "order": [[1, "desc"]],
+                "bDestory": true,
+                columns: [
+                    { title: "序号", data: "Index" },
+                    { title: "匹配状态", data: "DiffState" },
+                    { title: "本库状态", data: "LocalState" },
+                    { title: "本库编码", data: "LocalCode" },
+                    { title: "本库名称", data: "LocalName" },
+                    { title: "本库价值", data: "LocalValue" },
+                    { title: "本库规格", data: "LocalMode" },
+                    { title: "办学状态", data: "BxState" },
+                    { title: "办学编码", data: "BxCode" },
+                    { title: "办学名称", data: "BxName" },
+                    { title: "办学价值", data: "BxValue" },
+                    { title: "办学规格", data: "BxMode" },
+                    { title: "动态状态", data: "DtState" },
+                    { title: "动态编码", data: "DtCode" },
+                    { title: "动态名称", data: "DtName" },
+                    { title: "动态价值", data: "DtValue" },
+                    { title: "动态规格", data: "DtMode" },
+                ],
+            });
+        });
+
+    }
+
+    //function queryData(pageIndex) {
+    //    $("#PageIndex").val(pageIndex);
+    //    var d = $("#frmSearch").serialize();
+    //    $.post(serviceUrl, d, function (result) {
+    //        $("#DiffResultTable tbody").empty();
+    //        console.log(result);
+    //        $(result.Items).each(function (index, item) {
+    //            var row = $(" <tr role='row'>");
+    //            row.append('<td>' + index + '</td>');
+    //            row.append('<td>' + item.DiffState + '</td>');
+    //            row.append('<td>' + item.LocalState + '</td>');
+    //            row.append('<td>' + item.LocalCode + '</td>');
+    //            row.append('<td>' + item.LocalName + '</td>');
+    //            row.append('<td>' + item.LocalValue + '</td>');
+    //            row.append('<td>' + item.LocalMode + '</td>');
+    //            row.append('<td>' + item.BxState + '</td>');
+    //            row.append('<td>' + item.BxCode + '</td>');
+    //            row.append('<td>' + item.BxName + '</td>');
+    //            row.append('<td>' + item.BxValue + '</td>');
+    //            row.append('<td>' + item.BxMode + '</td>');
+    //            row.append('<td>' + item.DtState + '</td>');
+    //            row.append('<td>' + item.DtCode + '</td>');
+    //            row.append('<td>' + item.DtName + '</td>');
+    //            row.append('<td>' + item.DtValue + '</td>');
+    //            row.append('<td>' + item.DtMode + '</td>');
+    //            $("#DiffResultTable").append(row);
+    //});
+    //        $("#dataTables_info").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " , 总共 " + result.TotalItemCount);
+
+    //    if (result.TotalPageCount <= 1) {
+    //        $('#DiffResultPager').empty();
+    //        return;
+    //    }
+    //var options = {
+    //    bootstrapMajorVersion: 3, //版本
+    //    numberOfPages: 8,
+    //    currentPage: result.CurrentPageIndex,
+    //    totalPages: result.TotalPageCount,
+    //    itemTexts: function (type, page, current) {
+    //        switch (type) {
+    //            case "first":
+    //                return "首页";
+    //            case "prev":
+    //                return "上一页";
+    //            case "next":
+    //                return "下一页";
+    //            case "last":
+    //                return "末页";
+    //            case "page":
+    //                return page;
+    //        }
+    //    }, //点击事件，用于通过Ajax来刷新整个list列表
+    //    onPageClicked: function (event, originalEvent, type, page) {
+    //        queryData(page);
+    //    }
+    //};
+    //$('#DiffResultPager').bootstrapPaginator(options);
+    //}, "json");
+    //}
+
+    //$(function () {
+    //    $("#perPageSize").change(function () {
+    //        alert($(this).val());
+    //        $("#PageSize").val($(this).val());
+    //        queryData(1);
+    //    });
+
+    //    queryData(1);
+
+    //});
+    $("#ExportDiffResultBtn").click(function () {
+        @*alert("开始下载");
+
+        var serviceUrl = " @Url.Action("DownLoadDiffResult", "Syc", new { area = "SycData" }) ";
+
+        var d = $("#frmSearch").serialize();
+        $.post(serviceUrl, d, function() {});*@
+    })
+
+</script>

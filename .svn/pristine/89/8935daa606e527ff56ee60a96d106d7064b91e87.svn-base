@@ -1,0 +1,32 @@
+﻿<html>
+<head>
+    <title>我的第一个打印文档</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- 插入打印控件 -->
+
+    <script>
+
+		function doPrint() {
+		    var myDoc = {
+		        settings: {
+		            paperWidth: 196,
+		            paperHeight: 112
+		        },
+				documents: document, 
+				copyrights: '杰创软件拥有版权  www.jatools.com' // 版权声明,必须
+			};
+			document.getElementById("jatoolsPrinter").print(myDoc, false); // 直接打印，不弹出打印机设置对话框
+		}
+
+    </script>
+</head>
+<body style='padding:10px;'>
+    <input type="button" value="打印" onclick='doPrint()'><br><br>
+
+    <div id='page1'><img src="QrCodes/102060101000001.jpg"/></div>
+    <div id='page2'><img src="QrCodes/102060101000002.jpg" /></div> 
+    
+    <object id="jatoolsPrinter" classid="CLSID:B43D3361-D075-4BE2-87FE-057188254255"
+            codebase="jatoolsPrinter.cab#version=8,6,0,0"></object>
+</body>
+</html>

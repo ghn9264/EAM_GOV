@@ -1,0 +1,689 @@
+﻿<!-- 2017-05-26 wnn 盘盈导入 -->
+@model Eam.Web.Portal.Areas.SycData.ImportResultModel
+
+@{
+    ViewBag.Title = "数据同步界面";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+@*<link href="~/Assets/css/Home_main.css" rel="stylesheet" />*@
+<link href="~/Assets/datatables/datatables.min.css" rel="stylesheet" /><link href="~/Assets/css/search_main.css" rel="stylesheet" />
+<link href="~/Assets/css/importDt_main.css" rel="stylesheet" />
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">盘盈导入</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- Content Header (Page header) -->
+@*<section class="content-header">
+
+        <!--最顶部的标题栏-->
+        @*<h1>
+                固定资产
+                <small>数据同步</small>
+            </h1>
+
+        <!--顶部标题栏右侧的层级显示栏-->
+        @*<ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#">Examples</a></li>
+                <li class="active">Blank page</li>
+            </ol>
+    </section>
+    *@
+    <!--盘盈导入 -->
+    <section class="content content-all">
+
+        <div class="row">
+            <!--盘盈导入操作面板 -->
+            <div class="col-lg-9">
+                <!-- 盘盈导入操作面板 -->
+                <div class="box box-danger">
+                    <!-- 表头 -->
+                    <div class="box-header with-border">
+                        <h3 class="box-title right_top"><a>盘盈导入</a></h3>
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                    </div><!-- /.box-header -->
+                    <!-- body -->
+                    <form method="post" id=" frmDtUpload" enctype="multipart/form-data">
+                        <div class="box-body content">
+                            <div class="row row-changef">
+                                <!-- 数据上传 -->
+                                <div class="div_file">
+                                    <!-- 文件上传 -->
+                                    <img src="../../img/changefile.PNG">
+                                    <input type="file" id="file" name="file">
+                                </div>
+                                <div class="div_rule">
+                                    <p>上传办学资产表之前请下载"<a href="@Url.Action("DownLoadDtSample")">盘盈导入模板.xls</a>"</p>
+                                    <p>请严格按照盘盈导入模板上传盘盈资产表。</p>
+                                    <p>上传表格只接受.xls（97-2003版本)格式。</p>
+                                    <p>表格内所有填写数量的地方不允许出现数字无关的字符，但可以为空。</p>
+                                    <p>表格内所有填写日期的地方请严格按照"2016-1-1"格式进行填写。</p>
+                                    <p>表格内不允许出现重复表头。</p>
+                                </div>
+
+                                <!-- 数据上传 -->
+
+                            </div>
+
+
+                            <div class="row row-importDt">
+                                <div class="col-lg-10">
+                                    <p>盘盈导入信息：</p>
+                                    <br />
+                                    @Html.Raw(Model.ErrorMessage)
+                                    <br />
+                                    共导入 @Model.ImportedItems.Count, 跳过 @Model.UnImportedItems.Count.
+
+                                </div>
+
+                                <!--保存控制器返回信息，隐藏-->
+                                <div class="col-lg-1">
+                                    <input type="hidden" name="PageIndex" id="PageIndex" value="1" />
+                                    <input type="hidden" name="PageSize" id="PageSize" value="10" />
+                                    <input type="hidden" name="ImportId" id="ImportId" value="1" />
+                                    <input type="hidden" name="ImportType" id="ImportType" value="1" />
+                                    <input type="hidden" name="LastImportedId" id="LastImportedId" value="1" />
+                                </div>
+                                <div class="file_btn">
+                                    <a class="btn btn-primary" id="upload">上传盘盈资产</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!--动态导入规则面板 -->
+            <div class="col-lg-3 new_clo">
+                <!-- 动态导入操作面板 -->
+                <div class="box box-danger emptybg">
+
+                    <div class="wheather">
+                        <iframe src="//www.seniverse.com/weather/weather.aspx?uid=U40192E28B&amp;cid=CHBJ000000&amp;l=zh-CHS&amp;p=SMART&amp;a=0&amp;u=C&amp;s=1&amp;m=2&amp;x=1&amp;d=3&amp;fc=FFFFFF&amp;bgc=&amp;bc=&amp;ti=0&amp;in=0&amp;li=" frameborder="0" scrolling="no" width="100%" height="181.5" allowtransparency="true"></iframe>
+                    </div>
+                    <div class="dateTime">
+                        <p id="p1">14:50</p>
+                        <p id="p2">2017年06月13日</p>
+                    </div>
+                </div><!--/.box -->
+            </div>
+        </div>
+    </section>
+    <script type="text/javascript">
+        window.onload = init;
+        function init() {
+            var obj1 = document.getElementById("p1");
+            var obj2 = document.getElementById("p2");
+            var obj = document.getElementById("p1");
+            var date = new Date();
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1;
+            var strDate = date.getDate();
+            var hour = date.getHours();
+            var minutes = date.getMinutes();
+            if (month >= 1 && month <= 9) {
+                month = "0" + month;
+            }
+            if (strDate >= 0 && strDate <= 9) {
+                strDate = "0" + strDate;
+            }
+
+            if (hour >= 0 && hour <= 9) {
+                hour = "0" + hour;
+            }
+            if (minutes >= 0 && minutes <= 9) {
+                minutes = "0" + minutes;
+            }
+            obj1.innerHTML = hour + ":" + minutes;
+            obj2.innerHTML = year + "年" + month + "月" + strDate + "日";
+
+            var setTime = setTimeout("init()", 60000);
+        }
+    </script>
+
+    <!--盘盈上传记录 -->
+    <section class="content" id="DtUploadHistoryPanel" style="display:">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="box new-box">
+                    <div class="box-header new-box-header">
+                        <h3 class="box-title title-a">盘盈上传记录</h3>
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <div id="example1_wrapper" class="dataTables_wrapper form-inline">
+                            <div class="row">
+                                <div class="col-sm-12 new-clo-12">
+                                    <table id="tableDtHistory" class="table table-bordered table-striped dataTable" role="grid">
+                                        <thead>
+                                            <tr role="row" class="row-bkg">
+                                                <th width="4%"><input type="checkbox" id="chooseall">全选</th>
+                                                <th width="4%">序号</th>
+                                                <th width="10%">导入类型</th>
+                                                <th width="20%">文件名称</th>
+                                                <th width="10%">导入时间</th>
+                                                <th width="10%">导入用户</th>
+                                                <th width="10%">已导入条数</th>
+                                                <th width="10%">未导入条数</th>
+                                                <th width="10%">文件总条数</th>
+                                                <th width="5%">记录号</th>
+                                                <!--<th width="5%" colspan="2" ><button id="btnRemoveAll" onclick="DeleteAllCrnt()" type="button" class="btn btn-danger btn-sm">批量移除记录</button></th>-->
+                                                <th width="7%"></th>
+                                                <!--  <th width="100">异常信息</th -->
+
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="dataTables_info" id="exampleDtHistory_info" role="status" aria-live="polite"></div>
+                                </div>
+                                <div class="col-sm-8  text-center">
+                                    <ul id="divDtHistoryPager"></ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div><!-- /.box-body -->
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <script type="text/javascript">
+        $("#chooseall").click(function () {
+            var isChecked = $(this).prop("checked");
+            $("input[name='checkbox1']").prop("checked", isChecked);
+        });
+        function fn() {
+            var obj = document.getElementById("DtImportedDetialPanel");
+            var obj1 = document.getElementById("DtImportedDetialPanel_1");
+            obj.style.display = "block";
+            obj1.style.display = "block";
+        }
+
+    </script>
+
+
+    <script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            //
+            // 打开历史上传纪录
+            //
+            $("button[name='btnOpenHistory']").click(function () {
+                document.getElementById("DtUploadHistoryPanel").style.display = ""; //显示
+            });
+            // 关闭历史上传纪录
+            $("button[name='btnCloseHistory']").click(function () {
+                document.getElementById("DtUploadHistoryPanel").style.display = "none"; //显示
+            });
+
+
+        });
+
+
+        //----------------------------------------------------------------------------
+        var action = "@ViewBag.DoAction";
+        var serviceDtUrl = "@Url.Action("ImportedAssetsQuery", "Syc", new {area = "SycData"})";
+        var QueryDtImportedId = "@Url.Action("QueryLastImportedId", "Syc", new {area = "SycData"})";
+        var UrlDtHistory = "@Url.Action("ImportHistoryQuery", "Syc", new { area = "SycData" })";
+        var UnImportedUrl = "@Url.Action("UnImportedAssetsQuery", "Syc", new {area = "SycData"})";
+        var serviceUrlRemove = "@Url.Action("DeleteAssetsQuery", "Syc", new { area = "SycData" })";
+        var serviceUrlRemoveAll = "@Url.Action("DeleteAllAssetsQuery", "Syc", new { area = "SycData" })";
+        var sreviceUrlDelete = "@Url.Action("DeleteQuery", "Syc", new { area = "SycData" })";
+        //var LastImportedId;
+
+        //盘盈导入历史查询
+        function queryDtHistory(pageIndex) {
+
+            $("#PageIndex").val(pageIndex);
+            $("#DtImportId").val(0); //0过滤Id查询条件，查询所有
+            $("#DtImportType").val(2);
+
+
+            //var d = $("#frmDtHistory").serialize();
+            var d = $("#frmDtUploadInfo").serialize();
+            //查询导入记录
+            $.post(UrlDtHistory, d, function (result) {
+
+                $("#tableDtHistory tbody").empty();
+
+                $(result.Items).each(function (index, item) {
+                    var no = index + 1 +
+                    ($("#PageIndex").val() - 1) * $("#PageSize").val();
+                    var Type = "";
+                    if (1 == item.ImportType) { Type = "办学资产" } else {
+                        Type = "盘盈资产";
+                    }
+                    var row = $(" <tr role='row'>");
+                    row.append('<td><input type="checkbox" name="checkbox1"/></td>');
+                    row.append('<td>' + no + '</td>');
+                    row.append('<td>' + Type + '</td>');
+                    row.append('<td>' + item.ImportFile + '</td>');
+                    row.append('<td>' + item.ImportTime + '</td>');
+                    row.append('<td>' + item.UserId + '</td>');
+                    row.append('<td>' + item.ImportRows + '</td>');
+                    row.append('<td>' + (item.TotalRows - item.ImportRows) + '</td>');
+                    row.append('<td>' + item.TotalRows + '</td>');
+                    row.append('<td>' + item.EntityId + '</td>');
+                    row.append('<td><div><a  onclick="queryCrntRecordDetial(' + item.EntityId + ')"  id="btnSeeDetial" ">查看</a><a data-id="' + item.EntityId + '" onclick="DeleteCrnt(' + item.EntityId + ')"  id="btnDelete">移除</a><a  data-id="' + item.EntityId + '" onclick="Delete(' + item.EntityId + ')"  id="Delete" ">删除</a></div></td>');
+
+                    $("#tableDtHistory").append(row);
+
+                });
+
+
+                $("#exampleDtHistory_info").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " , 总共 " + result.TotalItemCount);
+
+                if (result.TotalPageCount <= 1) {
+                    $('#divDtHistoryPager').empty();
+                    return;
+                }
+                var options = {
+                    bootstrapMajorVersion: 3, //版本
+                    numberOfPages: 8,
+                    currentPage: result.CurrentPageIndex,
+
+                    totalPages: result.TotalPageCount,
+                    itemTexts: function (type, page, current) {
+                        switch (type) {
+                            case "first":
+                                return "首页";
+                            case "prev":
+                                return "上一页";
+                            case "next":
+                                return "下一页";
+                            case "last":
+                                return "末页";
+                            case "page":
+                                return page;
+                        }
+                    }, //点击事件，用于通过Ajax来刷新整个list列表
+                    onPageClicked: function (event, originalEvent, type, page) {
+                        queryDtHistory(page);
+                    }
+                };
+                $('#divDtHistoryPager').bootstrapPaginator(options);
+            }, "json");
+
+        } //fuction
+
+        function queryCrntRecordDetial(id) {
+            var section1 = document.getElementById("DtUploadHistoryPanel");
+
+            //if (section1.style.display == "") section1.style.display = "none";
+            //queryDtHistory(1);
+            queryDtImported(1, id);
+            queryDtUnImported(1, id);
+
+
+        }
+        function DeleteCrnt(id) {
+
+            $.post(serviceUrlRemove, { assetsid: id }, function () {
+                queryDtHistory(1);
+            });
+
+        }
+        //
+        //点击删除按钮删除这一行数据库数据，同时删除这一条记录
+        //
+        function Delete(id) {
+            //post请求获取这条记录在数据库的数据
+            $.post(sreviceUrlDelete, { recordid: id }, function () {
+                queryDtHistory(1);
+            });
+        }
+        function DeleteAllCrnt() {
+            $.post(serviceUrlRemoveAll, null, function () {
+                queryDtHistory(1);
+            });
+        }
+
+        function queryDtImported(pageIndex, id) {
+
+            $("#PageIndex").val(pageIndex);
+            $("#DtImportId").val(id);
+            $("#DtImportDtType").val(2);
+            var Type = $("#DtImportType").val();
+            //alert(id);
+            //alert(Type);
+
+            var d = $("#frmDtUploadInfo").serialize();
+
+
+            //查询导入记录
+            $.post(serviceDtUrl, d, function (result) {
+
+
+                $("#tableDtImported tbody").empty();
+
+                $(result.Items).each(function (index, item) {
+                    var row = $(" <tr role='row'>");
+                    // row.append('<td><a class="btn default" data-toggle="modal" data-target="#myModal" role="basic" aria-hidden="true" href="/AssetsFind/AssetsFind/ViewDetail?entityId=' + item.EntityId + '&t=' + (new Date()).valueOf() + '">' + item.AssetsNum + '</a></td>');
+                    row.append('<td><input type="hidden" name="assetsNums" value="' + item.AssetsNum + '">' + item.GoodsName + '</td>');
+                    row.append('<td>' + item.CatCode + '</td>');
+                    row.append('<td>' + item.Money + '</td>');
+                    row.append('<td>' + item.StorePlace + '</td>');
+                    row.append('<td>' + item.Agent + '</td>');
+                    row.append('<td>' + item.UsingAttribute + '</td>');
+                    row.append('<td>' + item.UsingState + '</td>');
+                    var href = '"/AssetsFind/AssetsFind/CreateQrCodeEx?assetsNums=' + item.AssetsNum + '"';
+                    row.append('<td> <a href="/AssetsInput/SingleInput/EditSpecialequipment?entityId=' + item.EntityId + ' " class="btn btn-sm  ">修改</a><a target="_blank" onclick=' + "'Open(" + href + ")'" + '"  class="btn btn-sm  " data-id="' + item.ASSETS_NUM + '">打印</a> </td>');
+
+
+                    $("#tableDtImported").append(row);
+
+                });
+                $("#exampleDt_info").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " , 总共 " + result.TotalItemCount);
+
+                if (result.TotalPageCount <= 1) {
+                    $('#divDtImportedPager').empty();
+                    return;
+                }
+                var options = {
+                    bootstrapMajorVersion: 3, //版本
+                    numberOfPages: 8,
+                    currentPage: result.CurrentPageIndex,
+
+                    totalPages: result.TotalPageCount,
+                    itemTexts: function (type, page, current) {
+                        switch (type) {
+                            case "first":
+                                return "首页";
+                            case "prev":
+                                return "上一页";
+                            case "next":
+                                return "下一页";
+                            case "last":
+                                return "末页";
+                            case "page":
+                                return page;
+                        }
+                    }, //点击事件，用于通过Ajax来刷新整个list列表
+                    onPageClicked: function (event, originalEvent, type, page) {
+                        queryDtImported(page, id);
+                    }
+                };
+                $('#divDtImportedPager').bootstrapPaginator(options);
+            }, "json");
+
+        } //fuction
+
+
+        //    本次未导入信息
+        function queryDtUnImported(pageIndex, id) {
+
+            $("#PageIndex").val(pageIndex);
+            $("#ImportId").val(id);
+            $("#ImportType").val(2); //Type=1表示办学
+            //   alert(id);
+
+            // var d = $("#frmBxUpload").serialize();
+
+            //查询导入记录
+            $.post(UnImportedUrl, { id: id, type: 2, PageIndex: pageIndex }, function (result) {
+                $("#tableDtUnImported tbody").empty();
+
+                $(result.Items).each(function (index, item) {
+                    var row = $(" <tr role='row'>");
+                    // row.append('<td><a class="btn default" data-toggle="modal" data-target="#myModal" role="basic" aria-hidden="true" href="/AssetsFind/AssetsFind/ViewDetail?entityId=' + item.EntityId + '&t=' + (new Date()).valueOf() + '">' + item.AssetsNum + '</a></td>');
+                    row.append('<td>' + item.GoodsName + '</td>');
+                    row.append('<td>' + item.DynamicNum + '</td>');
+                    row.append('<td>' + item.TableName + '</td>');
+                    row.append('<td>' + item.TableRow + '</td>');
+                    row.append('<td>' + item.ImportTime + '</td>');
+                    row.append('<td>' + item.ImportPerson + '</td>');
+                    row.append('<td>' + item.Exception + '</td>');
+
+                    $("#tableDtUnImported").append(row);
+
+                });
+
+                $("#exampleDtUnImported_info").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " , 总共 " + result.TotalItemCount);
+
+                if (result.TotalPageCount <= 1) {
+                    $('#divDtUnImportedPager').empty();
+                    return;
+                }
+
+                var options = {
+                    bootstrapMajorVersion: 3, //版本
+                    numberOfPages: 8,
+                    currentPage: result.CurrentPageIndex,
+
+                    totalPages: result.TotalPageCount,
+                    itemTexts: function (type, page, current) {
+                        switch (type) {
+                            case "first":
+                                return "首页";
+                            case "prev":
+                                return "上一页";
+                            case "next":
+                                return "下一页";
+                            case "last":
+                                return "末页";
+                            case "page":
+                                return page;
+                        }
+                    }, //点击事件，用于通过Ajax来刷新整个list列表
+                    onPageClicked: function (event, originalEvent, type, page) {
+
+                        queryDtUnImported(page, id);
+                    }
+                };
+                $('#divDtUnImportedPager').bootstrapPaginator(options);
+            }, "json");
+
+        } //fuction
+
+
+
+        $(function () {
+
+            $.post(QueryDtImportedId, { type: 2 }, function (id) {
+
+                $("#LastDtImportedId").val(id);
+
+                //  alert(id);
+            });
+
+            var lstId = $("#LastDtImportedId").val();
+            //alert(lstId);
+            queryDtImported(1, lstId);
+            queryDtHistory(1);
+            $("#perDtPageSize").change(function () {  //点击每页数量时，改变每页显示数，从第一页开始
+                var pageIndex = $("#PageSize").val();
+                var recordId = $("#ImportId").val();
+                queryDtImported(pageIndex, recordId);
+            });
+            $("#perDtHistoryPageSize").change(function () {  //点击每页数量时，改变每页显示数，从第一页开始
+                $("#PageSize").val($(this).val());
+                var pageIndex = $("#PageIndex").val();
+                queryDtHistory(pageIndex);
+            });
+        });
+        function Open(href) {
+            window.open(href, "1", "width=600,height=480,toolbar=no, status=no, menubar=no, resizable=yes, scrollbars=yes");
+            return false;
+        }
+        function OpenAllByPost() {
+            $.ajax({
+                type: "POST",
+                url: "/AssetsFind/AssetsFind/CreateQrCodeEx",
+                data: $("#Select").serialize(),
+                success: function (data) {
+
+                    openWin = window.open("", "newwin", "location=no,width=600,height=480,toolbar=no, status=no, menubar=no, resizable=no, scrollbars=yes");
+                    openWin.document.write(data);
+
+                    openWin.document.close();
+                }
+            });
+        }
+    </script>
+
+
+
+    <div class="modal fade" id="UpLoadModel" tabindex="-1" role="dialog" aria-labelledby="UpLoadModelLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">文件上传</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="progress">
+                        <div class="progress-bar" id="progressNumber" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">文件名</label>
+                        <div class="form-control" id="fileName"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">文件大小</label>
+                        <div class="form-control" id="fileSize"></div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" type="button" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="~/Assets/datatables/datatables.min.js"></script>
+
+    <script>
+        $("#file")[0].onchange = fileSelected;
+        $("#upload")[0].onclick = uploadFile;
+        function fileSelected() {
+            var file = $('#file')[0].files[0];
+            if (file) {
+                var fileSize = 0;
+                if (file.size > 1024 * 1024)
+                    fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+                else
+                    fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+                $('#fileName')[0].innerHTML = file.name;
+                $('#fileSize')[0].innerHTML = fileSize;
+            }
+        }
+        var xhr;
+        function uploadFile() {
+            $('#UpLoadModel').modal({ backdrop: 'static', keyboard: false });
+            var fd = new FormData($("form")[0]);
+            xhr = new XMLHttpRequest();
+            //xhr.upload.addEventListener("progress", uploadProgress, false);
+            xhr.addEventListener("load", uploadComplete, false);
+            xhr.addEventListener("error", uploadFailed, false);
+            xhr.addEventListener("abort", uploadCanceled, false);
+
+            xhr.open("POST", "/SycData/Syc/NewDynamicPDataInput");//修改成自己的接口
+            xhr.send(fd);
+
+            $("#progressNumber").css("width", 0 + '%');
+            $("#progressNumber").attr("aria-valuenow", 0);
+            intervalProcess = setInterval("uploadProgress()", 100);
+        }
+        var intervalProcess;
+        function uploadProgress() {
+
+            $.post("/SycData/syc/QueryProgress", null, function (e) {
+
+                $("#progressNumber").css("width", e.ImportedPercentVal.toString() + '%');
+                $("#progressNumber").attr("aria-valuenow", e.ImportedPercentVal.toString());
+                //document.getElementById('progressNumber').innerHTML = e.ImportedPercentVal.toString() + '%';
+                document.getElementById('progressNumber').innerHTML = e.ImportedPercentVal.toString() + '%  (' + e.ImportedAssetsNum + '/' + e.TotalAssetsNum + ')';
+
+            });
+        }
+        var tableDtImported, tableDtUnImported;
+        function uploadComplete(evt) {
+            $('#UpLoadModel').modal('hide');
+            var result = JSON.parse(xhr.response);
+            clearInterval(intervalProcess);
+            if (result.type == 0) {
+                alert("已经导入" + result.ImportedNum + "未导入" + result.UnImportedNum);  //
+                // alert("已经导入" + result.ImportedItems.length + "未导入" + result.UnImportedItems.length);
+                queryDtHistory(1); //更新办学导入记录
+                // var lstId = $("#LastImportedId").val();
+                // LastImportedId
+                queryDtImported(1, result.LastImportedId); //更新已导入记录详细信息
+                queryDtUnImported(1, result.LastImportedId);//更新本次未导入详细信息
+
+
+                /* //-------------------------------liu 0715--------------------------------------------------------//
+                 history.go(0);
+                 //-----------------------------------------------------------------------------------------------//
+                 $("#tableDtImported").empty();
+                 $("#tableDtUnImported").empty();
+                 if (tableDtImported != null) {
+                     tableDtImported.destroy();
+                 }
+                 if (tableDtUnImported != null) {
+                     tableDtUnImported.destroy();
+                 }
+                  tableDtImported= $("#tableDtImported").DataTable({
+                     data: result.ImportedItems,
+                     "order": [[1, "desc"]],
+                     "bDestory": true,
+                     columns: [
+                         { title: "资产名称" ,data:"GoodsName"},
+                         { title: "资产代码" ,data:"CatCode"},
+                         { title: "价值" ,data:"Money"},
+                         { title: "存放地点" ,data:"StorePlace"},
+                         { title: "经办人" ,data:"Agent"},
+                         { title: "使用属性" ,data:"UsingAttribute"},
+                         {title:"使用状况",data:"UsingState"}
+                     ],
+                 });
+                  tableDtUnImported= $("#tableDtUnImported").DataTable({
+                     data: result.UnImportedItems,
+                     "order": [[1, "desc"]],
+                     "bDestory": true,
+                     columns: [
+                         { title: "资产名称", data: "AssetsMain.GoodsName" },
+                         { title: "资产代码", data: "AssetsMain.CatCode" },
+                         { title: "价值", data: "AssetsMain.Money" },
+                         { title: "存放地点", data: "AssetsMain.StorePlace" },
+                         { title: "经办人", data: "AssetsMain.Agent" },
+                         { title: "使用属性", data: "AssetsMain.UsingAttribute" },
+                         { title: "使用状况", data: "AssetsMain.UsingState" },
+                     { title: "未导入原因", data: "Message" }
+                     ],
+                  });*/
+
+            } else {
+                queryDtUnImported(1, result.LastImportedId);//更新本次未导入详细信息
+                // alert(result.msg);
+            }
+        }
+        function uploadFailed(evt) {
+            clearInterval(intervalProcess);
+            alert("上传文件时出错");
+        }
+        function uploadCanceled(evt) {
+            clearInterval(intervalProcess);
+            alert("取消上传");
+        }
+    </script>

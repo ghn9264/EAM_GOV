@@ -1,0 +1,229 @@
+﻿@using EAM.Data.Domain
+@using Eam.Web.Portal.Areas
+@using Newtonsoft.Json;
+@model EAM.Data.Services.Query.LedgerQuery
+@{
+    ViewBag.Title = "资产操作";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+<style type="text/css">
+    .content {
+        min-height: 0px;
+    }
+</style>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <!--最顶部的标题栏-->
+    <h1>
+        资产统计<small>资产台账</small>
+    </h1>
+    <!--顶部标题栏右侧的层级显示栏-->
+    @*<ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Examples</a></li>
+            <li class="active">Blank page</li>
+        </ol>*@
+</section>
+
+<!-- 条件检索面板 -->
+<section class="content">
+    <div class="row">
+        <!-- 条件检索面板 -->
+        <div class="col-lg-12">
+            <!-- 条件检索面板 -->
+            <div class="box box-danger">
+                <!-- 表头 -->
+                <div class="box-header with-border">
+                    <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">检索条件</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div><!-- /.box-header -->
+                <!-- body -->
+                <div class="box-body content">
+                    <form method="post" id="frmSearch" name="frmSearch">
+                        <!-- 检索条件输入区域 -->
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <label>开始日期：</label>
+                                @if (Model.BeginDate.HasValue)
+                                {
+                                    <input class="form-control" type="text" placeholder="开始日期" data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                           maxlength="20" name="BeginDate" id="BeginDate" value="@Model.BeginDate.Value.ToString("yyyy-MM-dd")" />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="text" placeholder="开始日期" data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                           maxlength="20" name="BeginDate" id="BeginDate" />
+                                }
+                            </div>
+                            <div class="col-lg-2">
+                                <label>截止日期：</label>
+                                @if (Model.EndDate.HasValue)
+                                {
+                                    <input class="form-control" type="text" placeholder="截止日期" data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                           maxlength="20" name="EndDate" id="EndDate" value="@Model.EndDate.Value.ToString("yyyy-MM-dd")" />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="text" placeholder="截止日期" data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                           maxlength="20" name="EndDate" id="EndDate" />
+                                }
+                            </div>
+                            <div class="col-lg-2">
+                                <label>摘要：</label>
+                                <input class="form-control" type="text" placeholder="摘要" maxlength="20" name="GoodsName" id="GoodsName" value="@Model.GoodsName" />
+                            </div>
+                            <div class="col-lg-2">
+                                <label>资产分类：</label>
+                                <a href="#" data-toggle="control-sidebar">
+                                    <input class="form-control" type="text" placeholder="资产分类" readonly="readonly" maxlength="20" name="CatName" id="CatName" value="@Model.CatName" />
+                                </a>
+                                <input type="hidden" name="CatCode" id="CatCode" value="@Model.CatCode" />
+                            </div>
+                            <div class="col-lg-1">
+                                <br />
+                                <button type="button" class="btn btn-info btn-sm" id="btnClearCat">清除分类</button>
+                            </div>
+                            <div class="col-lg-2">
+                                <br />
+                                <button type="button" class="btn btn-primary" id="btnSearch">查询</button>
+                                <button type="reset" class="btn btn-primary">清除</button>
+                                <button type="button" class="btn btn-primary" id="btnExport">导出</button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div><!--/.box -->
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    #LedgerTable td {
+        text-align: center;
+    }
+
+    .tdbold {
+        font-weight: bold;
+    }
+</style>
+
+<!-- 资产列表面板 -->
+<section class="content">
+    <div class="row">
+        <!--资产列表面板 -->
+        <div class="col-lg-12">
+            <!-- 资产列表面板 -->
+            <div class="box">
+                <div class="box-body">
+                    <table id="LedgerTable" style="border-color: darkslategray" class=" table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <td rowspan="2" style="font-weight: bolder;border-color:darkslategray">资产名称</td>
+                                <td rowspan="2" style="font-weight: bolder;border-color: darkslategray">资产编号</td>
+                                <td colspan="7" style="font-weight: bolder;border-color: darkslategray">购&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;进&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;或&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;拨&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;入</td>
+                                <td colspan="2" style="font-weight: bolder;border-color: darkslategray">报 &nbsp;废&nbsp;&nbsp;  或&nbsp;&nbsp;  转&nbsp; 出</td>
+                                <td colspan="2" style="font-weight: bolder;border-color: darkslategray">余&nbsp;&nbsp;   额</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bolder;border-color: darkslategray">购置日期</td>
+                                <td style="font-weight: bolder;border-color: darkslategray">品牌型号</td>
+                                <td style="font-weight: bolder;border-color: darkslategray">数量</td>
+                                <td style="font-weight: bolder;border-color: darkslategray">单价</td>
+                                <td style="font-weight: bolder;border-color: darkslategray">金额</td>
+                                <td style="font-weight: bolder;border-color: darkslategray">使用地点</td>
+                                <td style="font-weight: bolder;border-color: darkslategray">使用(保管)人</td>
+                                <td style="font-weight: bolder;border-color: darkslategray">数量</td>
+                                <td style="font-weight: bolder;border-color: darkslategray">金额</td>
+                                <td style="font-weight: bolder;border-color: darkslategray">数量</td>
+                                <td style="font-weight: bolder;border-color: darkslategray">金额</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @*@{
+                                List<LedgerItem> ledgerItems = ViewBag.Result as List<LedgerItem>;
+                                if (ledgerItems == null)
+                                {
+                                    ledgerItems = new List<LedgerItem>();
+                                }
+                                foreach (var item in ledgerItems)
+                                {
+                                    var boldCls = "";
+                                    if (item.Year == 0)
+                                    {
+                                        boldCls = "tdbold";
+                                    }
+                            <tr class="@boldCls">
+                                <td style="width: 100px">@item.GoodsName</td>
+                                <td style="width: 100px">@item.AssetsNum</td>
+                                <td style="width: 100px">@item.GetDate</td>
+                                <td style="width: 100px">@item.Brand @item.ModelSpecification</td>
+                                <td style="max-width:50px">@UIHelper.NumberToString(item.InCount)</td>
+                                <td style="max-width:50px">@UIHelper.NumberToString(item.InPrice)</td>
+                                <td style="width: 60px">@UIHelper.NumberToString(item.InMoney)</td>
+                                <td style="max-width:150px">@item.StorePlace</td>
+                                <td style="max-width:60px">@item.UsePeople</td>
+                                <td style="max-width:50px">@UIHelper.NumberToString(item.OutCount)</td>
+                                <td style="max-width:60px">@UIHelper.NumberToString(item.OutMoney)</td>
+                                <td style="max-width:50px">@UIHelper.NumberToString(item.Count)</td>
+                                <td style="max-width:60px">@UIHelper.NumberToString(item.Money)</td>
+                            </tr>
+                                }
+                            }*@
+                        </tbody>
+                    </table>
+                </div><!-- /.box-body -->
+            </div>
+        </div>
+    </div>
+</section>
+<script src="~/Assets/datatables/datatables.min.js"></script>
+<link href="~/Assets/datatables/datatables.min.css" rel="stylesheet" />
+<script type="text/javascript">
+
+    $("#LedgerTable").DataTable({
+        "searching": false,
+        "pageLength": 10,
+        "bSort": false,
+        data: @Html.Raw( JsonConvert.SerializeObject(ViewBag.Result as List<LedgerItem>)),
+        "order": [[1, "desc"]],
+        columns: [
+            { title: "资产名称", data: "GoodsName" },
+            { title: "资产编号", data: "AssetsNum" },
+            { title: "购置日期", data: "Brand" },
+            { title: "品牌型号", data: "StorePlace" },
+            { title: "数量", data: "InCount" },
+            { title: "单价", data: "InPrice" },
+            { title: "金额", data: "InMoney" },
+            { title: "使用地点", data: "StorePlace" },
+            { title: "使用(保管)人", data: "UsePeople" },
+            { title: "数量", data: "OutCount" },
+            { title: "金额", data: "OutMoney" },
+            { title: "数量", data: "Count" },
+            { title: "金额", data: "Money" }
+        ],
+    });
+    //$("#LedgerTable").DataTable({});
+    window.OnClassCodeSelected = function (classCode) {
+        $("#CatCode").val(classCode.ClassCode);
+        $("#CatName").val(classCode.ClassName);
+    }
+    $(function () {
+        $("#btnClearCat").click(function () {
+            $("#CatCode").val("");
+            $("#CatName").val("");
+        });
+        $("#btnSearch").click(function () {
+            document.frmSearch.action = "/AssetsFind/Statistics/Ledger";
+            document.frmSearch.submit();
+        });
+        $("#btnExport").click(function () {
+            document.frmSearch.action = "/AssetsFind/Statistics/LedgerExport";
+            document.frmSearch.submit();
+        });
+    });
+</script>

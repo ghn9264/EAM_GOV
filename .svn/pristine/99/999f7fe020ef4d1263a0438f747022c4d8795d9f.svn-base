@@ -1,0 +1,283 @@
+﻿@using Eam.Web.Portal.Areas
+@model Eam.Web.Portal.Areas.AssetsFind.Models.AcquireModel
+@{
+    Layout = "~/Areas/AssetsFind/Views/AssetsFind/_AssetsFindLayout.cshtml";
+}
+@*<script src="~/Assets/SelectTree.js"></script>*@
+<!-- 资产领用单 -->
+<section class="content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box">
+                <!-- 表头 -->
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">资产领用单</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-primary top_a" id="AddAsset" name="AddAsset">添加资产</button>
+                        <span></span>
+                        <button class="btn btn-primary top_a" id="CloseAdd" name="CloseAdd">关闭添加</button>
+                    </div>
+                </div><!-- /.box-header -->
+                <!-- box content -->
+                <div class="box-body content">
+                    <form method="post" action="" name="frmAcquire">
+                        <!-- 领用左侧栏/借用信息 -->
+                        <div class="col-lg-3">
+                            <!-- 领用信息 -->
+                            <div class="row" style="margin-left:0px;">
+                                <br />
+                                <label>领用人：</label><select class="form-control" type="text" name="AcquirePerson" id="AcquirePerson"  ></select>
+                                @*<link rel="stylesheet" href="~/Assets/select2/select2.css"/>*@
+                                <script src="~/Assets/select2/select2.js"></script>
+                                <script>
+                                    $.post( "/sysManage/sysManage/GetAllUsersMax",function(data){
+                                        $("#AcquirePerson").select2({
+                                            placeholder:"领用人",
+                                            data: data
+                                            });
+                                    })
+                              
+                                </script>
+                                <br />
+                                <br />
+                                <label>领用日期：</label>
+                                <input class="form-control" type="text" name="AcquireDate" id="AcquireDate" placeholder="领用日期" maxlength="20" readonly="readonly" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")" />
+                                <br />
+                                <label>领用人联系方式：</label><input class="form-control" type="text" name="AcquirePersonPhone" id="AcquirePersonPhone" placeholder="领用人联系方式" maxlength="13">
+                                <br />
+                                <label>领用人所在部门：</label><input class="form-control" type="text" name="AcquireDepartment" id="AcquireDepartment" placeholder="领用人所在部门" maxlength="20">
+                                <script>
+                                    buildTree("treediv1", "placeTree1", "AcquireDepartment", "/SysManage/SysManage/ListDept?t=" + new Date(), "name");
+                                </script>
+                                <br />
+                            </div>
+                            <!-- 领用操作 -->
+                            <div class="row">
+                                <br />
+                                <div style="color:red">@Html.ValidationSummary()</div>
+                                <br />
+                                <div class="col-lg-offset-5">
+                                    <button class="btn btn-default btn-all">确认领用</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 借用右侧栏/待借用资产 -->
+                        <div class="col-lg-9">
+                            <table id="tableOrderList" class="table table-bordered table-striped dataTable" role="grid">
+                                <thead>
+                                    <tr role="row" class="row-bkg">
+                                        <th style="width: 293px;">资产编号</th>
+                                        <th style="width: 359px;">资产名称</th>
+                                        <th style="width: 318px;">资产类别</th>
+                                        <th style="width: 256px;">单价</th>
+                                        <th style="width: 256px;">数量</th>
+                                        <th style="width: 256px;">计量单位</th>
+                                        <th style="width: 191px;"><button id="btnRemoveAll" type="button" class="btn btn-default btn-all">批量删除</button></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 资产领用记录表 -->
+<section class="content">
+    <div class="row">
+        <!--资产列表面板 -->
+        <div class="col-lg-12">
+            <!-- 资产列表面板 -->
+            <div class="box">
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">资产领用记录</h3>
+
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="acquireRecordTable" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                    <thead>
+                                        <tr role="row" class="row-bkg">
+                                            <th  style="width: 10%;">序号</th>
+                                            <th style="width: 359px;">领用人</th>
+                                            <th style="width: 318px;">领用日期</th>
+                                            <th style="width: 256px;">领用人联系方式</th>
+                                            <th style="width: 256px;">领用人所在部门</th>
+                                            <th style="width: 120px;">&nbsp;</th>
+                                            <th style="width: 120px;">&nbsp;</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="dataTables_info" id="acquireRecordInfo" role="status" aria-live="polite"></div>
+                            </div>
+                            <div class="col-sm-9">
+                                <ul id="acquireRecordPager"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- 将资产列表中的资产添加到待领用列表 -->
+<script type="text/javascript">
+
+    window.AddToOrderListCallBack = loadData;
+
+    var serviceUrl2 = "@Url.Action("Query", "OrderList", new {area = "Account"})";
+
+    function loadData() {
+        $.post(serviceUrl2, { "type": "@ConstTag.Acquire" }, function(result) {
+            $("#tableOrderList tbody").empty();
+            $(result).each(function(index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td><input type="hidden" name="AssetsNum" value="' + item.AssetsNum + '"/>' + item.UsedNum1 + '</td>');
+                row.append('<td>' + item.GoodsName + '</td>');
+                row.append('<td>' + item.CatCode + '</td>');
+                row.append('<td>' + item.Price + '</td>');
+                row.append('<td>' + item.Counts + '</td>');
+                row.append('<td>' + item.MeasurementUnits + '</td>');
+                row.append('<td><span class="btn btn-default btn-all" data-id="' + item.EntityId + '">删除</span></td>');
+                $("#tableOrderList tbody").append(row);
+            });
+            $("#tableOrderList").DataTable();
+            $(".remove").click(function() {
+                var serviceUrlRemove = "@Url.Action("RemoveOne", "OrderList", new {area = "Account"})";
+                $.post(serviceUrlRemove, { "id": $(this).attr("data-id") }, function () {
+                    loadData();
+                });
+            });
+        });
+    }
+    function RemoveFormOrderList() {
+        $("#btnRemoveAll").click(function () {
+            var serviceUrlRemove = "@Url.Action("RemoveFormOrderList", "OrderList", new { area = "Account" })";
+            $.post(serviceUrlRemove, { "type": "@ConstTag.Acquire" }, function () {
+                loadData();
+            });
+        });
+    }
+    //初始加载
+    $(function() {
+        loadData();
+        RemoveFormOrderList();
+    });
+</script>
+
+
+
+<script src="~/Assets/datatables/datatables.min.js"></script>
+<!-- 领用记录表数据呈现 -->
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="#" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产领用</a></li> </ol>');
+        //alert("YES");
+    });
+        
+
+    var acquireQueryUrl = "@Url.Action("AllAcquireRecordQuery", "AssetsFind", new { area = "AssetsFind" })";
+
+    function queryAcquireRecord(pageIndex) {
+
+        //
+        // 当前页码索引值
+        //
+        $("#acquireRecordPageIndex").val(pageIndex);
+
+        //
+        // 表单序列化，表单数据打包
+        // 如果有检索条件则在此表单里输入
+        //
+        //var d = $("#noneFrm").serialize();
+
+        //
+        // 向后台发送服务请求
+        //
+        $.post(acquireQueryUrl, function (result) {
+
+            //
+            // 清空列表内容
+            //
+            //$("#acquireRecordTable tbody").empty();
+
+            //
+            // 对服务返回结果进行遍历
+            //
+            $(result.Items).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td>' + item.EntityId + '</td>');
+                row.append('<td>' + item.AcquirePerson + '</td>');
+                row.append('<td>' + item.AcquireDate + '</td>');
+                row.append('<td>' + item.AcquirePersonPhone + '</td>');
+                row.append('<td>' + item.AcquireDepartment + '</td>');
+                row.append('<td><a class="btn btn-default btn-all" href="/AssetsFind/DoAssetsExport/ExportAcquire?doAssetsId=' + item.EntityId + '" class="btn btn-sm">导出领用单</a></td>');
+                row.append('<td><a class="btn btn-default btn-all" href="/AssetsFind/DoAssets/DeleteAcquireRecord?doAssetsId=' + item.EntityId + '" class="btn btn-sm">删除</a></td>');
+                $("#acquireRecordTable").append(row);
+            });
+            $("#acquireRecordTable").DataTable();
+            ////
+            //// 添加页码总数和当前页面索引
+            ////
+            //$("#acquireRecordInfo").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " ,总共 " + result.TotalItemCount);
+            //if (result.TotalPageCount <= 1) {
+            //    $('#acquireRecordPager').empty();
+            //    return;
+            //}
+            ////
+            //// 添加页码导航按钮
+            ////
+            //var acquireOptions = {
+            //    bootstrapMajorVersion: 3,                               // bootstrap版本
+            //    numberOfPages: 8,                                        // 每次显示8个按钮
+            //    currentPage: result.CurrentPageIndex,
+            //    totalPages: result.TotalPageCount,
+            //    itemTexts: function (type, page, current) {
+            //        switch (type) {
+            //        case "first":
+            //            return "首页";
+            //        case "prev":
+            //            return "上一页";
+            //        case "next":
+            //            return "下一页";
+            //        case "last":
+            //            return "末页";
+            //        case "page":
+            //            return page;
+            //        }
+            //    }, //点击事件，用于通过Ajax来刷新整个list列表
+            //    onPageClicked: function (event, originalEvent, type, page) {
+            //        //alert(page);
+            //        queryAcquireRecord(page);
+            //    }
+            //};
+            //$('#acquireRecordPager').bootstrapPaginator(acquireOptions);
+        }, "json");
+    }
+
+    $(function () {
+        $("#acquirePerPage").change(function () {
+            alert($(this).val());
+            $("#acquireRecordPageSize").val($(this).val());
+            queryAcquireRecord(1);
+        });
+        queryAcquireRecord(1);
+    });
+</script>

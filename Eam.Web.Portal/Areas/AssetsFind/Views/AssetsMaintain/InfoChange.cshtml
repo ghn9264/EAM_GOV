@@ -1,0 +1,324 @@
+﻿@*@using EAM.Data.Services.Query
+    @model Eam.Web.Portal.Areas.AssetsFind.Models.QueryModel*@
+
+@using Eam.Web.Portal.Areas
+@model Eam.Web.Portal.Areas.AssetsFind.Models.AcquireModel
+@{
+    ViewBag.Title = "信息变更";
+    Layout = "~/Areas/AssetsFind/Views/AssetsFind/_AssetsFindLayout.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">信息变更</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 资产信息变更列表 -->
+<section class="content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box">
+                <!-- 表头 -->
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">信息变更列表</h3>
+                    <div class="infochangeBtn">
+                        <button id="btnRemoveAll" type="button" class="btn btn-default btn-all">移除</button>
+                        <button id="btnChangeAll" type="button" class="btn btn-default btn-all">修改</button>
+                        <button id="btnDeleteAll" type="button" class="btn btn-default btn-all">删除</button>
+                    </div>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-primary top_a" id="AddAsset" name="AddAsset">添加资产</button>
+                        <span></span>
+                        <button class="btn btn-primary top_a" id="CloseAdd" name="CloseAdd">关闭添加</button>
+                    </div>
+                </div><!-- /.box-header -->
+                <!-- box content -->
+                <div class="box-body content">
+                    <form method="post" id="Select" @*action="/AssetsFind/AssetsFind/CreateQrCode"*@ target="_blank">
+                        <!-- 借用右侧栏/待借用资产 -->
+                        <div class="col-lg-12">
+                            <table id="tableOrderList" class="table table-bordered table-striped dataTable" role="grid">
+                                <thead>
+                                    <tr role="row" class="row-bkg">
+                                        <th style="width: 3%;"><input type="checkbox" id="cbCheckAll1" />全选</th>
+                                        <th style="width: 6%;">资产编号</th>
+                                        <th style="width: 6%;">资产名称</th>
+                                        <th style="width: 6%;">动态编码</th>
+                                        <th style="width: 6%;">资产类别</th>
+                                        <th style="width: 4%;">单价</th>
+                                        <th style="width: 4%;">数量</th>
+                                        <th style="width: 6%;">单位</th>
+                                        <th style="width: 6%;">使用人</th>
+                                        <th style="width: 6%;">存放地点</th>
+                                        <th style="width: 6%;">使用部门</th>
+                                        <th style="width: 6%;">打印状态</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table><button type="button" class="btn btn-default btn-all print" id="printAll">打印</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<div class="modal fade" id="InfoChangeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    批量修改
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="ChangeInfoFrm" method="POST">
+                    <div class="form-group">
+                        <label>修改项目</label>
+                        <select class="form-control" id="ChangeItem" name="ChangeItem" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                            <option selected="selected">存放地点</option>
+                            <option>使用部门</option>
+                            <option>使用人</option>
+                            <option>资产名称</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>修改内容</label>
+                        <input type="text" class="form-control" id="ChangeContent" name="ChangeContent" placeholder="修改内容">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-all" data-dismiss="modal">
+                    关闭
+                </button>
+                <button type="button" class="btn btn-default btn-all" id="SubmitChange">
+                    提交更改
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!-- 将资产列表中的资产添加到待变更列表 -->
+<script type="text/javascript">
+
+    window.AddToOrderListCallBack = loadData;
+
+    var serviceUrl2 = "@Url.Action("Query", "OrderList", new {area = "Account"})";
+
+
+    function loadData() {
+        $.post(serviceUrl2, { "type": "@ConstTag.ChangeInfo" }, function (result) {
+            $("#tableOrderList tbody").empty();
+            $(result).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td><input type="checkbox" name="checkbox" data-id="' + item.EntityId + '" assetsNums="' + item.AssetsNum + '" MainId-id="' + item.MainId + '" CatCode-id="' + item.CatCode + '" /></td>');
+                row.append('<td><input type=hidden name=assetsNums value=' + item.AssetsNum + '> ' + item.AssetsNum + '</td>');
+                row.append('<td>' + item.GoodsName + '</td>');
+                row.append('<td>' + item.UsedNum1 + '</td>');
+                row.append('<td>' + item.CatCode + '</td>');
+                row.append('<td>' + item.Price + '</td>');
+                row.append('<td>' + item.Counts + '</td>');
+                row.append('<td>' + item.MeasurementUnits + '</td>');
+                row.append('<td>' + item.UsePeople + '</td>');
+                row.append('<td>' + item.StorePlace + '</td>');
+                row.append('<td>' + item.UseDepartment + '</td>');
+                if (item.IsPrinted == 1) {
+                    row.append('<td>' + "已打印" + '</td>');
+                } else {
+                    row.append('<td>' + "未打印" + '</td>');
+                }
+
+                var href = '"/AssetsFind/AssetsFind/CreateQrCodeEx?assetsNums=' + item.AssetsNum + '"';
+
+                $("#tableOrderList tbody").append(row);
+            });
+
+
+            //
+            // 全选当前页
+            //
+            $("#cbCheckAll1").click(function () {
+                var checkboxs = document.getElementsByName("checkbox");
+                for (var i = 0; i < checkboxs.length; i++) {
+                    var e = checkboxs[i];
+                    e.checked = !e.checked;
+                }
+            });
+            //
+            // 移除单条资产
+            //
+            $("#btnRemoveAll").click(function () {
+                var test = $("input[name='checkbox']:checked");
+                var checkBoxValue = "";
+                test.each(function () {
+                    checkBoxValue += $(this).attr("data-id") + "|";
+                });
+                if (checkBoxValue.length < 1) { alert("请选择"); } else {
+                    var serviceUrlRemove = "@Url.Action("RemoveOne", "OrderList", new {area = "Account"})";
+                    $.post(serviceUrlRemove, { "id": checkBoxValue }, function () {
+                        loadData();
+                    });
+                }
+            });
+
+            //
+            // 删除单条资产
+            //
+            $("#btnDeleteAll").click(function () {
+
+                //
+                // 先从主表删除资产
+                //
+
+                var test = $("input[name='checkbox']:checked");
+                var checkBoxValue = "";
+                var MainId = "";
+                var CatCode = "";
+                test.each(function () {
+                    checkBoxValue += $(this).attr("data-id") + "|";
+                    MainId += $(this).attr("MainId-id") + "|";
+                    CatCode += $(this).attr("CatCode-id") + "|";
+
+                });
+                if (checkBoxValue.length < 1) { alert("请选择"); } else {
+                    //alert(checkBoxValue);
+                    var deleteOneUrl = "@Url.Action("LogicRemoveOneEx", "AssetsFind", new { area = "AssetsFind" })";
+                    @*var serviceUrlRemove = "@Url.Action("RemoveOne", "OrderList", new {area = "Account"})";*@
+                    $.post(deleteOneUrl, { "entityId": MainId, "catCode": CatCode, "orderListId": checkBoxValue }, function () {
+
+                        //
+                        // 数据重载
+                        //
+                        loadData();
+                    });
+                }
+            });
+
+            @*//
+            // 删除列表中所有资产
+            //
+            $("#btnDeleteAll").click(function () {
+                if (confirm('确定要删除吗？')) {
+                    var serviceUrlDeleteAll = "@Url.Action("LogicRemoveAllFromOrderList", "AssetsFind", new { area = "AssetsFind" })";
+                    $.post(serviceUrlDeleteAll, { "type": "@ConstTag.ChangeInfo" }, function () {
+                        loadData();
+                    });
+                }
+
+            });*@
+
+            //
+            // 显示更改所有资产面板
+            //
+            $("#btnChangeAll").click(function () {
+                $('#InfoChangeModal').modal('show');
+            });
+
+            //
+            // 更改所有资产提交
+            //
+            $("#SubmitChange").click(function () {
+                alert("start");
+                var test = $("input[name='checkbox']:checked");
+                var checkBoxValue = "";
+                test.each(function () {
+                    checkBoxValue += $(this).attr("data-id") + "|";
+                });
+                if (checkBoxValue.length < 1) { alert("请选择"); } else {
+                    //alert(checkBoxValue);
+                    //var data = $("#ChangeInfoFrm").serialize();
+                    var serviceUrlChangeAll = "@Url.Action("ChangeAllFromOrderList", "AssetsFind", new { area = "AssetsFind" })";
+
+
+                    $.post(serviceUrlChangeAll, { "type": checkBoxValue, "changeItem": $("#ChangeItem").val(), "changeContent": $("#ChangeContent").val() }, function (rlt) {
+                        if (rlt) {
+                            $('#InfoChangeModal').modal('hide');
+                            //loadData();
+                            window.location.reload();//刷新当前页面.
+                        } else {
+                            alert("没有选中任何资产！");
+                            $('#InfoChangeModal').modal('hide');
+                        }
+                    });
+                }
+            });
+
+        });
+    }
+    $("#printAll")[0].onclick = OpenAllByPost;
+    function Open(href) {
+        window.open(href, "1", "width=600,height=480,toolbar=no, status=no, menubar=no, resizable=yes, scrollbars=yes");
+        return false;
+    }
+    function OpenAll() {
+        var assetsNums = $("");
+        var str = "";
+        $("input[name=assetsNums]").each(function (element) {
+            str += "assetsNums=" + this.value + "&";
+        });
+        var href = '/AssetsFind/AssetsFind/CreateQrCodeEx?' + str;
+        window.open(href, "1", "width=600,height=480,toolbar=no, status=no, menubar=no, resizable=yes, scrollbars=yes");
+        return false;
+    }
+    function OpenAllByPost() {
+        alert($("#Select").serialize());
+        var test = $("input[name='checkbox']:checked");
+        var checkBoxValue = "";
+        var assetsNums = "";
+        test.each(function () {
+            checkBoxValue += $(this).attr("data-id") + "|";
+            assetsNums += "assetsNums=" + $(this).attr("assetsNums") + "&";
+        })
+        alert(checkBoxValue + "______" + assetsNums);
+
+
+        $.ajax({
+            type: "POST",
+            url: "/AssetsFind/AssetsFind/CreateQrCodeEx",
+            data: $("#Select").serialize(),
+            success: function (data) {
+                openWin = window.open("", "newwin", "location=no,width=600,height=480,toolbar=no, status=no, menubar=no, resizable=no, scrollbars=yes");
+                openWin.document.write(data);
+                console.log(data);
+                openWin.document.close();
+            }
+        });
+    }
+    function simulateClick(el) {
+        var evt;
+        if (document.createEvent) { // DOM Level 2 standard
+            evt = document.createEvent("MouseEvents");
+            evt.initMouseEvent("click", true, true, window,
+              0, 0, 0, 0, 0, false, false, false, false, 0, null);
+
+            el.dispatchEvent(evt);
+        } else if (el.fireEvent) { // IE
+            el.fireEvent('onclick');
+        }
+    }
+    @*function RemoveFormOrderList() {
+        $("#btnRemoveAll").click(function () {
+            var serviceUrlRemove = "@Url.Action("RemoveFormOrderList", "OrderList", new { area = "Account" })";
+            $.post(serviceUrlRemove, { "type": "@ConstTag.ChangeInfo" }, function () {
+                loadData();
+            });
+        });
+    }*@
+    //初始加载
+    $(function () {
+        loadData();
+        //RemoveFormOrderList();
+    });
+</script>

@@ -1,0 +1,1167 @@
+﻿@using Eam.Web.Portal.Areas
+@using EAM.Data.Domain
+@using Eam.Web.Portal.Areas.AssetsInput.Models
+@model dynamic
+@{
+    //ViewBag.Title = "资产操作";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+<style type="text/css">
+    .content {
+        min-height: 0px;
+    }
+</style>
+<!-- 资产检索 -->
+<section>
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- 左边树状检索栏 -->
+            <div class="col-lg-3" id="TreeIndexPanel" style="display:none">
+                <div class="nav-tabs-custom">
+                    <ul class=" nav nav-tabs">
+                        <li class="active"><a href="#activity" data-toggle="tab" aria-expanded="true">资产类别</a></li>
+                        <li class=""><a href="#timeline" data-toggle="tab" aria-expanded="false">使用部门</a></li>
+                        <li class=""><a href="#settings" data-toggle="tab" aria-expanded="false">存放地点</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <!-- 资产类别树/.tab-pane -->
+                        <div class="tab-pane active" id="activity">
+                            <div class="box box-danger">
+                                <!-- body Header -->
+                                <div class="box-header with-border">
+                                    <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);"></h3>
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                    </div>
+                                </div><!-- /.box-header -->
+                                <!-- 资产类型列表 -->
+                                <div class="box-body no-padding">
+
+                                    <section class="sidebar">
+                                        <!-- 资产类别树 -->
+                                        <ul id="_classTree" class="ztree"></ul>
+                                    </section>
+                                    <script type="text/javascript">
+                                        var CatSetting = { callback: { onDblClick: onCatNodeDblClick } };
+
+                                        //
+                                        // 资产类树点击回调函数
+                                        //
+                                        function onCatNodeDblClick(event, treeId, treeNode) {
+                                            $("#IndexPlace").val('');
+                                            $('#IndexDept').val('');
+
+                                            //alert(treeNode.id);
+                                            $("#IndexClass").val(treeNode.id);
+
+                                            queryData(1);
+                                        }
+
+                                        //
+                                        // ajax呈现资产树
+                                        //
+                                        $(document).ready(function () {
+
+                                            //
+                                            // 从数据库取资产类别树
+                                            //
+                                            $.post("/Account/DeskTop/GetClassCodeTree?t=" + new Date(),
+                                                function (result) {
+
+                                                    //
+                                                    // 根据取回来的数据创建资产树
+                                                    //
+                                                    $.fn.zTree.init($("#_classTree"), CatSetting, result);
+                                                }, "json");
+                                        });
+                                    </script>
+
+
+
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div>
+                        <!-- 归属部门树/.tab-pane -->
+                        <div class="tab-pane" id="timeline">
+                            <div class="box box-danger">
+                                <!-- body Header -->
+                                <div class="box-header with-border">
+                                    <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);"></h3>
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                    </div>
+                                </div><!-- /.box-header -->
+                                <!-- 资产类型列表 -->
+                                <div class="box-body no-padding">
+
+                                    <section class="sidebar">
+                                        <!-- 资产类别树 -->
+                                        <ul id="departmentTree" class="ztree"></ul>
+                                    </section>
+
+
+
+
+
+
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div><!-- /.tab-pane -->
+                        <!-- 存放地点树/.tab-pane -->
+                        <div class="tab-pane" id="settings">
+                            <div class="box box-danger">
+                                <!-- body Header -->
+                                <div class="box-header with-border">
+                                    <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);"></h3>
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                    </div>
+                                </div><!-- /.box-header -->
+                                <!-- 资产类型列表 -->
+                                <div class="box-body no-padding">
+
+                                    <section class="sidebar">
+                                        <!-- 资产类别树 -->
+                                        <ul id="placeTree" class="ztree"></ul>
+                                    </section>
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div><!-- /.tab-pane -->
+                    </div><!-- /.tab-content -->
+                </div>
+            </div>
+            <!-- 右边检索面板和资产呈现面板 -->
+            <div class="col-lg-9" id="ExpandPannel">
+                <!-- 条件检索面板 -->
+                <section id="IndexPanel" style="display:none">
+                    <div class="row">
+                        <!-- 条件检索面板 -->
+                        <div class="col-lg-12">
+                            <!-- 条件检索面板 -->
+                            <div class="box box-danger">
+                                <!-- 表头 -->
+                                <div class="box-header new-box-header">
+                                    <h3 class="box-title title-a">检索条件</h3>
+
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-box-tool" data-widget="collapse">
+                                            <i class="fa fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div><!-- /.box-header -->
+                                <!-- body -->
+                                <div class="box-body content">
+                                    <form method="get" id="frmSearch" name="frmSearch">
+                                        <input class="hidden" id="PageType" name="PageType" value="@ViewBag.DoAction" />
+                                        <input class="hidden" id="IndexClass" name="IndexClass" value="" />
+                                        <input class="hidden" id="IndexDept" name="IndexDept" value="" />
+                                        <input class="hidden" id="IndexPlace" name="IndexPlace" value="" />
+                                        <!-- 检索条件输入区域 -->
+                                        <div class="row">
+                                            <!-- 第一列检索条件 -->
+                                            <div class="col-lg-3">
+                                                <div class="col-lg-12">
+                                                    <br />
+                                                    <label>资产名称：</label>
+                                                    <input class="form-control" type="text" placeholder="资产名称" maxlength="20" name="GoodsName" id="GoodsName" />
+                                                    <br />
+                                                    <label>资产编号：</label>
+                                                    <input class="form-control" type="text" placeholder="资产编号" maxlength="20" name="AssetsNum" id="AssetsNum" />
+                                                    <br />
+                                                    <label>动态编码：</label>
+                                                    <input class="form-control" type="text" placeholder="动态编码" maxlength="20" name="UsedNum1" id="UsedNum1" />
+
+
+
+                                                </div>
+                                            </div>
+                                            <!-- 第二列检索条件 -->
+                                            <div class=" col-lg-3">
+                                                <div class="col-lg-12">
+                                                    <br />
+                                                    <label>品牌型号：</label>
+                                                    <input class="form-control" type="text" placeholder="品牌型号" maxlength="20" name="MODEL_SPECIFICATIONSandBrand" id="MODEL_SPECIFICATIONSandBrand" />
+                                                    <br />
+                                                    <label>存放地点：</label><input class="form-control" type="text" placeholder="存放地点" id="StorePlace" name="StorePlace">
+                                                    <br />
+
+                                                    <label>使用人：</label><select class="form-control" type="text" name="UsePeople" id="UsePeople"></select>
+
+                                                    <script src="/Assets/select2/select2.js"></script>
+                                                    <script>
+                                                        $.post("/sysManage/sysManage/GetAllUsersMax", function (data) {
+                                                            $("#UsePeople").select2({
+                                                                placeholder: "使用人",
+                                                                data: data
+                                                            });
+                                                        })
+
+                                                        $("#UsePeople").append("<option value=''></option>");
+
+                                                        //var count = $("#UsePeople option").length;
+
+
+                                                        $("#UsePeople option[text='jQuery']").attr("selected", true);
+                                                    </script>
+                                                </div>
+                                            </div>
+
+                                            <!-- 第三列检索条件 -->
+                                            <div class="col-lg-5">
+                                                <div class="col-lg-12">
+                                                    <br />
+                                                    <label>备注：</label>
+                                                    <input class="form-control" type="text" placeholder="备注" maxlength="20" name="Memo" id="Memo" />
+                                                    <br />
+                                                    <label>资产类型：</label>
+                                                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" id="SelectAssetsType" name="SelectAssetsType">
+                                                        <option value="" selected="selected">所有资产</option>
+                                                        <option value="盘平资产">盘平资产</option>
+                                                        <option value="盘盈资产">盘盈资产</option>
+                                                    </select>
+                                                    <br />
+                                                    <label>取得日期范围：</label>
+                                                    <div class="row">
+                                                        <div class="col-lg-5">
+                                                            <div class="input-group">
+                                                                <div class="input-group-addon">
+                                                                    <i class="fa fa-calendar"></i>
+                                                                </div>
+                                                                <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd" value=""
+                                                                       data-inputmask="'alias': 'yyyy-mm-dd'" data-mask="yyyy-mm-dd" id="GetDateStart" name="GetDateStart" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-2"><hr style="color:black;width:100%;border:0.5px solid black;" /></div>
+                                                        <div class="col-lg-5">
+                                                            <div class="input-group">
+                                                                <div class="input-group-addon">
+                                                                    <i class="fa fa-calendar"></i>
+                                                                </div>
+                                                                <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd" value=""
+                                                                       data-inputmask="'alias': 'yyyy-mm-dd'" data-mask="yyyy-mm-dd" id="GetDateEnd" name="GetDateEnd" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- 隐藏条件 -->
+                                            <input type="hidden" id="UserName" name="UserName" />
+                                            <input type="hidden" id="Role" name="Role" />
+                                            <input type="hidden" id="UseDepartment" name="UseDepartment" />
+                                        </div>
+
+                                        <div class="row">
+                                            <br />
+                                            <div class="col-lg-5"></div>
+                                            <div class="col-lg-1">
+                                                <input type="hidden" name="PageIndex" id="PageIndex" value="1" />
+                                                <input type="hidden" name="PageSize" id="PageSize" value="10" />
+                                                <button type="button" class="btn btn-default btn-all" id="btnSearch">筛选资产</button>
+                                            </div>
+                                            <div class="col-lg-1">
+                                                <button type="reset" class="btn btn-default btn-all">清除条件</button>
+                                            </div>
+                                            <div class="col-lg-5"></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div><!--/.box -->
+                        </div>
+
+                    </div>
+                </section>
+
+                <!--???-->
+                <div class="row" style="display:">
+                    <div class="modal fade" id="ajax" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                                </div>
+                                <div class="modal-body">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 资产列表面板 -->
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+<section class="content" id="AssetsPanel" style="display:none">
+    <div class="row">
+        <!--资产列表面板 -->
+        <div class="col-lg-12 assetList">
+            <!-- 资产列表面板 -->
+            <div class="box assetList">
+                <div class="box-header">
+                    <h3 class="box-title right_top"><span>资产列表</span></h3>
+                    <div class="col-sm-3 text-center top_input">
+                        <button type="button" class="btn btn-sm input_second" id="dbCheckAll">全选所有页</button>
+                        <button id="addAssetsToMaintainList" class="btn btn-primary btn-sm input_second">添加到操作列表</button>
+                    </div>
+                    <div class="box-tools pull-right top_btn">
+                        <button class="btn btn-primary top_a" id="IndexAsset" name="IndexAsset">筛选资产</button><span></span>
+                        <button class="btn btn-primary top_a" id="CloseIndex" name="CloseIndex">关闭筛选</button>
+                    </div>
+                    @*<div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>*@
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div id="example1_wrapper" class="dataTables_wrapper form-inline">
+                        @*<div class="row">
+                                <div class="col-sm-6">
+                                    <div class="dataTables_length" id="example1_length">
+                                        <select name="perPageSize" id="perPageSize" class="form-control input-sm">
+                                            <option value="10" selected>10</option>
+                                            <option value="20">20</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>*@
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tableAssets" class="table table-bordered table-striped dataTable " role="grid">
+                                    <thead>
+                                        <tr role="row" class="tabletr">
+                                            <th width="5%"><input type="checkbox" id="cbCheckAll" class="checkcpage"/>全选</th>
+                                            <th width="9%">资产编号</th>
+                                            <th width="9%">资产名称</th>
+                                            <th width="8%">资产类别</th>
+                                            <th width="6%">资产类型</th>
+                                            <th width="5%">价值</th>
+                                            <th width="3%">数量</th>
+                                            <th width="9%">计量单位</th>
+                                            <th width="9%">动态编码</th>
+                                            <th width="9%">存放地点</th>
+                                            <th width="9%">使用部门</th>
+                                            <th width="5%">是否贴签</th>
+                                            <th width="5%">是否打印</th>
+
+                                            @*<th width="10%">操作</th>*@
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-1">
+                                <div class="dataTables_info" id="example1_info" role="status" aria-live="polite"></div>
+                            </div>
+                            <div class="col-sm-8  text-center">
+                                <ul id="divAssetsPager" style="cursor:pointer"></ul>
+                            </div>
+
+
+
+                        </div>
+                        @*<div class="row">
+                                <div class="col-sm-12">
+                                    <div class="dataTables_info" id="PageMoneyInfo" role="status" aria-live="polite"></div>
+                                </div>
+                            </div>*@
+                    </div>
+                </div><!-- /.box-body -->
+                <div class="row exportBtn">
+                    <div class="box-body content" style="margin-top: 0;">
+                        <form method="post" id="ExportAssetsFrm" target="_blank">
+                            <!-- 借用右侧栏/待借用资产 -->
+                            <div class="col-lg-12" style="text-align:center; width:100%;height:100%;margin:0px; ">
+                                <a style="display: none" class="btn btn-danger btn-sm btn-flat " href="/AssetsFind/DoAssetsExport/DownLoadCurrentAsset
+                               "><span style="display: none" id="currentAssets"></span></a>
+                                <button type="button" class="btn btn-primary bottombtn" id="ExportCurrentAssets" name="ExportCurrentAssets">导出当前资产</button>
+
+
+                                <script language="javascript">
+
+                                    var ExportCurrentAssetsUrl = "/AssetsFind/DoAssetsExport/ExportCurrentAsset";
+
+                                    var ExportAllAssetsUrl = "/AssetsFind/DoAssetsExport/Query";
+
+                                    $("#ExportCurrentAssets").click(function () {
+
+
+                                        var d = $("#frmSearch").serialize();
+
+                                        $.ajax({
+                                            url: ExportCurrentAssetsUrl,
+                                            type: "POST",
+                                            data: d,
+                                            beforeSend: function () {
+                                                $('#UpLoadModel').modal({ backdrop: 'static', keyboard: false });
+                                                intervalProcess = setInterval("uploadProgress()", 100);
+                                            },
+                                            success: function (result) {
+                                                clearInterval(intervalProcess);
+                                                $('#UpLoadModel').modal('hide');
+                                                $("#currentAssets").click();
+                                            },
+
+                                        });
+                                    });
+                                    function uploadProgress() {
+
+                                        $.post("/AssetsFind/DoAssetsExport/QueryProgress", null, function (e) {
+                                            console.log(e);
+                                            $("#progressNumber").css("width", e.ImportedPercentVal.toString() + '%');
+                                            $("#progressNumber").attr("aria-valuenow", e.ImportedPercentVal.toString());
+                                            document.getElementById('progressNumber').innerHTML = e.ImportedAssetsNum + '/' + e.TotalAssetsNum;
+                                        });
+                                    }
+
+
+                                </script>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+</section>
+
+
+<!-- Modal -->
+<!-- 资产详情面板 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" @*role="document"*@>
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <section class="content">
+                    <div class="row">
+                        <!-- 资产详情 -->
+                        <div class="col-lg-12">
+                            <div class="box">
+                                <div class="box-body table-responsive no-padding">
+                                    <!-- 资产详情 -->
+                                    <div class="col-lg-6">
+                                        <div class="nav-tabs-custom">
+                                            <ul class="nav nav-tabs">
+                                                <li class="active"><a href="#tab_1" data-toggle="tab">资产卡片</a></li>
+                                                <li><a href="#tab_2" data-toggle="tab">资产记录</a></li>
+                                                @*<li><a href="#tab_2" data-toggle="tab">资产领用</a></li>
+                                                    <li><a href="#tab_3" data-toggle="tab">资产借用</a></li>
+                                                    <li><a href="#tab_4" data-toggle="tab">资产报修</a></li>
+                                                    <li><a href="#tab_5" data-toggle="tab">资产维修</a></li>
+                                                    <li><a href="#tab_6" data-toggle="tab">资产盘点</a></li>*@
+                                                @*<li><a href="#tab_7" data-toggle="tab">资产变更</a></li>*@
+                                                @*<li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>*@
+                                            </ul>
+                                            <div class="tab-content">
+                                                <!-- 资产卡片 -->
+                                                <div class="tab-pane active" id="tab_1">
+                                                    <!-- 资产卡片 -->
+                                                    <div class="box">
+                                                        <!-- 标题 -->
+                                                        <div class="row col-lg-offset-4">
+                                                            <label style="font-size:30px;">资产卡片</label>
+                                                        </div>
+                                                        @*<hr style="color:black;width:100%;border:0.5px solid black;" />*@
+                                                        <!-- 时间和二维码 -->
+                                                        <div class="row col-lg-offset-0">
+                                                            <!-- 取得日期 -->
+                                                            <div class="col-lg-3">
+                                                                <label style="font-size:10px;">取得日期：@*@Model.AssetsMain.GetDate.ToString("yyyy-MM-dd")*@</label>
+                                                                <label style="font-size:10px;">取得方式：@*@Model.AssetsMain.GetWay*@</label>
+                                                                <label style="font-size:10px;">资产编号：@*@Model.AssetsMain.AssetsNum*@</label>
+                                                            </div>
+                                                            <div class="col-lg-6"></div>
+                                                            <!-- 二维码 -->
+                                                            <div class="col-lg-3">
+                                                                <img class="img-responsive" src="/Image/erweima.jpg">
+                                                            </div>
+                                                        </div>
+                                                        <hr style="color:black;width:100%;border:0.5px solid black;" />
+                                                        <!-- 基础信息标题 -->
+                                                        <div class="row col-lg-offset-0">
+                                                            <label style="font-size:20px;">基础信息</label>
+                                                        </div>
+
+                                                        <!-- 基础信息表 -->
+                                                        <div>
+                                                            <div class="row">
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">资产名称</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.GoodsName*@</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">资产代码</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.AssetsNum*@</label>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row">
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">计量单位</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.MeasurementUnits*@</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">单价</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.Price*@</label>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row">
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">存放地点</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.StorePlace*@</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">获取日期</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.GetDate.ToString("yyyy-MM-dd")*@</label>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row">
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">入库日期</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px"></label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">是否低值资产</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <hr style="color:black;width:100%;border:0.5px solid black;" />
+                                                        <!-- 财务信息标题 -->
+                                                        <div class="row col-lg-offset-0">
+                                                            <label style="font-size:20px;">财务信息</label>
+                                                        </div>
+
+                                                        <!-- 财务信息表 -->
+                                                        <div>
+                                                            <div class="row">
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">入账形式</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px"></label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">入账日期</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.PostingDate.ToString("yyyy-MM-dd")*@</label>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row">
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">价值类型</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.ValueType*@</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">价值</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.Money*@</label>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row">
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">非财政性资金</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.NoneGovMoney*@</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">财政性资金</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.GovMoney*@</label>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row">
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">会计凭证号</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.AcountDocNum*@</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px"></label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <hr style="color:black;width:100%;border:0.5px solid black;" />
+                                                        <!-- 折旧信息标题 -->
+                                                        <div class="row col-lg-offset-0">
+                                                            <label style="font-size:20px;">折旧信息</label>
+                                                        </div>
+
+                                                        <!-- 折旧信息表 -->
+                                                        <div>
+                                                            <div class="row">
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">累计折旧</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.AccumulateDepreciation*@</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">净值</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.NetWorth*@</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <hr style="color:black;width:100%;border:0.5px solid black;" />
+                                                        <!-- 使用信息标题 -->
+                                                        <div class="row col-lg-offset-0">
+                                                            <label style="font-size:20px;">使用信息</label>
+                                                        </div>
+
+                                                        <!-- 使用信息表 -->
+                                                        <div>
+                                                            <div class="row">
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">使用属性</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.UsingAttribute*@</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">使用状况</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.UsingState*@</label>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row">
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">使用方式</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">@*@Model.AssetsMain.UsingStyle*@</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">使用/管理人</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <hr style="color:black;width:100%;border:0.5px solid black;" />
+                                                        <!-- 其他信息标题 -->
+                                                        <div class="row col-lg-offset-0">
+                                                            <label style="font-size:20px;">其他信息</label>
+                                                        </div>
+
+                                                        <!-- 其他信息表 -->
+                                                        <div>
+                                                            <div class="row">
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">品牌型号</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px"></label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px">生产厂家</label>
+                                                                </div>
+                                                                <div class="col-lg-3">
+                                                                    <label style="font-size:10px"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <!-- 资产信息变更操作面板 -->
+                                                    @*<div class="row">
+                                                            <div class="col-lg-offset-5">
+                                                                <button class="btn btn-primary btn-sm btn-flat">信息变更</button>
+                                                                <button class="btn btn-primary btn-sm btn-flat">打印条码</button>
+                                                            </div>
+                                                        </div>*@
+                                                </div><!-- /.tab-pane -->
+                                                <!-- 资产领用 -->
+                                                <div class="tab-pane" id="tab_2">
+                                                    <!-- 领用记录表 -->
+                                                    <div class="row">
+                                                        <div class="box">
+                                                            <div class="box-header">
+                                                                <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">领用记录</h3>
+                                                            </div><!-- /.box-header -->
+                                                            <div class="box-body">
+                                                                <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                                                                    <div class="row"><div class="col-sm-6"><div class="dataTables_length" id="example1_length"><label>Show <select name="example1_length" aria-controls="example1" class="form-control input-sm"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> entries</label></div></div><div class="col-sm-6"><div id="example1_filter" class="dataTables_filter"><label>Search:<input type="search" class="form-control input-sm" placeholder="" aria-controls="example1"></label></div></div></div><div class="row">
+                                                                        <div class="col-sm-12">
+                                                                            <table id="example1" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                                                                <thead>
+                                                                                    <tr role="row"><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending" style="width: 81px;">序号</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 105px;">领用时间</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending" style="width: 90px;">领用人</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending" style="width: 68px;">使用地点</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending" style="width: 45px;">备注</th></tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    @*@{
+                                                                                            var num = 0;
+                                                                                            foreach (AssetsRecord item in ViewBag.Acquire)
+                                                                                            {
+                                                                                                num++;
+                                                                                                if (num % 2 == 1)
+                                                                                                {
+                                                                                                    <tr role="row" class="odd">
+                                                                                                        <td class="sorting_1">@item.EntityId</td>
+                                                                                                        <td>@item.CreatedTime</td>
+                                                                                                        <td>@item.UsePeople</td>
+                                                                                                        <td>@item.UseDepartment</td>
+                                                                                                        <td>@item.Type</td>
+                                                                                                    </tr>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <tr role="row" class="even">
+                                                                                                        <td class="sorting_1">@item.EntityId</td>
+                                                                                                        <td>@item.CreatedTime</td>
+                                                                                                        <td>@item.UsePeople</td>
+                                                                                                        <td>@item.UseDepartment</td>
+                                                                                                        <td>@item.Type</td>
+                                                                                                    </tr>
+                                                                                                }
+                                                                                            }
+                                                                                        }*@
+                                                                                </tbody>
+
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>@*<div class="row"><div class="col-sm-5"><div class="dataTables_info" id="example1_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div></div><div class="col-sm-7"><div class="dataTables_paginate paging_simple_numbers" id="example1_paginate"><ul class="pagination"><li class="paginate_button previous disabled" id="example1_previous"><a href="#" aria-controls="example1" data-dt-idx="0" tabindex="0">Previous</a></li><li class="paginate_button active"><a href="#" aria-controls="example1" data-dt-idx="1" tabindex="0">1</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="2" tabindex="0">2</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="3" tabindex="0">3</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="4" tabindex="0">4</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="5" tabindex="0">5</a></li><li class="paginate_button "><a href="#" aria-controls="example1" data-dt-idx="6" tabindex="0">6</a></li><li class="paginate_button next" id="example1_next"><a href="#" aria-controls="example1" data-dt-idx="7" tabindex="0">Next</a></li></ul></div></div></div>*@
+                                                                </div>
+                                                            </div><!-- /.box-body -->
+                                                        </div>
+                                                    </div>
+
+                                                </div><!-- /.tab-pane -->
+
+                                            </div>
+                                        </div>
+                                        <!-- 资产照片 -->
+                                        <div class="col-lg-6">
+                                            <!-- 资产照片标题 -->
+                                            <div class="row">
+                                                <label>资产照片</label>
+                                            </div>
+                                            <!-- 资产照片 -->
+                                            <div class="row">
+                                                <br />
+                                                <br />
+                                                <img class="img-responsive" src="/Image/photo2.png">
+                                            </div>
+                                        </div>
+                                    </div><!-- /.box-body -->
+                                </div>
+                            </div>
+
+                        </div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 资产操作面板 -->
+@*<section class="content">*@
+@RenderBody()
+@*</section>*@
+<script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+
+<script type="text/javascript">
+
+    var checkAllItem = false;
+    $(document).ready(function () {
+
+
+
+        //
+        // 为筛选资产按钮添加函数
+        //
+        $("#IndexAsset").click(function () {
+            document.getElementById("IndexPanel").style.display = ""; //显示
+            document.getElementById("TreeIndexPanel").style.display = ""; //显示
+
+            //
+            // 将资产面板宽度调整到9
+            //
+            $("#ExpandPannel").attr("class", "col-lg-9");
+        });
+
+        $("#CloseIndex").click(function () {
+            document.getElementById("IndexPanel").style.display = "none"; //显示
+            document.getElementById("TreeIndexPanel").style.display = "none"; //显示
+
+            //
+            // 将资产面板宽度调整到12
+            //
+            $("#ExpandPannel").attr("class", "col-lg-9");
+        });
+
+        //
+        // 为筛选资产按钮添加函数
+        //
+        $("#AddAsset").click(function () {
+            document.getElementById("AssetsPanel").style.display = ""; //显示
+            $("#ExpandPannel").attr("class", "col-lg-9");
+        });
+
+        $("#CloseAdd").click(function () {
+            document.getElementById("AssetsPanel").style.display = "none"; //显示
+        });
+
+        var title = '@ViewBag.Title';
+
+        //alert(title);
+        //if (title != "信息变更") {
+        //    document.getElementById("AssetsPanel").style.display = "none"; //显示
+        //    $("#ExpandPannel").attr("class", "col-lg-9");
+        //} else {
+        //    document.getElementById("AssetsPanel").style.display = ""; //显示
+        //    $("#ExpandPannel").attr("class", "col-lg-12");
+        //}
+        //alert(title);
+        if (title == "查询资产") {
+            document.getElementById("AssetsPanel").style.display = ""; //显示
+            document.getElementById("IndexPanel").style.display = ""; //显示
+            document.getElementById("TreeIndexPanel").style.display = ""; //显示
+        }
+
+    });
+
+
+
+    //window.AddToOrderListCallBack = null;
+    var action = "@ViewBag.DoAction";
+    var serviceUrl = "@Url.Action("AssetsQuery", "AssetsFind", new { area = "AssetsFind" })";
+
+    function queryData(pageIndex) {
+        $("#Role").val($("#ARole").val()); 
+        $("#UserName").val($("#AUserName").val());
+        $("#UseDepartment").val($("#AUseDepartment").val()); 
+        $("#PageIndex").val(pageIndex); 
+        var d = $("#frmSearch").serialize();
+        $.post(serviceUrl, d, function (result) {
+            var CurrentPageMoney = 0;
+            var AllPageMoney = 0;
+            $("#tableAssets tbody").empty();
+            if (result.AllItem != "" && result.AllItem.length > 0) {
+                $(result.AllItem).each(function (index, item) {
+                    AllPageMoney += item.Money;
+                });
+            }
+            if (result.Items != '' && result.Items.length > 0) {
+                $(result.Items).each(function (index, item) {
+
+                    //
+                    // 当前页面资产金额
+                    //
+                    CurrentPageMoney += item.Money;
+                    var row = $(" <tr role='row'>");
+                    row.append('<td><input type="checkbox" rel="cbassets" value="' + item.EntityId + '" name="GoodsId"></td>');
+                    row.append('<td><a class="btn default" data-toggle="modal" data-target="#myModal" role="basic" aria-hidden="true" href="/AssetsFind/AssetsFind/ViewDetail?entityId=' + item.EntityId + '&t=' + (new Date()).valueOf() + '">' + item.AssetsNum + '</a></td>');
+                    //row.append('<td><a data-toggle="modal" data-target="#myModal" target="_blank" href="/AssetsFind/AssetsFind/ViewDetail?entityId=' + item.EntityId + '">' + item.AssetsNum + '</a></td>');
+                    row.append('<td>' + item.GoodsName + '</td>');
+                    row.append('<td>' + item.CatCode + '</td>');
+                    if (item.IsIventoryProfit == 0) {
+                        row.append('<td>盘平资产</td>');
+                    } else {
+                        row.append('<td>盘盈资产</td>');
+                    }
+                    row.append('<td>' + item.Money + '</td>');
+                    row.append('<td>' + item.Counts + '</td>');
+                    row.append('<td>' + item.MeasurementUnits + '</td>');
+                    row.append('<td>' + item.UsedNum1 + '</td>');
+                    row.append('<td>' + item.StorePlace + '</td>');
+                    row.append('<td>' + item.UseDepartment + '</td>');
+                    row.append('<td>' + ((item.StorePlace > 1 && item.StorePlace < 999) ? "已贴标签" : "未贴标签") + '</td>');
+                    //row.append('<td>' + (item.IsBorrow > 0 ? "是" : "否") + '</td>');//可借用
+
+                    row.append('<td>' + (item.IsPrinted > 0 ? "已打印" : "未打印") + '</td>');
+
+
+
+
+                    $("#tableAssets tbody").append(row);
+                });
+            }
+
+            //$("#example1_info").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " , 总共 " + result.TotalItemCount);
+            $("#PageMoneyInfo").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + "项 , 总共 " + result.TotalItemCount + "项，当前页金额： " + CurrentPageMoney + "元，所有页总金额：" + AllPageMoney + "元");
+
+            $(".orderlist").click(function () {
+                var val = $(this).attr("data-id");
+                var type = $(this).attr("rel");
+                var ids = new Array();
+                ids.push(val);
+                addToOrderList(ids, type);
+            });
+            if (result.TotalPageCount <= 1) {
+                $('#divAssetsPager').empty();
+                return;
+            }
+            var options = {
+                bootstrapMajorVersion: 3, //版本
+                numberOfPages: 8,
+                currentPage: result.CurrentPageIndex,
+                totalPages: result.TotalPageCount,
+                itemTexts: function (type, page, current) {
+                    switch (type) {
+                        case "first":
+                            return "首页";
+                        case "prev":
+                            return "上一页";
+                        case "next":
+                            return "下一页";
+                        case "last":
+                            return "末页";
+                        case "page":
+                            return page;
+                    }
+                }, //点击事件，用于通过Ajax来刷新整个list列表
+                onPageClicked: function (event, originalEvent, type, page) {
+                    queryData(page);
+                }
+            };
+            $('#divAssetsPager').bootstrapPaginator(options);
+
+        }, "json");
+    }
+
+    //
+    // 将当前显示页的资产全部添加到资产操作列表
+    //
+    function addToOrderList(ids, type) {
+        $.post("@Url.Action("Add", "OrderList", new {area = "Account"})", { entityIds: ids, Type: type }, function (result) {
+            if (result) {
+                alert("添加成功");
+                //history.go(0); //js刷新当前页面
+
+                if ($.isFunction(window.AddToOrderListCallBack))
+                    window.AddToOrderListCallBack();
+            } else {
+                alert("添加失败");
+            }
+        }, "json");
+
+    }
+
+    //
+    // 将经过筛选之后的资产全部添加到资产操作列表
+    //
+    function addAllToOrderList(type) {
+        var dataEx = $("#frmSearch").serialize();
+
+        $.post("@Url.Action("AddAllToOrderList", "AssetsFind", new { area = "AssetsFind" })", /*{ model: dataEx, type: type }*/dataEx, function (result) {
+            if (result) {
+                alert("添加成功");
+                //history.go(0); //js刷新当前页面
+
+                //if ($.isFunction(window.AddToOrderListCallBack))
+                //    window.AddToOrderListCallBack();
+            } else {
+                alert("添加失败");
+            }
+        }, "json");
+
+    }
+
+
+    $(function () {
+        //$("#perPageSize").change(function () {
+        //    $("#PageSize").val($(this).val());
+        //    queryData(1);
+        //});
+        queryData(1);
+        $("#btnSearch").click(function () { //点击查询按钮后从第一页开始查询
+            queryData(1);
+            return false;
+        });
+
+        //
+        // 全选当前页
+        //
+        $("#cbCheckAll").click(function () {
+            var checkboxs = document.getElementsByName("GoodsId");
+            for (var i = 0; i < checkboxs.length; i++) {
+                var e = checkboxs[i];
+                e.checked = !e.checked;
+            }
+        });
+        //
+        // 全选所有页
+        //
+        $("#dbCheckAll").click(function () {
+            var checkboxs = document.getElementsByName("GoodsId");
+            for (var i = 0; i < checkboxs.length; i++) {
+                var e = checkboxs[i];
+                e.checked = !e.checked;
+            }
+            $("#cbCheckAll").attr("checked", !$('#cbCheckAll').attr('checked'));
+            checkAllItem = true;
+        });
+
+        //
+        // 添加到操作列表
+        //
+        $("#addAssetsToMaintainList").click(function () {
+            alert("数据添加中，请耐心等待至下一条提醒出现（添加数据数量决定时间长短）点击确定继续~~~");
+            if (checkAllItem) {
+                //
+                // 将所有资产列表中所有显示的资产添加到操作表列表(oederlist)
+                //
+                addAllToOrderList('@ViewBag.DoAction');
+
+                checkAllItem = false;
+
+            } else {
+                var chkValue = [];
+                $('input[name="GoodsId"]:checked').each(function () {
+
+                    chkValue.push($(this).val());
+                });
+                if (chkValue.length > 0) {
+
+                    addToOrderList(chkValue, '@ViewBag.DoAction');
+                }
+            }
+
+        });
+
+        //信息变更 删除资产
+
+
+    });
+
+    $("#btnRemoveOne").click(function () {
+        //逻辑删除一条资产
+        @*var serviceUrlRemove = "@Url.Action("LogicRemoveOne", "AssettsFind", new { area = "AssettsFind" })";
+            $.post(serviceUrlRemove, { "id": $(this).attr("data-id") }, function() {
+                // loadData();
+            });*@
+
+        //LogicDelete
+        //  alert()
+        alert("删除成功");
+    });
+
+    function remove() {
+
+        console.log("删除成功！");
+        //alert("删除成功");
+    }
+</script>
+
+<!-- 存放地点树函数 -->
+<script type="text/javascript">
+    var selectPlaceNode = null;
+    function buildTree() {
+        selectPlaceNode = null;
+        $.fn.zTree.destroy("placeTree");
+        var setting = {
+            callback: {
+                onDblClick: placeClick
+            }
+        };
+        $.getJSON("/SysManage/SysManage/ListPlace?placeType=loc&t=" + new Date(), function (result) {
+            $.fn.zTree.init($("#placeTree"), setting, result);
+        });
+    }
+
+    function placeClick(event, treeId, treeNode) {
+
+        $('#IndexDept').val('');
+        $('#IndexClass').val('');
+        $("#IndexPlace").val(treeNode.name);
+
+        queryData(1);
+    }
+
+    $(function () {
+        buildTree();
+    });
+</script>
+
+<!-- 归属部门树函数 -->
+<script type="text/javascript">
+    var selectDeptNode = null;
+    function buildDeptTree() {
+        $.fn.zTree.destroy("departmentTree");
+        var deptsetting = {
+            callback: {
+                onDblClick: deptClick
+            }
+        };
+        $.getJSON("/SysManage/SysManage/ListDept?t=" + new Date(), function (result) {
+            $.fn.zTree.init($("#departmentTree"), deptsetting, result);
+        });
+    }
+
+    function deptClick(event, treeId, treeNode) {
+
+        //selectDeptNode = treeNode;
+        $("#IndexPlace").val('');
+
+        $('#IndexClass').val('');
+        $("#IndexDept").val(treeNode.name);
+
+        queryData(1);
+    }
+
+
+    $(function () {
+
+        buildDeptTree();
+    });
+</script>

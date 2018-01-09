@@ -1,0 +1,48 @@
+﻿@*设备用途*@
+@helper DispDevUse(string name, string selected = "")
+{
+    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" id="@name" name="@name">
+        <option @if (selected == "办公") { @: selected="selected"
+                                }>
+            办公
+        </option>
+        <option @if (selected == "办公") { @: selected="selected"
+                                   }>
+            教学
+        </option>
+        <option @if (selected == "培训") { @: selected="selected"
+                                   }>
+            培训
+        </option>
+        <option @if (selected == "执法") { @: selected="selected"
+                        }>
+            执法
+        </option>
+        <option @if (selected == "窗口") { @: selected="selected"
+                                }>
+            窗口
+        </option>
+        <option @if (selected == "专用") { @: selected="selected"
+                           }>
+            专用
+        </option>
+        <option @if (selected == "其他") { @: selected="selected"
+                                }>
+            其他
+        </option>
+    </select>
+}
+
+
+@helper NumberToString(decimal num)
+{
+    if (num > 0)
+    {
+        <span>@num</span>    }
+}
+@helper NumberToString(int num)
+{
+    if (num > 0)
+    {
+        <span>@num</span>    }
+}

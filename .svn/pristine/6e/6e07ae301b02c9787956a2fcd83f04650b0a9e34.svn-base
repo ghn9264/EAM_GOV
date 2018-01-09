@@ -1,0 +1,173 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using EAM.Data.Domain;
+using EAM.Data.Services;
+
+namespace Eam.Web.Portal.Areas.Account.Controllers
+{
+    public class OrderListController : EamAdminController
+    {
+        private static string UserId = "00001";
+
+        private readonly IAssetsService _assetsService;
+        private readonly IUserService _userService;
+
+        public OrderListController(IAssetsService assetsService,
+            IUserService userService)
+        {
+            _assetsService = assetsService;
+            _userService = userService;
+            if (System.Web.HttpContext.Current.Request.IsAuthenticated)
+            {
+                UserId = System.Web.HttpContext.Current.User.Identity.Name;
+            }
+        }
+
+        [HttpPost]
+        public ActionResult Add(List<int> entityIds, string type)
+        {
+
+            var list = _assetsService.Get(entityIds);
+            if (null != list && list.Count > 0)
+            {
+                foreach (var item in list)
+                {
+                    if (!_userService.IsExistOrderList(UserId, item.AssetsNum, type))
+                    {
+                        var entity = new OrderList
+                        {
+                            UserId = UserId,
+                            CreatedTime = DateTime.Now,
+                            GoodsName = item.GoodsName,
+                            AssetsNum = item.AssetsNum,
+                            CatCode = item.CatCode,
+                            Price = item.Price,
+                            Type = type,
+                            Counts = item.Counts,
+                            MeasurementUnits = item.MeasurementUnits,
+                            IsPrinted = item.IsPrinted,
+                            UsedNum1 = item.UsedNum1,
+                            MainId = item.EntityId,
+                            UsePeople = item.UsePeople,
+                            UseDepartment = item.UseDepartment,
+                            StorePlace = item.StorePlace
+                        };
+                        _userService.AddToOrderList(entity);
+                    }
+                }
+                return Json(true);
+            }
+
+            return Json(false);
+        }
+        [HttpPost]
+        public ActionResult Query(string type)
+        {
+            var result = _userService.Query(type);
+            return Json(result);
+        }
+        [HttpPost]
+        public ActionResult RemoveOne(string id)
+        {
+            string[] strSo = id.Split('|');
+            for (int i = 0; i < strSo.Length; i++)
+            {
+                if (!strSo[i].Equals(""))
+                {
+                    int idOne = int.Parse(strSo[i]);
+                    var order = _userService.GetOrderListOne(idOne);
+
+                    //2017-06-07 wnn
+                    if (order != null)
+                    {
+                        AssetsRecord assetsRecord = new AssetsRecord();//实例化
+                        assetsRecord.AssetsNum = order.AssetsNum;//赋值
+                        assetsRecord.CatCode = order.CatCode;
+                        assetsRecord.Counts = order.Counts;
+                        assetsRecord.CreatedTime = order.CreatedTime;
+                        assetsRecord.GoodsName = order.GoodsName;
+                        assetsRecord.IsPrinted = order.IsPrinted;
+                        assetsRecord.MainId = order.MainId;
+                        assetsRecord.MeasurementUnits = order.MeasurementUnits;
+                        assetsRecord.Price = order.Price;
+                        assetsRecord.StorePlace = order.StorePlace;
+                        assetsRecord.Type = order.Type;
+                        assetsRecord.UseDepartment = order.UseDepartment;
+                        assetsRecord.UsedNum1 = order.UsedNum1;
+                        assetsRecord.UsePeople = order.UsePeople;
+                        assetsRecord.UserId = order.UserId;
+
+                        _userService.AddToAssetsRecord(assetsRecord);//执行添加
+                    }
+
+                    _userService.RemoveFormOrderList(new[] { idOne });
+                }
+            }
+            return Json(true);
+        }
+
+        [HttpPost]
+        public ActionResult RemoveOneEx(int id)
+        {
+            //2017-06-07 wnn
+
+
+            _userService.RemoveFormOrderList(new[] { id });
+            return Json(true);
+        }
+
+        [HttpPost]
+        public ActionResult Remove(IEnumerable<int> ids)
+        {
+            //2017-06-07 wnn
+
+
+            _userService.RemoveFormOrderList(ids);
+            return Json(true);
+        }
+
+        [HttpPost]
+        public ActionResult RemoveFormOrderList(string type)
+        {
+            //2017-06-07 wnn
+            var order = _userService.Query(type);//将满足条件的查询出来
+            foreach (var item in order)
+            {
+                if (order != null)
+                {
+                    AssetsRecord assetsRecord = new AssetsRecord();//实例化
+                    assetsRecord.AssetsNum = item.AssetsNum;//赋值
+                    assetsRecord.CatCode = item.CatCode;
+                    assetsRecord.Counts = item.Counts;
+                    assetsRecord.CreatedTime = item.CreatedTime;
+                    assetsRecord.GoodsName = item.GoodsName;
+                    assetsRecord.IsPrinted = item.IsPrinted;
+                    assetsRecord.MainId = item.MainId;
+                    assetsRecord.MeasurementUnits = item.MeasurementUnits;
+                    assetsRecord.Price = item.Price;
+                    assetsRecord.StorePlace = item.StorePlace;
+                    assetsRecord.Type = item.Type;
+                    assetsRecord.UseDepartment = item.UseDepartment;
+                    assetsRecord.UsedNum1 = item.UsedNum1;
+                    assetsRecord.UsePeople = item.UsePeople;
+                    assetsRecord.UserId = item.UserId;
+
+                    _userService.AddToAssetsRecord(assetsRecord);//执行添加
+                }
+            }
+            _userService.RemoveFormOrderList(type);
+            return Json(true);
+        }
+
+        [HttpPost]
+        public ActionResult EmptyOrderList()
+        {
+            _userService.EmptyOrderList(UserId);
+            return Json(true);
+        }
+
+    }
+}

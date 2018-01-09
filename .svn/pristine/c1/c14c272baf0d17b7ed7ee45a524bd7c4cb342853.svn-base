@@ -1,0 +1,111 @@
+﻿@model EAM.Data.Domain.BooksAttribute
+@{
+    ViewBag.Title = "条目输入界面";
+    Layout = "~/Areas/AssetsInput/Views/AssetsInput/Input.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">图书档案</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 图书档案资产差异化属性 -->
+<div class="col-lg-6">
+    <div class="box box-info">
+        <!-- Header -->
+        <div class="box-header with-border">
+            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">图书档案</h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button> 
+            </div>
+        </div>
+        <!-- Body -->
+        <div class="box-body">
+            <div class="box-body">
+                <!-- 投入使用日期 -->
+                <div class="form-group">
+                    <label>投入使用日期</label>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd" id="UseDate" name="UseDate" value="@Model.UseDate">
+                    </div>
+                </div>
+
+                <!-- 档案号 -->
+                <div class="form-group">
+                    <label>档案号</label>
+                    <input type="text" class="form-control" id="FileNum" name="FileNum" placeholder="档案号" value="@Model.FileNum">
+                </div>
+
+                <!-- 出版社 -->
+                <div class="form-group">
+                    <label>出版社</label>
+                    <input type="text" class="form-control" id="Press" name="Press" placeholder="出版社" value="@Model.Press">
+                </div>
+
+            </div><!-- /.box-body -->
+         
+        </div><!-- /.box-body -->
+    </div>
+</div>
+
+<!-- 图书档案差异化属性 -->
+<div class="col-lg-6">
+    <div class="box box-info">
+        <!-- Header -->
+        <div class="box-header with-border">
+            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">图书档案</h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button> 
+            </div>
+        </div>
+        <!-- Body -->
+        <div class="box-body">
+            <div class="box-body">
+                
+                <!-- 保存年限 -->
+                <div class="form-group">
+                    <label>保存年限</label>
+                    <input type="text" class="form-control" id="StoreYears" name="StoreYears" placeholder="保存年限" value="@Model.StoreYears">
+                </div>
+
+                <!-- 出版日期 -->
+                <div class="form-group">
+                    <label>出版日期</label>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        <input type="text" class="form-control pull-right" data-provide="datepicker" data-date-format="yyyy-mm-dd" id="PressDate" name="PressDate" value="@Model.PressDate">
+                    </div>
+                </div>
+
+                <!-- 数量 -->
+                @*<div class="form-group">
+                    <label>数量</label>
+                    <input type="text" class="form-control" placeholder="数量">
+                </div>*@
+
+                <!-- 使用方向 -->
+                <div class="form-group">
+                    <label>使用方向</label>
+                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;">
+                        <option selected="selected">自用</option>
+                        <option>出借</option>
+                        <option>出租</option>
+                        <option>其他</option>
+                    </select>
+                </div>
+
+            </div><!-- /.box-body -->
+         
+        </div><!-- /.box-body -->
+    </div>
+</div>
+<input type="hidden" name="AttrId" value="@Model.AttrId">

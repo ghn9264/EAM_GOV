@@ -1,0 +1,102 @@
+﻿using System;
+using System.Web.Mvc;
+using EAM.Data.Repositories;
+using EAM.Data.Repositories.Impl;
+using EAM.Data.Services;
+using EAM.Data.Services.Impl;
+using EAM.Data.Services.Query;
+using Ninject;
+using Ninject.Modules;
+
+namespace Eam.Web.Portal
+{
+    public class InjectControllerFactory : DefaultControllerFactory
+    {
+        private readonly IKernel _kernel = new StandardKernel(new MvcPortalModule());
+
+        protected override IController GetControllerInstance(System.Web.Routing.RequestContext requestContext,
+            Type controllerType)
+        {
+            if (controllerType == null)
+                return null;
+            return (IController)_kernel.Get(controllerType);
+        }
+
+        private class MvcPortalModule : NinjectModule
+        {
+            public override void Load()
+            {
+                /*Database*/
+                Bind<EamDatabase>().ToSelf();
+                /*Repository*/
+                Bind<IAnimalRepository>().To<AnimalRepository>();
+                Bind<IAquairDetailRepository>().To<AquairDetailRepository>();
+                Bind<IAquairRepository>().To<AquairRepository>();
+                Bind<IAssetsMainRepository>().To<AssetsMainRepository>();
+                Bind<IAssetsScrapReplyRepository>().To<AssetsScrapReplyRepository>();
+                Bind<IAssetsScrapPhotoRepository>().To<AssetsScrapPhotoRepository>();
+                Bind<IBooksRepository>().To<BooksRepository>();
+                Bind<IBorrowDetailRepository>().To<BorrowDetailRepository>();
+                Bind<IBorrowRepository>().To<BorrowRepository>();
+                Bind<IBuildingRepository>().To<BuildingRepository>();
+                Bind<ICarRepository>().To<CarRepository>();
+                Bind<ICulturalrelicRepository>().To<CulturalrelicRepository>();
+                Bind<IGeneralRepository>().To<GeneralRepository>();
+                Bind<IHouseRepository>().To<HouseRepository>();
+                Bind<IInventoryDetailRepository>().To<InventoryDetailRepository>();
+                Bind<IInventoryRepository>().To<InventoryRepository>();
+                Bind<ILandRepository>().To<LandRepository>();
+                Bind<IRepairDetailRepository>().To<RepairDetailRepository>();
+                Bind<IRepairRepository>().To<RepairRepository>();
+                Bind<IReturnDetailRepository>().To<ReturnDetailRepository>();
+                Bind<IReturnRepository>().To<ReturnRepository>();
+                Bind<IServiceDetailRepository>().To<ServiceDetailRepository>();
+                Bind<IServiceRepository>().To<ServiceRepository>();
+                Bind<ISpecialRepository>().To<SpecialRepository>();
+                Bind<ISysInfoRepository>().To<SysInfoRepository>();
+                Bind<IOrderListRepository>().To<OrderListRepository>();
+                Bind<IAssetsRecordRepository>().To<AssetsRecordRepository>();//2017-06-06 wnn
+                Bind<IUserInfoRepository>().To<UserInfoRepository>();
+                Bind<IClassCodeRepository>().To<ClassCodeRepository>();
+                Bind<ISysWarningRepository>().To<SysWarningRepository>();
+                Bind<IAssetsBorrrowRepository>().To<AssetsBorrrowRepository>();
+                Bind<IDepartmentRepository>().To<DepartmentRepository>();
+                Bind<IScrapApllyRepository>().To<ScrapApllyRepository>();
+                Bind<IScrapApplyDetailRepository>().To<ScrapApplyDetailRepository>();
+                Bind<IImportHistoryRepository>().To<ImportHistoryRepository>();
+                Bind<IPlaceRepository>().To<PlaceRepository>();
+                Bind<IDiffResultRepository>().To<DiffResultRepository>();
+                Bind<ILedGerCachRepository>().To<LedGerCachRepository>();
+                Bind<IScrapMergeRepository>().To<ScrapMergeRepository>();
+                Bind<IRoleRepository>().To<RoleRepository>();//2017-05-27 wnn
+
+                //wnn  2017-05-23
+                Bind<IAssetsMainCombineRepository>().To<AssetsMainCombineRepository>();
+                //ryb 07-17
+                Bind<IUnImportAssetsRepository>().To<UnImportAssetsRepository>();
+                Bind<IQrprintSettingRepository>().To<QrprintSettingRepository>();
+                Bind<IQrprintSettinghistoryRepository>().To<QrprintSettinghistoryRepository>();
+                /*SERVICE*/
+                Bind<IAssetsService>().To<AssetsService>();
+                Bind<IAssetsAcquireServices>().To<AssetsAcquireServices>();
+                Bind<ISysInfoService>().To<SysInfoServices>();
+                Bind<IUserService>().To<UserService>();
+                Bind<IAssetsOptionService>().To<AssetsOptionService>();
+                Bind<IClassCodeServices>().To<ClassCodeServices>();
+                Bind<ISysWarningService>().To<SysWarningServices>();
+                Bind<IAssetsBorrrowServices>().To<AssetsBorrrowServices>();
+                Bind<IRepairService>().To<RepairService>();
+                Bind<IInventoryService>().To<InventoryService>();
+                Bind<IScrapService>().To<ScrapService>();
+                Bind<ISystemService>().To<SystemService>();
+                Bind<IImportHistoryService>().To<ImportHistoryService>();
+                Bind<IRoleService>().To<RoleService>();//2017-05-27 wnn
+
+                //绑定服务
+                Bind<IUnImportAssetsService>().To<UnImportAssetsService>();
+                Bind<IQrprintSettingService>().To<QrprintSettingService>();
+            }
+        }
+
+    }
+}

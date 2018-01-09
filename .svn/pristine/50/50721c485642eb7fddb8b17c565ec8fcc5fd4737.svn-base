@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7A93F331-1CC4-4824-B0E3-2D0016843EC7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EAM.Data.ImportAndExport</RootNamespace>
+    <AssemblyName>EAM.Data.ImportAndExport</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EmitMapper">
+      <HintPath>..\RefDll\EmitMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.1.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\RefDll\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.1.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\RefDll\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.1.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\RefDll\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssetsDiff\DiffExecuter.cs" />
+    <Compile Include="AssetsDiff\DiffItem.cs" />
+    <Compile Include="AssetsMainExt.cs" />
+    <Compile Include="Export\ExportAssets\ExportAnimalandplant.cs" />
+    <Compile Include="Export\ExportAssets\ExportLedgerMerge.cs" />
+    <Compile Include="Export\ExportAssets\ExportLedgerMergeBase.cs" />
+    <Compile Include="Export\ExportAssets\ExportQueryAssetsBase.cs" />
+    <Compile Include="Export\ExportAssets\ExportDiffResultBase.cs" />
+    <Compile Include="Export\ExportAssets\ExportCulturalrelic.cs" />
+    <Compile Include="Export\ExportAssets\ExportFurniture.cs" />
+    <Compile Include="Export\ExportAssets\ExportDiffResult.cs" />
+    <Compile Include="Export\ExportAssets\ExportCurrentAssets.cs" />
+    <Compile Include="Export\ExportAssets\ExportScrapMerge.cs" />
+    <Compile Include="Export\ExportAssets\ExportScrapMergeBase.cs" />
+    <Compile Include="Export\ExportAssets\ExportSpecial.cs" />
+    <Compile Include="Export\ExportAssets\ExportSpecial1.cs" />
+    <Compile Include="Export\ExportAssets\ExportCar.cs" />
+    <Compile Include="Export\ExportAssets\ExportBuild.cs" />
+    <Compile Include="Export\ExportDoAssets\ExportDoAssetsSendBack.cs" />
+    <Compile Include="Export\ExportLedgerBase.cs" />
+    <Compile Include="Export\ExportLedgerCBase.cs" />
+    <Compile Include="Export\ExportQueryBaseEx.cs" />
+    <Compile Include="Export\ExportDynamicBase.cs" />
+    <Compile Include="Export\ExportLedger\ExportLedger.cs" />
+    <Compile Include="Export\ExportDoAssets\ExportDoAssetsInventory.cs" />
+    <Compile Include="Export\ExportDoAssets\ExportDoAssetsScrapBack.cs" />
+    <Compile Include="Export\ExportDoAssets\ExportDoAssetsScrapInfo.cs" />
+    <Compile Include="Export\ExportDoAssets\ExportDoAssetsService.cs" />
+    <Compile Include="Export\ExportDoAssets\ExportDoAssetsRepair.cs" />
+    <Compile Include="Export\ExportDoAssets\ExportDoAssetsAcquire.cs" />
+    <Compile Include="Export\ExportDoAssets\ExportDoAssetsReturn.cs" />
+    <Compile Include="Export\ExportDoAssets\ExportDoAssetsBorrow.cs" />
+    <Compile Include="Export\ExportDoAssets\ExportDoAssetsBase.cs" />
+    <Compile Include="Export\ExportBase.cs" />
+    <Compile Include="Export\ExportAssets\ExportAssetsBase.cs" />
+    <Compile Include="Export\ExportAssets\ExportGeneral.cs" />
+    <Compile Include="Export\ExportAssets\ExportBook.cs" />
+    <Compile Include="Export\ExportAssets\ExportLand.cs" />
+    <Compile Include="Export\ExportAssets\ExportHouse.cs" />
+    <Compile Include="Export\ExportScrapBase.cs" />
+    <Compile Include="ImageImport\ImageImportResult.cs" />
+    <Compile Include="ImportResult.cs" />
+    <Compile Include="Import\DtPImport.cs" />
+    <Compile Include="Import\PyImport.cs" />
+    <Compile Include="Import\DtUImport.cs" />
+    <Compile Include="Import\ProgressInfo.cs" />
+    <Compile Include="Import\BxImport.cs" />
+    <Compile Include="Import\BxReader.cs" />
+    <Compile Include="Import\DtImport.cs" />
+    <Compile Include="Import\DtReader.cs" />
+    <Compile Include="ImageImport\ImageBatchImport.cs" />
+    <Compile Include="Mappings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Eam.Core.Zip\Eam.Core.Zip.csproj">
+      <Project>{4a92975f-ab5d-4f82-9037-3dcb74c9bddb}</Project>
+      <Name>Eam.Core.Zip</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EAM.Data.Comm\EAM.Data.Comm.csproj">
+      <Project>{A7EF0FD8-266C-4B7B-B2FC-9A80ADE55844}</Project>
+      <Name>EAM.Data.Comm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EAM.Data.Domain\EAM.Data.Domain.csproj">
+      <Project>{613CD9FF-CA8A-4040-9225-AF99935C016F}</Project>
+      <Name>EAM.Data.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EAM.Data.Services\EAM.Data.Services.csproj">
+      <Project>{ee3e057a-dd8c-47d2-89e7-2533a9c76ddb}</Project>
+      <Name>EAM.Data.Services</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

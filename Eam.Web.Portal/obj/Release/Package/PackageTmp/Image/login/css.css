@@ -1,0 +1,8 @@
+body {background:##f6f8f9; }
+.main {width:1324px; height:828px; background:url(login_bg.jpg) no-repeat;}
+.footer {color:#082f74; text-align:center; margin-top:180px; font-size:12px;}
+.input {width:320px; height:35px; font-size:21px; padding-left:40px; background:url(key_icon.png) no-repeat 10px center; left:30px; }
+.input2 {width:320px; height:35px; font-size:21px; padding-left:40px; background:url(user_icon.png) no-repeat 10px center; left:30px; margin-top:10px;}
+.login_area {padding:420px 0px 0px 580px;}
+.icon_small {width:21px; height:21px; position:absolute; }
+.login_btn {width:147px; height:42px; background:url(login_btn.jpg) no-repeat; border:0px; cursor:pointer; margin-top:20px;}

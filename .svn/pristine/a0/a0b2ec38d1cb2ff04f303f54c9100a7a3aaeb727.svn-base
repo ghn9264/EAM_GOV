@@ -1,0 +1,238 @@
+﻿@using Eam.Core.Config
+@using Eam.Web.Portal._Comm
+@{
+    Layout = null;
+    var adminMenuConfig = CachedConfigContext.Current.AdminMenuConfig;
+
+    UserSession userSession = null;
+    if (HttpContext.Current.Request.IsAuthenticated)
+    {
+        if (null != ViewBag.UserSession)
+        {
+            userSession = ViewBag.UserSession as UserSession;
+        }
+        userSession = userSession ?? new UserSession();
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>固定资产管理系统</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.5 -->
+    <link rel="stylesheet" href="/Assets/bootstrap/css/bootstrap.css">
+    <!-- Font Awesome -->
+    <link href="~/Assets/font-awesome-4.4.0/css/font-awesome.min.css" rel="stylesheet" />
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/Assets/dist/css/AdminLTE.min.css">
+    <link href="~/Assets/css/Home_main.css" rel="stylesheet" />
+    <!-- ZTree style -->
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="/Assets/css/zTreeStyle.css" type="text/css">
+    <script src="/Assets/jQuery/jQuery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.core.js"></script>
+    <script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.excheck.js"></script>
+    <script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.exedit.js"></script>
+    <script src="~/Assets/SelectTree.js"></script>
+</head>
+
+<body class="bg-box" id="mainBody">
+    <div id="head-box">
+        <div class="head-left pull-left">
+            <img src="~/img/首页-Logo.png" alt="">
+            <p>固定资产管理系统 &nbsp;<span style="color:rgb(209,212,217);">服务热线：010-62813959</span></p>
+        </div>
+        <div class="head-right pull-right">
+            <p>
+                @userSession.UserName
+            </p>
+            <div class="seb_line">
+            </div>
+            <a href="@Url.Action("Index", "Auth", new { Area = "Account" })"><img src="~/img/退出.png" /></a>
+        </div>
+    </div>
+    <!-- =============================================== -->
+    <!-- 左侧功能导航栏，单独放在Menu.cshtml中 -->
+    <div>
+        @Html.Partial("_AreasMenu");
+    </div>
+
+    <!-- =============================================== -->
+    <!-- 主内容显示区域，由各个子模块界面组成 -->
+    <div class="content-wrapper">
+        <!--  非首页界面都要显示路径 -->
+        <!-- 主内容显示区 -->
+        <!-- 主内容显示区 -->
+        @RenderBody()
+    </div><!-- /.content-wrapper -->
+    <!--底边栏-->
+    @*<footer class="main-footer" id="footer"></footer>*@
+
+    <!-- 最右侧的控制栏，准备用于资产条件检索区，单独放在ControlSlideBar.cshtml中 -->
+    @Html.Partial("_AreasControlSideBar");
+
+    <!-- Add the sidebar's background. This div must be placed
+    immediately after the control sidebar -->
+    <div class="control-sidebar-bg"></div>
+    <!-- ./wrapper -->
+    <!-- Bootstrap 3.3.5 -->
+    <script src="/Assets/bootstrap/js/bootstrap.min.js"></script>
+    <!-- SlimScroll -->
+    <script src="/Assets/slimScroll/jquery.slimscroll.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/Assets/dist/js/app.min.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="/Assets/dist/js/demo.js"></script>
+    <!-- datepicker1 -->
+    <script src="/Assets/datepicker/bootstrap-datepicker1.js"></script>
+    <!-- datepicker -->
+    <script src="/Assets/datepicker/bootstrap-datepicker.js"></script>
+</body>
+
+</html>
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $.fn.smartFloat = function () {
+        var position = function (element) {
+            var top = element.position().top, pos = element.css("position");
+            $(window).scroll(function () {
+                var scrolls = $(this).scrollTop();
+                if (scrolls > top) {
+                    if (window.XMLHttpRequest) {
+                        element.css({
+                            position: "fixed",
+                            top: 0
+                        });
+                    } else {
+                        element.css({
+                            top: scrolls
+                        });
+                    }
+                } else {
+                    element.css({
+                        position: "absolute",
+                        top: top
+                    });
+                }
+            });
+        };
+        return $(this).each(function () {
+            position($(this));
+        });
+    };
+
+    jQuery.fn.floatdiv = function (location) {
+        //判断浏览器版本
+        var isIE6 = false;
+        var Sys = {};
+        var ua = navigator.userAgent.toLowerCase();
+        var s;
+        (s = ua.match(/msie ([\d.]+)/)) ? Sys.ie = s[1] : 0;
+        if (Sys.ie && Sys.ie == "6.0") {
+            isIE6 = true;
+        }
+        var windowWidth, windowHeight;//窗口的高和宽
+        //取得窗口的高和宽
+        if (self.innerHeight) {
+            windowWidth = self.innerWidth;
+            windowHeight = self.innerHeight;
+        } else if (document.documentElement && document.documentElement.clientHeight) {
+            windowWidth = document.documentElement.clientWidth;
+            windowHeight = document.documentElement.clientHeight;
+        } else if (document.body) {
+            windowWidth = document.body.clientWidth;
+            windowHeight = document.body.clientHeight;
+        }
+        return this.each(function () {
+            var loc;//层的绝对定位位置
+            var wrap = $("<div></div>");
+            var top = -1;
+            if (location == undefined || location.constructor == String) {
+                switch (location) {
+                    case ("rightbottom")://右下角
+                        loc = { right: "0px", bottom: "0px" };
+                        break;
+                    case ("leftbottom")://左下角
+                        loc = { left: "0px", bottom: "0px" };
+                        break;
+                    case ("lefttop")://左上角
+                        loc = { left: "0px", top: "0px" };
+                        top = 0;
+                        break;
+                    case ("righttop")://右上角
+                        loc = { right: "0px", top: "0px" };
+                        top = 0;
+                        break;
+                    case ("middletop")://居中置顶
+                        loc = { left: windowWidth / 2 - $(this).width() / 2 + "px", top: "0px" };
+                        top = 0;
+                        break;
+                    case ("middlebottom")://居中置低
+                        loc = { left: windowWidth / 2 - $(this).width() / 2 + "px", bottom: "0px" };
+                        break;
+                    case ("leftmiddle")://左边居中
+                        loc = { left: "0px", top: windowHeight / 2 - $(this).height() / 2 + "px" };
+                        top = windowHeight / 2 - $(this).height() / 2;
+                        break;
+                    case ("rightmiddle")://右边居中
+                        loc = { right: "0px", top: windowHeight / 2 - $(this).height() / 2 + "px" };
+                        top = windowHeight / 2 - $(this).height() / 2;
+                        break;
+                    case ("middle")://居中
+                        var l = 0;//居左
+                        var t = 0;//居上
+                        l = windowWidth / 2 - $(this).width() / 2;
+                        t = windowHeight / 2 - $(this).height() / 2;
+                        top = t;
+                        loc = { left: l + "px", top: t + "px" };
+                        break;
+                    default://默认为右下角
+                        location = "rightbottom";
+                        loc = { right: "0px", bottom: "0px" };
+                        break;
+                }
+            } else {
+                loc = location;
+                alert(loc.bottom);
+                var str = loc.top;
+                //09-11-5修改：加上top为空值时的判断
+                if (typeof (str) != 'undefined') {
+                    str = str.replace("px", "");
+                    top = str;
+                }
+            }
+            /*fied ie6 css hack*/
+            if (isIE6) {
+                if (top >= 0) {
+                    wrap = $("<div style=\"top:expression(documentElement.scrollTop+" + top + ");\"></div>");
+                } else {
+                    wrap = $("<div style=\"top:expression(documentElement.scrollTop+documentElement.clientHeight-this.offsetHeight);\"></div>");
+                }
+            }
+            $("body").append(wrap);
+
+            wrap.css(loc).css({
+                position: "fixed",
+                z_index: "999"
+            });
+            if (isIE6) {
+
+                wrap.css("position", "absolute");
+                //没有加这个的话，ie6使用表达式时就会发现跳动现象
+                //至于为什么要加这个，还有为什么要加nothing.txt这个，偶也不知道，希望知道的同学可以告诉我
+                $("body").css("background-attachment", "fixed").css("background-image", "url(n1othing.txt)");
+            }
+            //将要固定的层添加到固定层里
+            $(this).appendTo(wrap);
+        });
+    };
+
+    //$('#float').floatdiv({ bottom: "500px" });
+
+    //$("#float").smartFloat();
+</script>
+

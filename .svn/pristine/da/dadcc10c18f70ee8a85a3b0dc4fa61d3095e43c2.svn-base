@@ -1,0 +1,625 @@
+﻿@using Eam.Web.Portal.Areas
+@model Eam.Web.Portal.Areas.SycData.ImportResultModel
+
+@{
+    ViewBag.Title = "数据同步界面";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+@*<link href="~/Assets/css/Home_main.css" rel="stylesheet" />*@
+<link href="~/Assets/datatables/datatables.min.css" rel="stylesheet" />
+<link href="~/Assets/css/search_main.css" rel="stylesheet" />
+<link href="~/Assets/css/importDt_main.css" rel="stylesheet" />
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">办学导入</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!--办学导入 -->
+<section class="content content-all">
+    <!--办学导入操作面板 -->
+    <div class="row">
+        <div class="col-lg-9">
+            <!-- 办学导入操作面板 -->
+            <div class="box box-danger">
+                <!-- 表头 -->
+                <div class="box-header with-border">
+                    <h3 class="box-title right_top"><a>办学导入</a></h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <!-- body -->
+                <form method="post" id=" frmDtUpload" enctype="multipart/form-data">
+                    <div class="box-body content">
+                        <div class="row row-changef">
+                            <!-- 数据上传 -->
+                            <div class="div_file">
+                                <!-- 文件上传 -->
+                                <img src="../../img/changefile.PNG">
+                                <input type="file" id="file" name="file">
+                            </div>
+                            <div class="div_rule">
+                                <p>上传办学资产表之前请下载上传办学资产表之前请下载"<a href="@Url.Action("DownLoadBxSample")">办学导入模板.xls</a>"</p>
+                                <p>请严格按照办学导入模板上传办学表。</p>
+                                <p>上传表格只接受.xls（97-2003版本)格式。</p>
+                                <p>表格内所有填写数量的地方不允许出现数字无关的字符，但可以为空。</p>
+                                <p>表格内所有填写日期的地方请严格按照"2016-1-1"格式进行填写。</p>
+                                <p>表格内不允许出现重复表头。</p>
+                            </div>
+                        </div>
+
+                        <div class="row row-importDt">
+                            <div class="col-lg-10">
+                                <p>办学导入信息：</p>
+                                @Model.ErrorMessage
+                                @*<br />*@
+                            </div>
+
+                            <!--显示信息，隐藏-->
+                            <div class="col-lg-1">
+                                <input type="hidden" name="PageIndex" id="PageIndex" value="1" />
+                                <input type="hidden" name="PageSize" id="PageSize" value="10" />
+                                <input type="hidden" name="ImportId" id="ImportId" value="1" />
+                                <input type="hidden" name="ImportType" id="ImportType" value="1" />
+                                <input type="hidden" name="LastImportedId" id="LastImportedId" value="1" />
+                            </div>
+                            <div class="file_btn">
+                                <a class="btn btn-primary" id="upload">上传办学信息</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div><!--/.box -->
+        </div>
+        <!--办学导入规则面板 -->
+        <div class="col-lg-3 new_clo">
+            <!-- 办学导入操作面板 -->
+            <div class="box box-danger emptybg">
+
+                <div class="wheather">
+                    <iframe src="//www.seniverse.com/weather/weather.aspx?uid=U40192E28B&amp;cid=CHBJ000000&amp;l=zh-CHS&amp;p=SMART&amp;a=0&amp;u=C&amp;s=1&amp;m=2&amp;x=1&amp;d=3&amp;fc=FFFFFF&amp;bgc=&amp;bc=&amp;ti=0&amp;in=0&amp;li=" frameborder="0" scrolling="no" width="100%" height="181.5" allowtransparency="true"></iframe>
+                </div>
+                <div class="dateTime">
+                    <p id="p1">14:50</p>
+                    <p id="p2">2017年06月13日</p>
+                </div>
+            </div><!--/.box -->
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+    window.onload = init;
+    function init() {
+        var obj1 = document.getElementById("p1");
+        var obj2 = document.getElementById("p2");
+        var obj = document.getElementById("p1");
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        var hour = date.getHours();
+        var minutes = date.getMinutes();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+
+        if (hour >= 0 && hour <= 9) {
+            hour = "0" + hour;
+        }
+        if (minutes >= 0 && minutes <= 9) {
+            minutes = "0" + minutes;
+        }
+        obj1.innerHTML = hour + ":" + minutes;
+        obj2.innerHTML = year + "年" + month + "月" + strDate + "日";
+
+        var setTime = setTimeout("init()", 60000);
+    }
+</script>
+<!--办学上传记录 -->
+<section class="content" id="DtUploadHistoryPanel" style="display:">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box new-box">
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">办学上传记录</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div id="example1_wrapper" class="dataTables_wrapper form-inline">
+                        <div class="row">
+                            <div class="col-sm-12 new-clo-12">
+                                <table id="tableDtHistory" class="table table-bordered table-striped dataTable" role="grid">
+                                    <thead>
+                                        <tr role="row" class="row-bkg">
+                                            <th width="4%"><input type="checkbox" id="chooseall">全选</th>
+                                            <th width="4%">序号</th>
+                                            <th width="10%">导入类型</th>
+                                            <th width="20%">文件名称</th>
+                                            <th width="10%">导入时间</th>
+                                            <th width="10%">导入用户</th>
+                                            <th width="10%">已导入条数</th>
+                                            <th width="10%">未导入条数</th>
+                                            <th width="10%">文件总条数</th>
+                                            <th width="5%">记录号</th>
+                                            <!--<th width="5%" colspan="2" ><button id="btnRemoveAll" onclick="DeleteAllCrnt()" type="button" class="btn btn-danger btn-sm">批量移除记录</button></th>-->
+                                            <th width="7%"></th>
+                                            <!--  <th width="100">异常信息</th -->
+
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="dataTables_info" id="exampleDtHistory_info" role="status" aria-live="polite"></div>
+                            </div>
+                            <div class="col-sm-8  text-center">
+                                <ul id="divDtHistoryPager"></ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<script type="text/javascript">
+    $("#chooseall").click(function () {
+        var isChecked = $(this).prop("checked");
+        $("input[name='checkbox1']").prop("checked", isChecked);
+    });
+    function fn() {
+        var obj = document.getElementById("DtImportedDetialPanel");
+        var obj1 = document.getElementById("DtImportedDetialPanel_1");
+        obj.style.display = "block";
+        obj1.style.display = "block";
+    }
+
+</script>
+
+
+
+<script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+<script>
+
+
+    $(document).ready(function () {
+        //
+        // 打开历史上传纪录
+        //
+        $("button[name='btnOpenHistory']").click(function () {
+            document.getElementById("BxUploadHistoryPanel").style.display = ""; //显示
+        });
+        // 关闭历史上传纪录
+        $("button[name='btnCloseHistory']").click(function () {
+            document.getElementById("BxUploadHistoryPanel").style.display = "none"; //显示
+        });
+
+
+    });
+
+
+    //----------------------------------------------------------------------------
+    var action = "@ViewBag.DoAction";
+    var serviceUrl = "@Url.Action("ImportedAssetsQuery", "Syc", new {area = "SycData"})";
+    var QueryImportedId = "@Url.Action("QueryLastImportedId", "Syc", new {area = "SycData"})";
+    var UrlBxHistory = "@Url.Action("ImportHistoryQuery", "Syc", new { area = "SycData" })";
+    var UnImportedUrl = "@Url.Action("UnImportedAssetsQuery", "Syc", new {area = "SycData"})";
+    var LastImportedId;
+
+    //办学导入历史查询
+    function queryBxHistory(pageIndex) {
+
+        $("#PageIndex").val(pageIndex);
+        $("#ImportId").val(0); //0过滤Id查询
+        $("#ImportType").val(1);
+        // var inum = $("#PageIndex").val();
+        // alert(inum);
+
+        //var d = $("#frmBxHistory").serialize();
+        var d = $("#frmBxUpload").serialize();
+        //查询导入记录
+        $.post(UrlBxHistory, d, function (result) {
+            $("#tableBxHistory tbody").empty();
+
+            $(result.Items).each(function (index, item) {
+                var no = index + 1;
+                var Type = "";
+                if (1 == item.ImportType) { Type = "办学资产" } else {
+                    Type = "动态资产";
+                }
+                var row = $(" <tr role='row'>");
+                row.append('<td><input type="checkbox" name="checkbox1"/></td>');
+                row.append('<td>' + no + '</td>');
+                row.append('<td>' + Type + '</td>');
+                row.append('<td>' + item.ImportFile + '</td>');
+                row.append('<td>' + item.ImportTime + '</td>');
+                row.append('<td>' + item.UserId + '</td>');
+                row.append('<td>' + item.ImportRows + '</td>');
+                row.append('<td>' + (item.TotalRows - item.ImportRows) + '</td>');
+                row.append('<td>' + item.TotalRows + '</td>');
+                row.append('<td>' + item.EntityId + '</td>');
+                row.append('<td><div><a  onclick="queryCrntRecordDetial(' + item.EntityId + ')"  id="btnSeeDetial" ">查看</a><a data-id="' + item.EntityId + '" onclick="DeleteCrnt(' + item.EntityId + ')"  id="btnDelete">移除</a><a  data-id="' + item.EntityId + '" onclick="Delete(' + item.EntityId + ')"  id="Delete" ">删除</a></div></td>');
+
+
+                $("#tableBxHistory").append(row);
+
+            });
+            $("#exampleBxHistory_info").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " , 总共 " + result.TotalItemCount);
+
+            if (result.TotalPageCount <= 1) {
+                $('#divBxHistoryPager').empty();
+                return;
+            }
+            var options = {
+                bootstrapMajorVersion: 3, //版本
+                numberOfPages: 8,
+                currentPage: result.CurrentPageIndex,
+
+                totalPages: result.TotalPageCount,
+                itemTexts: function (type, page, current) {
+                    switch (type) {
+                        case "first":
+                            return "首页";
+                        case "prev":
+                            return "上一页";
+                        case "next":
+                            return "下一页";
+                        case "last":
+                            return "末页";
+                        case "page":
+                            return page;
+                    }
+                }, //点击事件，用于通过Ajax来刷新整个list列表
+                onPageClicked: function (event, originalEvent, type, page) {
+                    queryBxHistory(page);
+                }
+            };
+            $('#divBxHistoryPager').bootstrapPaginator(options);
+        }, "json");
+
+    } //fuction
+
+    function queryCrntRecordDetial(id) {
+        var section1 = document.getElementById("BxUploadHistoryPanel");
+        //if (section1.style.display == "" )section1.style.display = "none";
+        queryBxImported(1, id);
+        queryBxUnImported(1, id);
+
+    }
+
+    //办学历史详细记录查询
+    function queryBxImported(pageIndex, id) {
+
+        $("#PageIndex").val(pageIndex);
+        $("#ImportId").val(id);
+        $("#ImportType").val(1); //Type=1表示办学
+        //   alert(id);
+
+        var d = $("#frmBxUpload").serialize();
+
+        //查询导入记录
+        $.post(serviceUrl, d, function (result) {
+            $("#tableBxImported tbody").empty();
+
+            $(result.Items).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+
+                // row.append('<td><a class="btn default" data-toggle="modal" data-target="#myModal" role="basic" aria-hidden="true" href="/AssetsFind/AssetsFind/ViewDetail?entityId=' + item.EntityId + '&t=' + (new Date()).valueOf() + '">' + item.AssetsNum + '</a></td>');
+                row.append('<td><input type="hidden" name="assetsNums" value="' + item.AssetsNum + '">' + item.GoodsName + '</td>');
+                row.append('<td>' + item.CatCode + '</td>');
+                row.append('<td>' + item.Money + '</td>');
+                row.append('<td>' + item.StorePlace + '</td>');
+                row.append('<td>' + item.Agent + '</td>');
+                row.append('<td>' + item.UsingAttribute + '</td>');
+                row.append('<td>' + item.UsingState + '</td>');
+                var href = '"/AssetsFind/AssetsFind/CreateQrCode?assetsNums=' + item.AssetsNum + '"';
+                row.append('<td> <a href="/AssetsInput/SingleInput/EditSpecialequipment?entityId=' + item.EntityId + ' " class="btn btn-sm  ">修改</a><a target="_blank" onclick=' + "'Open(" + href + ")'" + '"  class="btn btn-sm  " data-id="' + item.ASSETS_NUM + '">打印</a> </td>');
+                $("#tableBxImported").append(row);
+
+            });
+            $("#exampleBx_info").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " , 总共 " + result.TotalItemCount);
+
+            if (result.TotalPageCount <= 1) {
+                $('#divBxImportedPager').empty();
+                return;
+            }
+            var options = {
+                bootstrapMajorVersion: 3, //版本
+                numberOfPages: 8,
+                currentPage: result.CurrentPageIndex,
+
+                totalPages: result.TotalPageCount,
+                itemTexts: function (type, page, current) {
+                    switch (type) {
+                        case "first":
+                            return "首页";
+                        case "prev":
+                            return "上一页";
+                        case "next":
+                            return "下一页";
+                        case "last":
+                            return "末页";
+                        case "page":
+                            return page;
+                    }
+                }, //点击事件，用于通过Ajax来刷新整个list列表
+                onPageClicked: function (event, originalEvent, type, page) {
+                    queryBxImported(page, id);
+                }
+            };
+            $('#divBxImportedPager').bootstrapPaginator(options);
+        }, "json");
+
+    } //fuction
+
+    //    本次未导入信息
+    function queryBxUnImported(pageIndex, id) {
+
+        $("#PageIndex").val(pageIndex);
+        $("#ImportId").val(id);
+        $("#ImportType").val(1); //Type=1表示办学
+        //   alert(id);
+
+        // var d = $("#frmBxUpload").serialize();
+
+        //查询导入记录
+        $.post(UnImportedUrl, { id: id, type: 1, PageIndex: pageIndex }, function (result) {
+            $("#tableBxUnImported tbody").empty();
+
+            $(result.Items).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                // row.append('<td><a class="btn default" data-toggle="modal" data-target="#myModal" role="basic" aria-hidden="true" href="/AssetsFind/AssetsFind/ViewDetail?entityId=' + item.EntityId + '&t=' + (new Date()).valueOf() + '">' + item.AssetsNum + '</a></td>');
+                row.append('<td>' + item.GoodsName + '</td>');
+                row.append('<td>' + item.StoreNum + '</td>');
+                row.append('<td>' + item.TableName + '</td>');
+                row.append('<td>' + item.TableRow + '</td>');
+                row.append('<td>' + item.ImportTime + '</td>');
+                row.append('<td>' + item.ImportPerson + '</td>');
+                row.append('<td>' + item.Exception + '</td>');
+
+                $("#tableBxUnImported").append(row);
+
+            });
+            $("#exampleBxUnImported_info").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " , 总共 " + result.TotalItemCount);
+
+            if (result.TotalPageCount <= 1) {
+                $('#divBxUnImportedPager').empty();
+                return;
+            }
+            var options = {
+                bootstrapMajorVersion: 3, //版本
+                numberOfPages: 8,
+                currentPage: result.CurrentPageIndex,
+
+                totalPages: result.TotalPageCount,
+                itemTexts: function (type, page, current) {
+                    switch (type) {
+                        case "first":
+                            return "首页";
+                        case "prev":
+                            return "上一页";
+                        case "next":
+                            return "下一页";
+                        case "last":
+                            return "末页";
+                        case "page":
+                            return page;
+                    }
+                }, //点击事件，用于通过Ajax来刷新整个list列表
+                onPageClicked: function (event, originalEvent, type, page) {
+                    queryBxUnImported(page, id);
+                }
+            };
+            $('#divBxUnImportedPager').bootstrapPaginator(options);
+        }, "json");
+
+    } //fuction
+
+    $(function () {
+
+        $.post(QueryImportedId, { type: 1 }, function (id) {
+
+            $("#LastImportedId").val(id);
+            // alert(id);
+        });
+        var lstId = $("#LastImportedId").val();
+
+        queryBxImported(1, lstId);
+        queryBxHistory(1);
+        $("#perBxPageSize").change(function () {  //点击每页数量时，改变每页显示数，从第一页开始
+            var pageIndex = $("#PageSize").val();
+            var recordId = $("#ImportId").val();
+            queryBxImported(pageIndex, recordId);
+        });
+        $("#perBxHistoryPageSize").change(function () {  //点击每页数量时，改变每页显示数，从第一页开始
+            $("#PageSize").val($(this).val());
+            var pageIndex = $("#PageIndex").val();
+            queryBxHistory(pageIndex);
+        });
+
+
+
+    });
+    function Open(href) {
+        window.open(href, "1", "width=600,height=480,toolbar=no, status=no, menubar=no, resizable=yes, scrollbars=yes");
+        return false;
+    }
+    function OpenAllByPost() {
+        $.ajax({
+            type: "POST",
+            url: "/AssetsFind/AssetsFind/CreateQrCode",
+            data: $("#Select").serialize(),
+            success: function (data) {
+                openWin = window.open("", "newwin", "location=no,width=600,height=480,toolbar=no, status=no, menubar=no, resizable=no, scrollbars=yes");
+                openWin.document.write(data);
+
+                openWin.document.close();
+            }
+        });
+    }
+</script>
+
+
+
+
+<div class="modal fade" id="UpLoadModel" tabindex="-1" role="dialog" aria-labelledby="UpLoadModelLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">文件上传</h4>
+            </div>
+            <div class="modal-body">
+                <div class="progress">
+                    <div class="progress-bar" id="progressNumber" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="recipient-name" class="control-label">文件名</label>
+                    <div class="form-control" id="fileName"></div>
+                </div>
+                <div class="form-group">
+                    <label for="recipient-name" class="control-label">文件大小</label>
+                    <div class="form-control" id="fileSize"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" type="button" data-dismiss="modal">关闭</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Assets/datatables/datatables.min.js"></script>
+
+<script>
+    $("#file")[0].onchange = fileSelected;
+    $("#upload")[0].onclick = uploadFile;
+    function fileSelected() {
+        var file = $('#file')[0].files[0];
+        if (file) {
+            var fileSize = 0;
+            if (file.size > 1024 * 1024)
+                fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+            else
+                fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+            $('#fileName')[0].innerHTML = file.name;
+            $('#fileSize')[0].innerHTML = fileSize;
+        }
+    }
+    var xhr;
+    function uploadFile() {
+        $('#UpLoadModel').modal({ backdrop: 'static', keyboard: false });
+        var fd = new FormData($("form")[0]);
+        xhr = new XMLHttpRequest();
+        //xhr.upload.addEventListener("progress", uploadProgress, false);
+        xhr.addEventListener("load", uploadComplete, false);
+        xhr.addEventListener("error", uploadFailed, false);
+        xhr.addEventListener("abort", uploadCanceled, false);
+
+        xhr.open("POST", "/SycData/Syc/NewBXDataInput");//修改成自己的接口
+        xhr.send(fd);
+        intervalProcess = setInterval("uploadProgress()", 100);
+        $("#progressNumber").css("width", 0 + '%');
+        $("#progressNumber").attr("aria-valuenow", 0);
+    }
+    var intervalProcess;
+    function uploadProgress() {
+
+        $.post("/SycData/syc/QueryProgress", null, function (e) {
+            //console.log(e);
+            $("#progressNumber").css("width", e.ImportedPercentVal.toString() + '%');
+            $("#progressNumber").attr("aria-valuenow", e.ImportedPercentVal.toString());
+            document.getElementById('progressNumber').innerHTML = e.ImportedPercentVal.toString() + '%  (' + e.ImportedAssetsNum + '/' + e.TotalAssetsNum + ')';
+        });
+    }
+    var tableBxUnImported, tableBxImported;
+    function uploadComplete(evt) {
+        clearInterval(intervalProcess);
+        $('#UpLoadModel').modal('hide');
+        var result = JSON.parse(xhr.response);
+        if (result.type == 0) {
+            alert("已经导入" + result.ImportedNum + "未导入" + result.UnImportedNum);  //
+            queryBxHistory(1); //更新办学导入记录
+            // var lstId = $("#LastImportedId").val();
+            // LastImportedId
+            queryBxImported(1, result.LastImportedId); //更新已导入记录详细信息
+            queryBxUnImported(1, result.LastImportedId);//更新本次未导入详细信息
+            //-------------------------------liu 0715--------------------------------------------------------//
+            //  history.go(0);
+            //-----------------------------------------------------------------------------------------------//
+
+            //if (tableDtImported != null) {
+            //    tableBxImported.destroy();
+            //}
+            //if (tableDtUnImported != null) {
+            //    tableBxUnImported.destroy();
+            //}
+
+
+            /*  tableBxImported = $("#tableBxImported").DataTable({
+               // data: result.ImportedItems,
+                "order": [[1, "desc"]],
+               columns: [
+                    { title: "资产名称" ,data:"GoodsName"},
+                    { title: "资产代码" ,data:"CatCode"},
+                    { title: "价值" ,data:"Money"},
+                    { title: "存放地点" ,data:"StorePlace"},
+                    { title: "经办人" ,data:"Agent"},
+                    { title: "使用属性" ,data:"UsingAttribute"},
+                    {title:"使用状况",data:"UsingState"}
+                ],
+            });
+               */
+            //  history.go(0);
+            /* tableBxUnImported=  $("#tableBxUnImported").DataTable({
+                 data: result.UnImportedItems,
+                 "order": [[1, "desc"]],
+                 "bDestory": true,
+                 columns: [
+                     { title: "资产名称", data: "AssetsMain.GoodsName" },
+                     { title: "资产代码", data: "AssetsMain.CatCode" },
+                     { title: "价值", data: "AssetsMain.Money" },
+                     { title: "存放地点", data: "AssetsMain.StorePlace" },
+                     { title: "经办人", data: "AssetsMain.Agent" },
+                     { title: "使用属性", data: "AssetsMain.UsingAttribute" },
+                     { title: "使用状况", data: "AssetsMain.UsingState" },
+                     { title: "未导入原因", data: "Message" }
+                 ],
+             });*/
+
+
+        } else {
+            // alert(result.msg);
+            queryBxUnImported(1, result.LastImportedId);//更新本次未导入详细信息
+        }
+
+    }
+    function uploadFailed(evt) {
+        clearInterval(intervalProcess);
+
+        alert("上传文件时出错");
+    }
+    function uploadCanceled(evt) {
+        clearInterval(intervalProcess);
+
+        alert("取消上传");
+    }
+</script>

@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9542B03F-DD9D-4160-99D3-889693B399FD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EAM.Data.Repositories</RootNamespace>
+    <AssemblyName>EAM.Data.Repositories</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NPoco">
+      <HintPath>..\RefDll\NPoco.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IAssetsMainCombineRepository.cs" />
+    <Compile Include="IAssetsScrapPhotoRepository.cs" />
+    <Compile Include="IAssetsScrapReplyRepository.cs" />
+    <Compile Include="ILedGerCachRepository.cs" />
+    <Compile Include="IDiffResultRepository.cs" />
+    <Compile Include="Impl\AssetsMainCombineRepository.cs" />
+    <Compile Include="Impl\AssetsScrapPhotoRepository.cs" />
+    <Compile Include="Impl\AssetsScrapReplyRepository.cs" />
+    <Compile Include="Impl\LedGerCachRepository.cs" />
+    <Compile Include="Impl\DiffResultRepository.cs" />
+    <Compile Include="Impl\AssetsRecordRepository.cs" />
+    <Compile Include="Impl\ScrapMergeRepository.cs" />
+    <Compile Include="Impl\UnImportAssetsRepository.cs" />
+    <Compile Include="Impl\PlaceRepository.cs" />
+    <Compile Include="Impl\RoleRepository.cs" />
+    <Compile Include="IAssetsRecordRepository.cs" />
+    <Compile Include="IPlaceRepository.cs" />
+    <Compile Include="IDepartmentRepository.cs" />
+    <Compile Include="IAssetsBorrrowRepository.cs" />
+    <Compile Include="IClassCodeRepository.cs" />
+    <Compile Include="IImportHistoryRepository.cs" />
+    <Compile Include="Impl\AssetsBorrrowRepository.cs" />
+    <Compile Include="Impl\DepartmentRepository.cs" />
+    <Compile Include="Impl\ScrapApplyDetailRepository.cs" />
+    <Compile Include="Impl\ScrapApllyRepository.cs" />
+    <Compile Include="Impl\SysWarningRepository.cs" />
+    <Compile Include="Impl\ClassCodeRepository.cs" />
+    <Compile Include="Impl\UserInfoRepository.cs" />
+    <Compile Include="Impl\ImportHistoryRepository.cs" />
+    <Compile Include="IScrapApplyDetailRepository.cs" />
+    <Compile Include="IScrapApllyRepository.cs" />
+    <Compile Include="IScrapMergeRepository.cs" />
+    <Compile Include="ISysWarningRepository.cs" />
+    <Compile Include="IUnImportAssetsRepository.cs" />
+    <Compile Include="IRoleRepository.cs" />
+    <Compile Include="IUserInfoRepository.cs" />
+    <Compile Include="IAquairDetailRepository.cs" />
+    <Compile Include="IAquairRepository.cs" />
+    <Compile Include="IAssetsMainRepository.cs" />
+    <Compile Include="Impl\OrderListRepository.cs" />
+    <Compile Include="Impl\SysInfoRepository.cs" />
+    <Compile Include="IOrderListRepository.cs" />
+    <Compile Include="IBooksRepository.cs" />
+    <Compile Include="IBorrowDetailRepository.cs" />
+    <Compile Include="IBorrowRepository.cs" />
+    <Compile Include="IBuildingRepository.cs" />
+    <Compile Include="ICarRepository.cs" />
+    <Compile Include="ICulturalrelicRepository.cs" />
+    <Compile Include="EamDatabase.cs" />
+    <Compile Include="IGeneralRepository.cs" />
+    <Compile Include="IHouseRepository.cs" />
+    <Compile Include="IAnimalRepository.cs" />
+    <Compile Include="Impl\AquairRepository.cs" />
+    <Compile Include="Impl\AnimalRepository.cs" />
+    <Compile Include="Impl\AquairDetailRepository.cs" />
+    <Compile Include="Impl\AssetsMainRepository.cs" />
+    <Compile Include="Impl\BooksRepository.cs" />
+    <Compile Include="Impl\BorrowDetailRepository.cs" />
+    <Compile Include="Impl\BorrowRepository.cs" />
+    <Compile Include="Impl\BuildingRepository.cs" />
+    <Compile Include="Impl\CarRepository.cs" />
+    <Compile Include="Impl\CulturalrelicRepository.cs" />
+    <Compile Include="Impl\GeneralRepository.cs" />
+    <Compile Include="Impl\HouseRepository.cs" />
+    <Compile Include="Impl\InventoryDetailRepository.cs" />
+    <Compile Include="Impl\InventoryRepository.cs" />
+    <Compile Include="IInventoryDetailRepository.cs" />
+    <Compile Include="IInventoryRepository.cs" />
+    <Compile Include="ILandRepository.cs" />
+    <Compile Include="ISysInfoRepository.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Impl\RepairDetailRepository.cs" />
+    <Compile Include="Impl\RepairRepository.cs" />
+    <Compile Include="Impl\ReturnDetailRepository.cs" />
+    <Compile Include="Impl\ReturnRepository.cs" />
+    <Compile Include="Impl\ServiceDetailRepository.cs" />
+    <Compile Include="Impl\ServiceRepository.cs" />
+    <Compile Include="Impl\SpecialRepository.cs" />
+    <Compile Include="IRepairDetailRepository.cs" />
+    <Compile Include="IRepairRepository.cs" />
+    <Compile Include="IReturnDetailRepository.cs" />
+    <Compile Include="IReturnRepository.cs" />
+    <Compile Include="IServiceDetailRepository.cs" />
+    <Compile Include="IServiceRepository.cs" />
+    <Compile Include="ISpecialRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EAM.Data.Comm\EAM.Data.Comm.csproj">
+      <Project>{A7EF0FD8-266C-4B7B-B2FC-9A80ADE55844}</Project>
+      <Name>EAM.Data.Comm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EAM.Data.Domain\EAM.Data.Domain.csproj">
+      <Project>{613CD9FF-CA8A-4040-9225-AF99935C016F}</Project>
+      <Name>EAM.Data.Domain</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Impl\LandRepository.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,392 @@
+﻿@{
+    Layout = Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+<script src="~/Assets/jquery.form.min.js"></script>
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产盘点</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 资产盘点计划表 -->
+<section class="content">
+    <div class="row">
+        <!--资产列表面板 -->
+        <div class="col-lg-12">
+            <!-- 资产列表面板 -->
+            <div class="box">
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">资产盘点计划</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        <input type="hidden" name="InventoryRecordPageIndex" id="InventoryRecordPageIndex" value="1" />
+                        <input type="hidden" name="InventoryRecordPageSize" id="InventoryRecordPageSize" value="20" />
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="InventoryRecordTable" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                    <thead>
+                                        <tr role="row" class="row-bkg">
+                                            <th >序号</th>
+                                            <th >盘点人</th>
+                                            <th >盘点日期</th>
+                                            <th >盘点部门</th>
+                                            <th >盘点状况</th>
+                                            <th >盘点操作人</th>
+                                            <th >盘点操作时间</th>
+                                            <th >盘点操作部门</th>
+                                            <th>操作</th>
+                                            <th>导出</th>
+                                        
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <!--  表数据数目显示位置 -->
+                                <div class="dataTables_info" id="InventoryRecordTableInfo" role="status" aria-live="polite"></div>
+                            </div>
+                            <div class="col-sm-9">
+                                <!-- 分页器添加位置 -->
+                                <ul id="InventoryRecordPager"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- 资产盘点单 -->
+<section class="content">
+    <div class="row">
+
+        <div class="col-lg-12">
+            <div class="box">
+                <!-- 表头 -->
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">资产盘点单</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <!-- box content -->
+                <div class="box-body content">
+                    <form method="post" id="fromInventory" name="fromInventory" action="UploadInventoryPlanFile" enctype="multipart/form-data">
+                        <!-- 盘点左侧栏/盘点信息 -->
+                        <div class="col-lg-3">
+                            <!-- 盘点信息 -->
+                            <div class="row" style="margin-left:0px;">
+                                <br />
+                                @*<label>盘点操作人：</label><input class="form-control" type="text" placeholder="盘点操作人" id="InventoryOperationPerson" name="InventoryOperationPerson">*@
+                                <label>盘点操作人：</label><select class="form-control" type="text" name="InventoryOperationPerson" id="InventoryOperationPerson"></select>
+                                <script src="~/Assets/select2/select2.js"></script>
+                                <script>
+                                    $.post("/sysManage/sysManage/GetAllUsersMax", function (data) {
+                                        $("#InventoryOperationPerson").select2({
+                                            placeholder: "盘点操作人",
+                                            data: data
+                                        });
+                                    })
+                                </script>
+                                <br />
+                                <br />
+                                <label>盘点部门：</label><input class="form-control" type="text" placeholder="盘点部门" id="InventoryOperationDepartment" name="InventoryOperationDepartment">
+                                <script>
+                                    buildTree("treediv1", "placeTree1", "InventoryOperationDepartment", "/SysManage/SysManage/ListDept?t=" + new Date(), "name");
+                                </script>
+
+                                <br />
+                                <label>盘点时间：</label><input class="form-control" type="text" placeholder="盘点时间" id="InventoryOperationDate" name="InventoryOperationDate" readonly="readonly" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")">
+                                <br />
+                                <div id="upfilediv">
+                                    <label>盘点文件：</label><input class="form-control" type="file" placeholder="盘点文件" id="file" name="file">
+                                    <input id="ButtonUpload" type="submit" value="上传盘点文件" />
+                                </div>
+                                @* <br />
+                                    <label>盘点文件：</label><input class="form-control" type="file" placeholder="盘点文件" id="InventoryFile" name="InventoryFile">*@
+                            </div>
+                            <!-- 盘点操作 -->
+                            <div class="row">
+                                <br />
+                                <div class="col-lg-offset-5">
+                                    <input type="hidden" id="InventoryId" name="InventoryId">
+                                    <button class="btn btn-default btn-all" id="btnInventory">完成盘点</button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- 盘点右侧栏/待盘点资产 -->
+                        <div class="col-lg-8 col-lg-offset-1">
+                            <!-- 资产借出单 -->
+                            <div class="row">
+                                <!-- 标题 -->
+                                <div class="row">
+                                    <div class="row col-lg-offset-4">
+                                        <label style="font-size:25px;">资产盘点单</label>
+                                    </div>
+                                </div>
+                                <!-- 借用单详情 -->
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px">盘点人:</label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px" id="InventoryPerson"></label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px">盘点时间:</label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px" id="InventoryDate"></label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px">盘点部门:</label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px" id="InventoryDepartment"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 资产借出列表 -->
+                            <div class="row">
+                                <table id="InventoryDetailListTable" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                    <thead>
+                                        <tr role="row" class="row-bkg">
+                                            <th>资产编号</th>
+                                            <th>资产名称</th>
+                                            <th>动态编码</th>
+                                            <th>型号规格</th>
+                                            <th>计量单位</th>
+                                            <th>数量</th>
+                                            <th>价值</th>
+                                            <th>存放地点</th>
+                                            <th>盘点人</th>
+                                            <th>盘点时间</th>
+                                            <th>盘点结果</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
+                    @*<form id="filePost" action="UploadInventoryPlanFile" method="post" enctype="multipart/form-data">
+                            <input type="file" name="file"/>
+                            <input id="ButtonUpload" type="submit" value="上传盘点文件"/>
+                            <div id="outputdiv"></div>
+                        </form>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/JavaScript">
+    $(document).ready(function() {
+        var options = {
+            beforeSubmit: showRequest,
+            success: showResponse
+        };
+        $('#fromInventory').submit(function () {
+            $(this).ajaxSubmit(options);
+            return false;
+        });
+    });
+
+    function showRequest(formData, jqForm, options) {
+        $("#outputdiv").text("正在上传文件");
+        return true;
+    }
+
+    function showResponse(responseText, statusText) {
+        //alert(responseText);
+        var inventoryDat = JSON.parse(responseText);
+        if (inventoryDat.Code > 0) {
+            var msg = "读取文件失败：" + inventoryDat.Message;
+            $("#outputdiv").text(msg);
+            alert(msg);
+            return;
+        }
+        /*正常上传  填写盘点结果*/
+        $(inventoryDat.Data).each(function (index, item) {
+            
+            var txt = $("#_INVENTORYRESULT_" + item.GoodsFiscalNo);
+            if (null != txt) {
+                if (item.GoodsNum == 1) {
+                    txt.val(item.GoodsNum + "盘平");
+                }
+                if (item.GoodsNum > 1) {
+                    txt.val(item.GoodsNum + "盘盈");
+                }
+                if (item.GoodsNum <= 0) {
+                    txt.val(item.GoodsNum + "盘亏");
+                }
+            }
+            $("#outputdiv").text("分析完成");
+        });
+    }
+</script>
+<script src="~/Assets/datatables/datatables.min.js"></script>
+<!-- 资产盘点计划表显示 -->
+<script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+<script type="text/javascript">
+
+    var inventoryQueryUrl = "@Url.Action("InventoryRecordQuery", "AssetsFind", new { area = "AssetsFind" })";
+
+    function queryInventoryRecordData(pageIndex) {
+        $("#InventoryRecordPageIndex").val(pageIndex);
+        //var d = $("#NoneFrm").serialize();
+        var pageSize = $("#InventoryRecordPageSize").val();
+        $.post(inventoryQueryUrl,{pageSize:pageSize,pageIndex:pageIndex}, function (result) {
+            $("#InventoryRecordTable tbody").empty();
+            $(result.Items).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td><a target="_blank" href="/AssetsFind/AssetsFind/ViewDetail?entityId=' + item.EntityId + '">' + item.EntityId + '</a></td>');
+                row.append('<td>' + item.InventoryPerson + '</td>');
+                row.append('<td>' + item.InventoryDate + '</td>');
+                row.append('<td>' + item.InventoryDepartment + '</td>');
+
+                if (item.HasInventory == 0)// 根据表里面的这个字段值来判断是否已经归还，0表示没有归还,1表示已经归还
+                    row.append('<td>未盘点</td>');
+                else
+                    row.append('<td>已盘点</td>');
+                var InventoryOperationPerson = "无";
+                if (item.InventoryOperationPerson!=null)
+                    InventoryOperationPerson = item.InventoryOperationPerson
+                row.append('<td>' + InventoryOperationPerson + '</td>');// 如果已经归还就会显示归还人是谁
+                row.append('<td>' + item.InventoryOperationDate + '</td>');// 和归还日期
+
+                var InventoryOperationDepartment = "无";
+                if (item.InventoryOperationDepartment != null)
+                    InventoryOperationDepartment = item.InventoryOperationDepartment
+                row.append('<td>' + InventoryOperationDepartment + '</td>');// 和归还日期
+
+                if (item.HasInventory == 0)
+                {
+                    row.append('<td><span class="btn btn-default btn-all inventory" data-id=' + item.EntityId + '>开始盘点</span></td>');// 如果没有归还就在这条记录的最后面增加一个按钮用来做归还操作
+                    row.append('<td></td>');// 如果没有归还就在这条记录的最后面增加一个按钮用来做归还操作
+                }
+                    
+                else
+                {
+                    row.append('<td><span class="btn btn-default btn-all inventory_show" data-id=' + item.EntityId + '>查看盘点结果</span></td>');
+                    //row.append('<td><span class="btn btn-primary inventory_show" data-id=' + item.EntityId + '>导出盘点结果</span></td>');
+                    row.append('<td><a class="btn btn-default btn-all" href="/AssetsFind/DoAssetsExport/ExportInventory?doAssetsId=' + item.EntityId + '" class="btn btn-sm">导出盘点结果</a></td>');
+                }
+                    
+
+                $("#InventoryRecordTable").append(row);
+            });
+            $("#InventoryRecordTable").DataTable();
+            // 盘点按钮事件注册
+            $(".inventory").click(function() {
+                var val = $(this).attr("data-id");// 传递这个控件的data-id的属性值，实际上你可以看到就是通过这个按钮把资产借出记录表中的序号传递过去
+                ShowInventory(val,false);// 点击归还按钮后调用这个函数，我们来看一下这个函数的作用效果
+            }); // 这个就是归还按钮事件注册，$(".inventory")表示选中所有class属性中有inventory标志控件
+            $(".inventory_show").click(function () {
+                var val = $(this).attr("data-id");
+                ShowInventory(val,true);
+            });
+        }, "json");
+    }
+
+    // 这个函数的作用有以下几点
+    // 1、将借用信息读取出来填充到借用单 // 资产借用信息是放在Assets_Borrow表中  
+    // 2、强借用信息中的资产项显示出来，  // 资产借用的资产项放在Assets_Borrow_Detail表中
+    // 3、提交归还信息，归还信息包括两方面：
+    //                           1、归还人，归还时间，归还备注，我们称之为归还的概要信息，这些信息提交后实际上是写入到Assets_Borrow表中
+    //                         2、归还资产的详细归还信息，刚才看到的资产状况就是，因为用户在归还的时候要填写资产是否有损坏等等信息。这些信息提交后是写到Assets_Borrow_Detail表中。
+    // 下面就来看这三个功能点是如何实现的
+    function ShowInventory(inventoryId,showResult) {
+        $.post("/AssetsFind/DoAssets/InventoryDetail", { inventoryId: inventoryId }, function (result) {  // 这个就是请求读取Assets_Borrow表和Assets_Borrow_Detail表
+
+            // 功能1开始
+            $("#InventoryId").val(result.InventoryInfo.EntityId);
+            $("#InventoryPerson").text(result.InventoryInfo.InventoryPerson);
+            $("#InventoryDate").text(result.InventoryInfo.InventoryDate);
+            $("#InventoryDepartment").text(result.InventoryInfo.InventoryDepartment);
+            // 功能1结束
+
+            // 功能2开始
+            $("#InventoryDetailListTable tbody").empty();
+            $(result.Details).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td>' + item.AssetsNo + '</td>');
+                row.append('<td>' + item.GoodsName + '</td>');
+                row.append('<td>' + item.UsedNum1 + '</td>');
+                row.append('<td>' + item.ModelSpecification + '</td>');
+                row.append('<td>' + item.MeasurementUnits + '</td>');
+                row.append('<td>' + item.Counts + '</td>');
+                row.append('<td>' + item.Money + '</td>');
+                row.append('<td>' + item.StorePlace + '</td>');
+                row.append('<td>' + item.InventoryPerson + '</td>');
+                row.append('<td>' + item.InventoryDate + '</td>');
+                var rval = item.InventoryResult == null ? "" : item.InventoryResult;
+                row.append('<td><input type="text" maxlength="50" width="20" name="_INVENTORYRESULT_' + item.UsedNum1 + '" id="_INVENTORYRESULT_' + item.UsedNum1 + '" value="' + rval + '"/><td>');// 这个就是用来填写每个资产归还时的详细情况的
+                $("#InventoryDetailListTable").append(row);
+            });
+            // 功能2结束
+
+            $("#InventoryOperationDepartment").val(result.InventoryInfo.InventoryOperationDepartment);
+            $("#InventoryOperationPerson").val(result.InventoryInfo.InventoryOperationPerson);
+            //$("#InventoryOperationDate").val(result.InventoryInfo.InventoryOperationDate);
+
+            $("#btnInventory").show();
+            $("#upfilediv").show();
+
+            /*显示盘点结果*/
+            if (showResult) {
+                $("#btnInventory").hide();
+                $("#upfilediv").hide();
+            }
+            $("#InventoryDetailListTable").DataTable();
+        });
+    }
+
+
+    $(function () {
+        $("#InventoryRecordPerPageSize").change(function () {
+            alert($(this).val());
+            $("#InventoryRecordPageSize").val($(this).val());
+            queryInventoryRecordData(1);
+        });
+
+        queryInventoryRecordData(1);
+
+        // 功能3开始
+        $("#btnInventory").click(function () {//点击盘点按钮
+            var d = $("#fromInventory").serialize();// 将盘点表单数据打包，准备发送
+            $.post("/AssetsFind/DoAssets/InventoryAssets", d, function (result) {// 这个就是提交资产归还表单
+                if (result == "ok") {
+                    alert("操作成功");
+                    //document.getElementById("fromInventory").reset();
+                    //queryInventoryRecordData($("#InventoryRecordPageIndex").val());
+                    window.location.reload();
+                    return;
+                }
+                alert(result);
+            }, "json");
+        });
+        // 功能3结束
+    });
+</script>
+

@@ -1,0 +1,75 @@
+﻿@model EAM.Data.Domain.AnimalandplantAttribute
+@{
+    ViewBag.Title = "条目输入界面";
+    Layout = "~/Areas/AssetsInput/Views/AssetsInput/Input.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">特种动植物</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 特种动植物差异化属性 -->
+<div class="col-lg-12">
+    <div class="box box-info">
+        <!-- Header -->
+        <div class="box-header with-border">
+            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">特种动植物</h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            </div>
+        </div>
+        <!-- Body -->
+        <div class="box-body">
+            <div class="box-body">
+                <!-- 出生/栽种年份 -->
+                <div class="form-group">
+                    <label>出生/栽种年份</label>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd" 
+                               id="Birthday" name="Birthday" value="@Model.Birthday" />
+                    </div>
+                </div>
+
+                <!-- 预计寿命/种龄 -->
+                <div class="form-group">
+                    <label>预计寿命/种龄</label>
+                    <input type="text" class="form-control" id="Age" name="Age" placeholder="预计寿命/种龄" value="@Model.Age" />
+                </div>
+
+                <!-- 纲属科 -->
+                <div class="form-group">
+                    <label>纲属科</label>
+                    <input type="text" class="form-control" id="Class" name="Class" placeholder="纲属科" value="@Model.Class" />
+                </div>
+
+                <!-- 产地 -->
+                <div class="form-group">
+                    <label>产地</label>
+                    <input type="text" class="form-control" id="Palce" name="Palce" placeholder="产地" value="@Model.Palce" />
+                </div>
+
+                <!-- 使用方向 -->
+                <div class="form-group">
+                    <label>使用方向</label>
+                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                        <option selected="selected">自用</option>
+                        <option>出借</option>
+                        <option>出租</option>
+                        <option>其他</option>
+                    </select>
+                </div>
+
+            </div><!-- /.box-body -->
+          
+        </div><!-- /.box-body -->
+    </div>
+</div>
+<input type="hidden" name="AttrId" value="@Model.AttrId">

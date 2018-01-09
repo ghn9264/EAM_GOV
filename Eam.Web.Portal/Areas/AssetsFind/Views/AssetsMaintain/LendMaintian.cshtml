@@ -1,0 +1,110 @@
+﻿@using Eam.Web.Portal.Areas
+@{
+    ViewBag.Title = "借用维护";
+    Layout = "~/Areas/AssetsFind/Views/AssetsFind/_AssetsFindLayout.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">借用维护</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 资产借出维护面板 -->
+<section class="content">
+    <div class="row">
+        <!--资产借出维护面板 -->
+        <div class="col-lg-12">
+            <!-- 资产借出维护面板 -->
+            <div class="box">
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">借出维护</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-primary top_a" id="AddAsset" name="AddAsset">添加资产</button>
+                        <span></span>
+                        <button class="btn btn-primary top_a" id="CloseAdd" name="CloseAdd">关闭添加</button>
+                    </div>
+                
+                </div><!-- /.box-header -->
+                
+                <div class="box-body">
+                    <form method="post" id="_frm_">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tableOrderList" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                    <thead>
+                                        <tr role="row" class="row-bkg">
+                                            <th style="width: 293px;">资产编号</th>
+                                            <th style="width: 359px;">资产名称</th>
+                                            <th style="width: 318px;">资产类别</th>
+                                            <th style="width: 256px;">单价</th>
+                                            <th style="width: 256px;">数量</th>
+                                            <th style="width: 256px;">计量单位</th>
+                                            <th style="width: 191px;">选择</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row text-center">
+                            <input type="hidden" value="0" name="isBorrow" id="isBorrow" />
+                            <button type="button" class="btn btn-default btn-all" id="isBorrow1">可借出</button>
+                            <button type="button" class="btn btn-default btn-all" id="isBorrow0">不可借出</button>
+                        </div>
+                    </form>
+                </div><!-- /.box-body -->
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+
+    window.AddToOrderListCallBack = loadData;
+
+    var serviceUrl2 = "@Url.Action("Query", "OrderList", new {area = "Account"})";
+
+    function loadData() {
+        $.post(serviceUrl2, { "type": "@ConstTag.LendMaintian" }, function (result) {
+            $("#tableOrderList tbody").empty();
+            $(result).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td><input type="hidden" name="AssetsNum" value="' + item.AssetsNum + '"/> ' + item.AssetsNum + '</td>');
+                row.append('<td>' + item.GoodsName + '</td>');
+                row.append('<td>' + item.CatCode + '</td>');
+                row.append('<td>' + item.Price + '</td>');
+                row.append('<td>' + item.Counts + '</td>');
+                row.append('<td>' + item.MeasurementUnits + '</td>');
+                row.append('<td><span class="btn btn-default btn-all remove" data-id="' + item.EntityId + '">删除</span></td>');
+                $("#tableOrderList tbody").append(row);
+            });
+            $(".remove").click(function () {
+                var serviceUrlRemove = "@Url.Action("RemoveOne", "OrderList", new {area = "Account"})";
+                $.post(serviceUrlRemove, { "id": $(this).attr("data-id") }, function() {
+                    loadData();
+                });
+            });
+        });
+    }
+
+    //初始加载
+    $(function() {
+        loadData();
+        $("#isBorrow1").click(function () {
+            $("#isBorrow").val(1);
+            submitForm();
+        });
+        $("#isBorrow0").click(function () {
+            $("#isBorrow").val(0);
+            submitForm();
+        });
+    });
+
+    function submitForm() {
+        $("#_frm_").submit();
+    }
+
+</script>

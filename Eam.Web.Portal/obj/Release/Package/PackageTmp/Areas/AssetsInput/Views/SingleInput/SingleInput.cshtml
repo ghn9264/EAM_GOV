@@ -1,0 +1,1496 @@
+﻿@using EAM.Data.Domain
+@using Eam.Web.Portal.Areas.AssetsInput.Models
+@model EAM.Data.Domain.AllAttribute
+
+@{
+    ViewBag.Title = "条目输入";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+
+    AssetsMain Main = ViewBag.Main as AssetsMain;
+    if (null == Main)
+    {
+        Main = new AssetsMain();
+    }
+}
+
+<script src="~/Assets/SelectTree.js"></script>
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> </ol>');
+    });
+</script>
+
+
+<link href="~/Assets/select2/select2.css" rel="stylesheet" />
+<link href="~/Assets/datepicker/datepicker1.css" rel="stylesheet" />
+<!-- 属性输入区顶部 -->
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.core.js"></script>
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.exedit.js"></script>
+<script src="~/Assets/SelectTree.js"></script>
+<section class="content content-all">
+    <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" id="AssetType" name="AssetType" value="">
+        <!-- 开一行 -->
+        <div class="row">
+
+                <!-- 左侧栏/资产类别树 -->
+                <div class="col-lg-3">
+                    <!-- 右侧列 -->
+                    <div class="box box-danger">
+                            <!-- body Header -->
+                            <div class="box-header with-border">
+                                <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);"></h3>
+                                <div class="box-tools pull-right">
+                                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div><!-- /.box-header -->
+                            <!-- 资产类型列表 -->
+                            <div class="box-body no-padding">
+                                @*<h3 class="control-sidebar-heading">资产分类</h3>*@
+                                <section class="sidebar">
+                                    <!-- 资产类别树 -->
+                                    <ul id="_classTree" class="ztree"></ul>
+                                </section>
+                                <script type="text/javascript">
+                                    var CatSetting = { callback: { onDblClick: onCatNodeDblClick } };
+
+                                    //
+                                    // 资产类树点击回调函数
+                                    //
+                                    function onCatNodeDblClick(event, treeId, treeNode) {
+
+                                        //alert("1");
+                                        //
+                                        // 判断是否为父节点
+                                        // 如果是父节点则双击没有反应
+                                        //
+                                        if (treeNode.isParent)
+                                            return;
+                                        //alert("2");
+                                        //
+                                        //
+                                        //
+                                        if ($.isFunction(window.OnClassCodeSelected)) {
+                                            //alert("3");
+                                            var obj = {};
+                                            obj.ClassCode = treeNode.id;
+                                            obj.ClassName = treeNode.name;
+                                            obj.Unit = treeNode.unit;
+                                            $.post("/Account/Desktop/GetClassCode?catCode=" + treeNode.id, function (nextNum) {
+
+                                                //
+                                                // 通过js从数据库取回nextNum值
+                                                //
+                                                obj.NextNum = nextNum;
+
+                                                //
+                                                // 调用OnClassCodeSelected函数
+                                                //
+                                                window.OnClassCodeSelected(obj);
+
+                                                //alert("4");
+                                            });
+                                        };
+                                        //alert("5");
+                                    }
+
+                                    //
+                                    // ajax呈现资产树
+                                    //
+                                    $(document).ready(function () {
+
+                                        //
+                                        // 从数据库取资产类别树
+                                        //
+                                        $.post("/Account/DeskTop/GetClassCodeTree?t=" + new Date(),
+                                            function (result) {
+
+                                                //
+                                                // 根据取回来的数据创建资产树
+                                                //
+                                                $.fn.zTree.init($("#_classTree"), CatSetting, result);
+                                            }, "json");
+                                    });
+                                </script>
+
+                            </div><!-- /.box-body -->
+                        </div>
+                </div>
+
+                <!-- 右侧栏/资产属性录入栏 -->
+                <div class="col-lg-9">
+                    <!-- 资产属性录入栏 -->
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">基础信息</a></li>
+                            <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">使用信息</a></li>
+                            <li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="false">财务信息</a></li>
+                            <li class=""><a href="#tab_4" data-toggle="tab" aria-expanded="false">附属信息</a></li>
+                            <li class=""><a href="#tab_5" data-toggle="tab" aria-expanded="false">资产照片</a></li>
+                            <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <!-- 基础信息 -->
+                            <div class="tab-pane active" id="tab_1">
+                                <!-- 公共属性录入区域/基础信息 -->
+                                <div class="box box-info" id="BaseInfo" style="display: ">
+                                    <!-- Header -->
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">资产基础信息</h3>
+                                        <div class="box-tools pull-right">
+                                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Body -->
+                                    <div class="box-body">
+                                        <!-- 资产名称 -->
+                                        <div class="form-group">
+                                            <label>资产名称</label>
+                                            <input type="text" class="form-control" id="GoodsName" name="GoodsName" placeholder="资产名称" value="@ViewBag.Main.GoodsName" />
+                                        </div>
+                                        <script src="~/Assets/select2/select2.full.js"></script>
+                                        <!-- 资产分类 -->
+                                        <div class="form-group">
+                                            <label>资产分类代码</label>
+                                            @*<select id="CatCode" name="CatCode" class="form-control">
+
+                                            </select>
+                                            <script>
+                                                //$.post("/account/desktop/GetClassCodeList").success(function (e) {
+                                                    //console.log(e);
+                                                    //
+                                                    // 填写资产名称
+                                                    //
+                                                    //$("#CatCode").select2({ data: e })
+                                                    //$("#CatCode").select2({ data: e })
+                                                //});
+                                            </script>*@
+                                            @*<a href="#" data-toggle="control-sidebar">aa</a>*@
+                                            <input type="text" class="form-control" id="CatCode" name="CatCode" placeholder="资产分类" value="@ViewBag.Main.CatCode" />
+
+
+                                            @*<script>
+                                                        buildTree("treediv1", "placeTree1","CatCode", "/Account/DeskTop/GetClassCodeTree?t=" + new Date(),"id");
+                                            </script>*@
+
+                                        </div>
+
+                                        <!-- 资产代码 -->
+                                        <div class="form-group">
+                                            <label>资产编号</label>
+                                            <input type="text" class="form-control" id="AssetsNum" name="AssetsNum" placeholder="资产编号" value="@ViewBag.Main.AssetsNum" />
+                                        </div>
+
+                                        <!-- 资产曾用编号1 -->
+                                        <div class="form-group">
+                                            <label>资产曾用编号1</label>
+                                            <input type="text" class="form-control" id="UsedNum1" name="UsedNum1" placeholder="资产曾用编号1" value="@ViewBag.Main.UsedNum1" />
+                                        </div>
+
+                                        <!-- 资产曾用编号2 -->
+                                        <div class="form-group">
+                                            <label>资产曾用编号2</label>
+                                            <input type="text" class="form-control" id="UsedNum2" name="UsedNum2" placeholder="资产曾用编号2" value="@ViewBag.Main.UsedNum2" />
+                                        </div>
+
+                                        <!-- 计量单位 -->
+                                        <div class="form-group">
+                                            <label>计量单位</label>
+                                            <input type="text" class="form-control" id="MeasurementUnits" name="MeasurementUnits" placeholder="计量单位" value="@ViewBag.Main.MeasurementUnits" />
+                                        </div>
+
+                                        <!-- 取得方式 -->
+                                        <div class="form-group">
+                                            <label>取得方式</label>
+                                            <select class="form-control" id="GetWay" name="GetWay" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                <option selected="selected">01|购置</option>
+                                                <option>02|调拨</option>
+                                                <option>03|自建</option>
+                                                <option>04|捐赠</option>
+                                                <option>05|划拨</option>
+                                                <option>06|置换</option>
+                                                <option>07|自行研制</option>
+                                                <option>08|其他</option>
+                                                <option>09|有偿取得</option>
+                                                <option>10|租凭</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- 取得日期 -->
+                                        <div class="form-group">
+                                            <label>取得日期</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-calendar"></i>
+                                                </div>
+                                                <input type="text" class="form-control" data-provide="datepicker" data-date-format="yyyy-mm-dd" id="GetDate" name="GetDate" value="@ViewBag.Main.GetDate.ToString("yyyy-MM-dd")">
+                                            </div>
+                                        </div>
+
+                                        <!-- 经办人 -->
+                                        <div class="form-group">
+                                            <label>经办人</label>
+                                            <input type="text" class="form-control" id="Agent" name="Agent" placeholder="经办人" value="@ViewBag.Main.Agent" />
+                                        </div>
+                                    </div><!-- /.box-body -->
+
+                                </div><!-- /.box-body -->
+                            </div>
+
+                            <!---使用信息 -->
+                            <div class="tab-pane" id="tab_2">
+                                <!-- 使用信息 -->
+                                <div class="box box-info">
+                                    <!-- Header -->
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">使用信息</h3>
+                                        <div class="box-tools pull-right">
+                                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                    <!-- Body -->
+                                    <div class="box-body">
+                                        <div class="box-body">
+                                            <!-- 使用属性 -->
+                                            <div class="form-group">
+                                                <label>使用属性</label>
+                                                <select class="form-control " style="width: 100%;" tabindex="-1" aria-hidden="true" id="UsingAttribute" name="UsingAttribute">
+                                                    <option selected="selected">01|办公设备</option>
+                                                    <option>02|专用设备</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- 使用状况 -->
+                                            <div class="form-group">
+                                                <label>使用状况</label>
+                                                <select class="form-control" style="width: 100%;" tabindex="-1" aria-hidden="true" id="UsingState" name="UsingState">
+                                                    <option selected="selected">01|在用</option>
+                                                    <option>02|闲置</option>
+                                                    <option>03|摧毁待报废</option>
+                                                    <option>04|其他</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- 使用方式 -->
+                                            <div class="form-group">
+                                                <label>使用方式</label>
+                                                <input type="text" class="form-control" id="UsingStyle" name="UsingStyle" placeholder="使用方式" value="@ViewBag.Main.UsingStyle" />
+                                            </div>
+
+                                            <!-- 存放地点 -->
+                                            <div class="form-group">
+                                                <label>存放地点</label>
+                                                <input type="text" class="form-control" id="StorePlace" name="StorePlace" placeholder="存放地点" value="@ViewBag.Main.StorePlace" />
+                                                <script>
+                                                    buildTree("treediv2", "placeTree2", "StorePlace", "/SysManage/SysManage/ListPlace?placeType=loc&t=" + new Date(), "name");
+                                                </script>
+                                                @*<select id="StorePlace" name="StorePlace" class="form-control ">
+
+
+                                                </select>
+                                                <script>
+                                                    $.post("/SysManage/SysManage/AllListPlace").success(function (e) {
+                                                    console.log(e);
+                                                    $("#StorePlace").select2({ data: e })
+                                                });
+                                                </script>*@
+                                            </div>
+
+                                            <!-- 使用人 -->
+                                            <div class="form-group">
+                                                <label>使用人</label>
+                                                <input type="text" class="form-control" id="UsePeople" name="UsePeople" placeholder="使用人" value="@ViewBag.Main.UsePeople" />
+                                            </div>
+                                        </div><!-- /.box-body -->
+
+                                    </div>
+
+                                </div>
+                            </div><!-- /.tab-pane -->
+                            <!-- 财务信息-->
+                            <div class="tab-pane " id="tab_3">
+                                <!-- 财务信息 -->
+                                <div class="box box-info">
+                                    <!-- Header -->
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">资产财务信息</h3>
+                                        <div class="box-tools pull-right">
+                                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                    <!-- Body -->
+                                    <div class="box-body">
+                                        <div class="box-body">
+                                            <!-- 价值类型 -->
+                                            <div class="form-group">
+                                                <label>价值类型</label>
+                                                <select class="form-control" style="width: 100%;" tabindex="-1" aria-hidden="true" id="ValueType" name="ValueType">
+                                                    <option selected="selected">01|原值</option>
+                                                    <option>02|暂估值</option>
+                                                    <option>03|重置值</option>
+                                                    <option>04|无价值</option>
+                                                    <option>05|评估值</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- 价值 -->
+                                            <div class="form-group">
+                                                <label>价值</label>
+                                                <input type="text" class="form-control" id="Money" name="Money" placeholder="价值" onfocus="NumOnfocus('Money')" onblur="NumOnblur('Money')" value="@ViewBag.Main.Money" />
+                                            </div>
+
+                                            <!-- 财政性资金 -->
+                                            <div class="form-group">
+                                                <label>财政性资金</label>
+                                                <input type="text" class="form-control" id="GovMoney" name="GovMoney" placeholder="财政性资金" onfocus="NumOnfocus('GovMoney')" onblur="NumOnblur('GovMoney')" value="@ViewBag.Main.GovMoney" />
+                                            </div>
+
+                                            <!-- 非财政性资金 -->
+                                            <div class="form-group">
+                                                <label>非财政性资金</label>
+                                                <input type="text" class="form-control" id="NoneGovMoney" name="NoneGovMoney" placeholder="非财政性资金" onfocus="NumOnfocus('NoneGovMoney')" onblur=" NumOnblur('NoneGovMoney')" value="@ViewBag.Main.NoneGovMoney" />
+                                            </div>
+
+                                            <!-- 入账日期 -->
+                                            <div class="form-group">
+                                                <label>入账日期</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </div>
+                                                    <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd" data-inputmask="'alias': 'yyyy-mm-dd'"
+                                                           id="PostingDate" name="PostingDate" value="@ViewBag.Main.PostingDate.ToString("yyyy-MM-dd")" />
+                                                </div>
+                                            </div>
+
+                                            <!-- 折旧 -->
+                                            <div class="form-group">
+                                                <label>折旧</label>
+                                                <input type="text" class="form-control" id="Depreciation" name="Depreciation" placeholder="折旧" onfocus="NumOnfocus('Depreciation')" onblur="NumOnblur('Depreciation')" value="@ViewBag.Main.Depreciation" />
+                                            </div>
+
+                                            <!-- 累计折旧 -->
+                                            <div class="form-group">
+                                                <label>累计折旧</label>
+                                                <input type="text" class="form-control" id="AccumulateDepreciation" name="AccumulateDepreciation" placeholder="累计折旧" onfocus="NumOnfocus('AccumulateDepreciation')" onblur="NumOnblur('AccumulateDepreciation')" value="@ViewBag.Main.AccumulateDepreciation" />
+                                            </div>
+
+                                            <!-- 净值 -->
+                                            <div class="form-group">
+                                                <label>净值</label>
+                                                <input type="text" class="form-control" id="NetWorth" name="NetWorth" placeholder="净值" onfocus="NumOnfocus('NetWorth')" onblur="NumOnblur('NetWorth')" value="@ViewBag.Main.NetWorth" />
+                                            </div>
+
+                                            <!-- 会计凭证号 -->
+                                            <div class="form-group">
+                                                <label>会计凭证号</label>
+                                                <input type="text" class="form-control" id="AcountDocNum" name="AcountDocNum" placeholder="会计凭证号" value="@ViewBag.Main.AcountDocNum" />
+                                            </div>
+
+                                        </div><!-- /.box-body -->
+                                    </div><!-- /.box-body -->
+                                </div>
+                            </div><!-- /.tab-pane -->
+                            <!--  差异化属性-->
+                            <div class="tab-pane" id="tab_4">
+                                <!-- 土地  -->
+                                <div id="landInfo" style="display: none">
+                                    <!-- 土地资产差异化属性 -->
+                                    <div class="box box-info">
+                                        <!-- Header -->
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">土地信息</h3>
+                                            <div class="box-tools pull-right">
+                                                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                        <!-- Body -->
+                                        <div class="box-body">
+                                            <div class="col-lg-6">
+                                                <!-- 产权形式 -->
+                                                <div class="form-group">
+                                                    <label>产权形式</label>
+                                                    <select class="form-control" style="width: 100%;" id="LandPropertyForm" name="LandPropertyForm">
+                                                        <option selected="selected">01|有产权</option>
+                                                        <option>02|无产权</option>
+                                                        <option>03|产权待界定</option>
+                                                    </select>
+                                                </div>
+
+                                                <!-- 权属证明 -->
+                                                <div class="form-group">
+                                                    <label>权属证明</label>
+                                                    <input type="text" class="form-control" id="LandOwnershipCertificate" name="LandOwnershipCertificate" placeholder="权属证明" value="@Model.LandOwnershipCertificate" />
+                                                </div>
+
+                                                <!-- 权属性质 -->
+                                                <div class="form-group">
+                                                    <label>权属性质</label>
+                                                    <select class="form-control" style="width: 100%;" id="LandOwnershipStyle" name="LandOwnershipStyle">
+                                                        <option selected="selected">01|国有</option>
+                                                        <option>02|集体</option>
+                                                    </select>
+                                                </div>
+
+                                                <!-- 权属年限 -->
+                                                <div class="form-group">
+                                                    <label>权属年限</label>
+                                                    <input type="text" class="form-control" id="LandOwnershipTime" name="LandOwnershipTime" placeholder="权属年限" value="@Model.LandOwnershipTime">
+                                                </div>
+
+                                                <!-- 权属证号 -->
+                                                <div class="form-group">
+                                                    <label>权属证号</label>
+                                                    <input type="text" class="form-control" id="LandOwnershipCertifiateNum" name="LandOwnershipCertifiateNum" placeholder="权属证号" value="@Model.LandOwnershipCertifiateNum" />
+                                                </div>
+
+                                                <!-- 发证日期 -->
+                                                <div class="form-group">
+                                                    <label>发证日期</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </div>
+                                                        <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                                               id="LandIssuingDate" name="LandIssuingDate" value="@Model.LandIssuingDate" />
+                                                    </div>
+                                                </div>
+
+                                            </div><!-- /.box-body -->
+
+                                            <div class="col-lg-6">
+                                                <!-- 土地使用权人 -->
+                                                <div class="form-group">
+                                                    <label>土地使用权人</label>
+                                                    <input type="text" class="form-control" id="LandOwner" name="LandOwner" placeholder="土地使用权人" value="@Model.LandOwner" />
+                                                </div>
+
+                                                <!-- 土地使用权类型 -->
+                                                <div class="form-group">
+                                                    <label>土地使用权类型</label>
+                                                    <select class="form-control" style="width: 100%;" id="LandUserStyle" name="LandUserStyle">
+                                                        <option selected="selected">01|出让</option>
+                                                        <option>02|划拨</option>
+                                                        <option>03|租凭</option>
+                                                    </select>
+                                                </div>
+
+                                                <!-- 坐落位置 -->
+                                                <div class="form-group">
+                                                    <label>坐落位置</label>
+                                                    <input type="text" class="form-control" id="LandLocation" name="LandLocation" placeholder="坐落位置" value="@Model.LandLocation" />
+                                                </div>
+
+                                                <!-- 土地使用权面积 -->
+                                                <div class="form-group">
+                                                    <label>土地使用权面积</label>
+                                                    <input type="text" class="form-control" id="LandAllArea" name="LandAllArea" placeholder="土地使用权面积"
+                                                           onfocus="NumOnfocus('AllArea')" onblur="isNum('AllArea')" value="@Model.LandAllArea" />
+                                                </div>
+
+                                                <!-- 分摊面积 -->
+                                                <div class="form-group">
+                                                    <label>分摊面积</label>
+                                                    <input type="text" class="form-control" id="LandSharingArea" name="LandSharingArea" placeholder="分摊面积"
+                                                           onfocus="NumOnfocus('SharingArea')" onblur="isNum('SharingArea')" value="@Model.LandSharingArea" />
+                                                </div>
+
+                                                <!-- 独用面积 -->
+                                                <div class="form-group">
+                                                    <label>独用面积</label>
+                                                    <input type="text" class="form-control" id="LandSingleArea" name="LandSingleArea" placeholder="独用面积"
+                                                           onfocus="NumOnfocus('SingleArea')" onblur="isNum('SingleArea')" value="@Model.LandSingleArea" />
+                                                </div>
+
+                                                <!-- 入账科目 -->
+                                                <div class="form-group">
+                                                    <label>入账科目</label>
+                                                    <select class="form-control" style="width: 100%;">
+                                                        <option selected="selected">01|固定资产</option>
+                                                        <option>02|无形资产</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div><!-- /.box-body -->
+                                    </div>
+                                </div>
+
+                                <!-- 房屋 -->
+                                <div id="houseInfo" style="display: none">
+                                    <!-- 房屋资产差异化属性 -->
+                                    <div class="box box-info">
+                                        <!-- Header -->
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">房屋信息</h3>
+                                            <div class="box-tools pull-right">
+                                                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                        <!-- Body -->
+                                        <div class="box-body">
+                                            <div class="col-lg-6">
+                                                <!-- 产权形式 -->
+                                                <div class="form-group">
+                                                    <label>产权形式</label>
+                                                    <select class="form-control" style="width: 100%;" id="HousePropertyForm" name="HousePropertyForm">
+                                                        <option selected="selected">01|有产权</option>
+                                                        <option>02|有产权证</option>
+                                                        <option>03|有证明文件</option>
+                                                        <option>04|无产权</option>
+                                                    </select>
+                                                </div>
+
+                                                <!-- 权属证明 -->
+                                                <div class="form-group">
+                                                    <label>权属证明</label>
+                                                    <input type="text" class="form-control" id="HouseOwnershipCertificate" name="HouseOwnershipCertificate" placeholder="权属证明" value="@Model.HouseOwnershipCertificate" />
+                                                </div>
+
+                                                <!-- 权属年限 -->
+                                                <div class="form-group">
+                                                    <label>权属年限</label>
+                                                    <input type="text" class="form-control" id="HouseOwnershipTime" name="HouseOwnershipTime" placeholder="权属年限" value="@Model.HouseOwnershipTime" />
+                                                </div>
+
+                                                <!-- 权属证号 -->
+                                                <div class="form-group">
+                                                    <label>权属证号</label>
+                                                    <input type="text" class="form-control" id="HouseOwnershipCertifiateNum" name="HouseOwnershipCertifiateNum" placeholder="权属证号" value="@Model.HouseOwnershipCertifiateNum" />
+                                                </div>
+
+                                                <!-- 发证日期 -->
+                                                <div class="form-group">
+                                                    <label>发证日期</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </div>
+                                                        <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                                               data-inputmask="'alias': 'yyyy-mm-dd'" id="HouseIssuingDate" name="HouseIssuingDate" value="@Model.HouseIssuingDate" />
+                                                    </div>
+                                                </div>
+
+                                            </div><!-- /.box-body -->
+
+                                            <div class="col-lg-6">
+
+                                                <!-- 房屋所有权人 -->
+                                                <div class="form-group">
+                                                    <label>房屋所有权人</label>
+                                                    <input type="text" class="form-control" id="HouseOwner" name="HouseOwner" placeholder="房屋所有权人" value="@Model.HouseOwner" />
+                                                </div>
+
+                                                <!-- 设计用途 -->
+                                                <div class="form-group">
+                                                    <label>设计用途</label>
+                                                    <input type="text" class="form-control" id="HouseDesignUse" name="HouseDesignUse" placeholder="设计用途" value="@Model.HouseDesignUse" />
+                                                </div>
+
+                                                <!-- 坐落位置 -->
+                                                <div class="form-group">
+                                                    <label>坐落位置</label>
+                                                    <input type="text" class="form-control" id="HouseLocation" name="HouseLocation" placeholder="坐落位置" value="@Model.HouseLocation" />
+                                                </div>
+
+                                                <!-- 建筑结构 -->
+                                                <div class="form-group">
+                                                    <label>建筑结构</label>
+                                                    <select class="form-control" style="width: 100%;" id="HouseBuildingStruccture" name="HouseBuildingStruccture">
+                                                        <option selected="selected">01|钢结构</option>
+                                                        <option>02|钢混结构</option>
+                                                        <option>03|砖混结构</option>
+                                                        <option>04|砖木结构</option>
+                                                        <option>05|其他</option>
+                                                    </select>
+                                                </div>
+
+                                                <!-- 建筑面积 -->
+                                                <div class="form-group">
+                                                    <label>建筑面积</label>
+                                                    <input type="text" class="form-control" id="HouseArea" name="HouseArea" placeholder="建筑面积" onblur="isNumEx('HouseArea')" onfocus="    NumOnfocus('HouseArea')" value="@Model.HouseArea" />
+                                                </div>
+
+                                            </div><!-- /.box-body -->
+                                        </div><!-- /.box-body -->
+                                    </div>
+                                </div>
+
+                                <!-- 构筑物 -->
+                                <div id="buildInfo" style="display: none">
+                                    <!-- 构筑物资产差异化属性 -->
+                                    <div class="box box-info">
+                                        <!-- Header -->
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">构筑物信息</h3>
+                                            <div class="box-tools pull-right">
+                                                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                        <!-- Body -->
+                                        <div class="box-body">
+                                            <div class="box-body">
+                                                <!-- 产权形式 -->
+                                                <div class="form-group">
+                                                    <label>产权形式</label>
+                                                    <select class="form-control " style="width: 100%;" id="BuildPropertyForm" name="BuildPropertyForm">
+                                                        <option selected="selected">01|产权在本单位（有证）</option>
+                                                        <option>02|产权在本单位（无证）</option>
+                                                        <option>03|产权不在单位</option>
+                                                        <option>04|产权带界定</option>
+                                                        <option>05|其他</option>
+                                                    </select>
+                                                </div>
+
+                                                <!-- 权属证号 -->
+                                                <div class="form-group">
+                                                    <label>权属证号</label>
+                                                    <input type="text" class="form-control" id="BuildOwnershipCertifiateNum" name="BuildOwnershipCertifiateNum" placeholder="权属证号" value="@Model.BuildOwnershipCertifiateNum">
+                                                </div>
+
+                                                <!-- 建筑物面积 -->
+                                                <div class="form-group">
+                                                    <label>构筑物面积</label>
+                                                    <input type="text" class="form-control" id="BuildArea" name="BuildArea" placeholder="建筑物面积" onblur="isNumEx('BuildArea')" onfocus="    NumOnfocus('BuildArea')" value="@Model.BuildArea">
+                                                </div>
+
+                                                <!-- 坐落位置 -->
+                                                <div class="form-group">
+                                                    <label>坐落位置</label>
+                                                    <input type="text" class="form-control" id="BuildLocation" name="BuildLocation" placeholder="坐落位置" value="@Model.BuildLocation">
+                                                </div>
+
+                                            </div><!-- /.box-body -->
+
+                                        </div><!-- /.box-body -->
+                                    </div>
+                                    <input type="hidden" name="AttrId" value="">
+                                </div>
+
+                                <!-- 车辆 -->
+                                <div id="carInfo" style="display: none">
+                                    <!-- 车辆资产差异化属性 -->
+                                    <div class="box box-info">
+                                        <!-- Header -->
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">车辆信息</h3>
+                                            <div class="box-tools pull-right">
+                                                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                        <!-- Body -->
+                                        <div class="box-body">
+                                            <div class="col-lg-6">
+                                                <!-- 车辆用途 -->
+                                                <div class="form-group">
+                                                    <label>车辆用途</label>
+                                                    <select class="form-control " style="width: 100%;" tabindex="-1" aria-hidden="true" id="CarUser" name="CarUser">
+                                                        <option selected="selected">01|正部级专车</option>
+                                                        <option>02|副部级专车</option>
+                                                        <option>03|一般公务用车</option>
+                                                        <option>04|专业技术用车</option>
+                                                        <option>05|其他用车</option>
+                                                        <option>06|执法执勤用车</option>
+                                                    </select>
+                                                </div>
+
+                                                <!-- 使用性质 -->
+                                                <div class="form-group">
+                                                    <label>使用性质</label>
+                                                    <input type="text" class="form-control" id="CarUsingType" name="CarUsingType" placeholder="使用性质" value="@Model.CarUsingType" />
+                                                </div>
+
+                                                <!-- 品牌型号 -->
+                                                <div class="form-group">
+                                                    <label>品牌型号</label>
+                                                    <input type="text" class="form-control" id="CarBrand" name="CarBrand" placeholder="品牌型号" value="@Model.CarBrand" />
+                                                </div>
+
+                                                <!-- 编制情况 -->
+                                                <div class="form-group">
+                                                    <label>编制情况</label>
+                                                    <select class="form-control select2 " style="width: 100%;" tabindex="-1" aria-hidden="true" id="CarOrganization" name="CarOrganization">
+                                                        <option selected="selected">01|财政在编</option>
+                                                        <option>02|非财政在编</option>
+                                                    </select>
+                                                </div>
+
+                                                <!-- 机动号牌号码 -->
+                                                <div class="form-group">
+                                                    <label>机动号牌号码</label>
+                                                    <input type="text" class="form-control" id="CarNum" name="CarNum" placeholder="机动号牌号码" value="@Model.CarNum" />
+                                                </div>
+
+                                            </div><!-- /.box-body -->
+
+                                            <div class="col-lg-6">
+
+                                                <!-- 机动车辆识别代号 -->
+                                                <div class="form-group">
+                                                    <label>机动车辆识别代号</label>
+                                                    <input type="text" class="form-control" id="CarRecCode" name="CarRecCode" placeholder="机动车辆识别代号" value="@Model.CarRecCode" />
+                                                </div>
+
+                                                <!-- 机动车辆行驶证发证日期 -->
+                                                <div class="form-group">
+                                                    <label>机动车辆行驶证发证日期</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-clock-o"></i>
+                                                        </div>
+                                                        <input type="text" class="form-control pull-right" data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                                               id="CarCertificateDate" name="CarCertificateDate" value="@Model.CarCertificateDate" />
+                                                    </div>
+                                                </div>
+
+                                                <!-- 机动车排气量 -->
+                                                <div class="form-group">
+                                                    <label>机动车排气量</label>
+                                                    <input type="text" class="form-control" id="CarExhaust" name="CarExhaust" placeholder="机动车排气量" value="@Model.CarExhaust" />
+                                                </div>
+
+                                                <!-- 机动车发动机号 -->
+                                                <div class="form-group">
+                                                    <label>机动车发动机号</label>
+                                                    <input type="text" class="form-control" id="CarEngineNum" name="CarEngineNum" placeholder="机动车发动机号" value="@Model.CarEngineNum" />
+                                                </div>
+
+                                                <!-- 机动车行驶证注册登记日期 -->
+                                                <div class="form-group">
+                                                    <label>机动车行驶证注册登记日期</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-clock-o"></i>
+                                                        </div>
+                                                        <input type="text" class="form-control pull-right" data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                                               id="CarErollDare" name="CarErollDare" value="@Model.CarErollDare" />
+                                                    </div>
+                                                </div>
+
+                                                <!-- 机动车辆行驶证所有人 -->
+                                                <div class="form-group">
+                                                    <label>机动车辆行驶证所有人</label>
+                                                    <input type="text" class="form-control" id="CarOwner" name="CarOwner" placeholder="机动车辆行驶证所有人" value="@Model.CarOwner" />
+                                                </div>
+
+                                            </div><!-- /.box-body -->
+                                        </div><!-- /.box-body -->
+                                    </div>
+
+                                </div>
+
+                                <!-- 通用设备 -->
+                                <div id="generalInfo" style=" display: none">
+                                    <!-- 通用设备资产差异化属性 -->
+                                    <div class="box box-info">
+                                        <!-- Header -->
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">通用设备</h3>
+                                            <div class="box-tools pull-right">
+                                                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                        <!-- Body -->
+                                        <div class="box-body">
+                                            <div class="box-body">
+                                                <!-- 品牌及规格型号 -->
+                                                <div class="form-group">
+                                                    <label>品牌及规格型号</label>
+                                                    <input type="text" class="form-control" id="ModelSpecification" name="ModelSpecification" placeholder="品牌及规格型号" maxlength="20" value="@ViewBag.Main.ModelSpecification" />
+                                                </div>
+
+                                                <!-- 设备用途 -->
+                                                <div class="form-group">
+                                                    <label>设备用途</label>
+                                                    @UIHelper.DispDevUse("GeneralDevUse", Model.GeneralDevUse)
+                                                </div>
+
+                                                <!-- 生产厂家 -->
+                                                <div class="form-group">
+                                                    <label>生产厂家</label>
+                                                    <input type="text" class="form-control" id="GeneralDevFactory" name="GeneralDevFactory" placeholder="生产厂家" maxlength="20" value="@Model.GeneralDevFactory" />
+                                                </div>
+
+                                                <!-- 保修截至日期 -->
+                                                <div class="form-group">
+                                                    <label>保修截至日期</label>
+                                                    <input type="text" class="form-control" id="GeneralWarrantyDate" name="GeneralWarrantyDate" placeholder="保修截至日期" maxlength="20"
+                                                           data-provide="datepicker" data-date-format="yyyy-mm-dd" value="@Model.GeneralWarrantyDate.ToString("yyyy-MM-dd")" />
+                                                </div>
+
+                                                <!-- 保修联系电话 -->
+                                                <div class="form-group">
+                                                    <label>保修联系电话</label>
+                                                    <input type="text" class="form-control" id="GeneralWarrantyPhone" name="GeneralWarrantyPhone" placeholder="保修联系电话" maxlength="20" value="@Model.GeneralWarrantyPhone" />
+                                                </div>
+
+                                                <!-- 使用方向 -->
+                                                <div class="form-group">
+                                                    <label>使用方向</label>
+                                                    <select class="form-control select2 " style="width: 100%;">
+                                                        <option selected="selected">01|自用</option>
+                                                        <option>02|出借</option>
+                                                        <option>03|出租</option>
+                                                        <option>04|其他</option>
+                                                    </select>
+                                                </div>
+                                            </div><!-- /.box-body -->
+                                        </div><!-- /.box-body -->
+                                    </div>
+                                </div>
+
+                                <!-- 专用设备 -->
+                                <div id="specialInfo" style="display: none">
+                                    <!-- 专用设备资产差异化属性 -->
+                                    <div class="box box-info">
+                                        <!-- Header -->
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">专用设备</h3>
+                                            <div class="box-tools pull-right">
+                                                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                        <!-- Body -->
+                                        <div class="box-body">
+                                            <div class="box-body">
+                                                <!-- 品牌及规格型号 -->
+                                                <div class="form-group">
+                                                    <label>品牌及规格型号</label>
+                                                    <input type="text" class="form-control" placeholder="品牌及规格型号" id="SpecialBrand" name="SpecialBrand" value="@Model.SpecialBrand" />
+                                                </div>
+
+                                                <!-- 生产厂家 -->
+                                                <div class="form-group">
+                                                    <label>生产厂家</label>
+                                                    <input type="text" class="form-control" id="SpecialDevFactory" name="SpecialDevFactory" placeholder="生产厂家" value="@Model.SpecialDevFactory" />
+                                                </div>
+
+                                                <!-- 使用方向 -->
+                                                <div class="form-group">
+                                                    <label>使用方向</label>
+                                                    <select class="form-control select2 " style="width: 100%;">
+                                                        <option selected="selected">01|自用</option>
+                                                        <option>02|出借</option>
+                                                        <option>03|出租</option>
+                                                        <option>04|其他</option>
+                                                    </select>
+                                                </div>
+                                                <!-- 保修联系电话 -->
+                                                <div class="form-group">
+                                                    <label>保修联系电话</label>
+                                                    <input type="text" class="form-control" id="SpecialWarrantyPhone" name="SpecialWarrantyPhone" placeholder="保修联系电话" value="@Model.SpecialWarrantyPhone" />
+                                                </div>
+                                            </div><!-- /.box-body -->
+                                        </div><!-- /.box-body -->
+                                    </div>
+                                </div>
+
+                                <!-- 文物 -->
+                                <div id="Culturalrelic" style="display: none">
+                                    <!-- 文物与陈列品资产差异化属性 -->
+                                    <div class="box box-info">
+                                        <!-- Header -->
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">文物与陈列品</h3>
+                                            <div class="box-tools pull-right">
+                                                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                        <!-- Body -->
+                                        <div class="box-body">
+                                            <div class="box-body">
+                                                <!-- 文物等级 -->
+                                                <div class="form-group">
+                                                    <label>文物等级</label>
+                                                    <select class="form-control select2 " style="width: 100%;" tabindex="-1" aria-hidden="true" id="CuiltureGoodsLevel" name="CuiltureGoodsLevel">
+                                                        <option selected="selected">01|一级</option>
+                                                        <option>02|二级</option>
+                                                        <option>03|三级</option>
+                                                        <option>04一般</option>
+                                                    </select>
+                                                </div>
+
+                                                <!-- 藏品年代 -->
+                                                <div class="form-group">
+                                                    <label>藏品年代</label>
+                                                    <input type="text" class="form-control" id="CuiltureYears" name="CuiltureYears" placeholder="藏品年代" value="@Model.CuiltureYears" />
+                                                </div>
+
+                                                <!-- 来源地 -->
+                                                <div class="form-group">
+                                                    <label>来源地</label>
+                                                    <input type="text" class="form-control" id="CuiltureSourcePlace" name="CuiltureSourcePlace" placeholder="来源地" value="@Model.CuiltureSourcePlace" />
+                                                </div>
+
+                                                <!-- 数量 -->
+                                                @*<div class="form-group">
+                                                    <label>数量</label>
+                                                    <input type="text" class="form-control" id="inputPassword3" placeholder="数量">
+                                                </div>*@
+
+                                                <!-- 使用方向 -->
+                                                <div class="form-group">
+                                                    <label>使用方向</label>
+                                                    <select class="form-control select2 " style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                        <option selected="selected">01|自用</option>
+                                                        <option>02|出借</option>
+                                                        <option>03|出租</option>
+                                                        <option>04|其他</option>
+                                                    </select>
+                                                </div>
+
+                                            </div><!-- /.box-body -->
+
+                                        </div><!-- /.box-body -->
+                                    </div>
+                                </div>
+
+                                <!-- 家俱 -->
+                                <div id="furniture" style="display: none">
+
+                                </div>
+
+                                <!-- 图书档案 -->
+                                <div id="bookInfo" style="display: none">
+                                    <!-- 图书档案资产差异化属性 -->
+                                    <div class="box box-info">
+                                        <!-- Header -->
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">图书档案</h3>
+                                            <div class="box-tools pull-right">
+                                                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                        <!-- Body -->
+                                        <div class="box-body">
+                                            <div class="col-lg-6">
+                                                <!-- 投入使用日期 -->
+                                                <div class="form-group">
+                                                    <label>投入使用日期</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </div>
+                                                        <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd" id="BookUseDate" name="BookUseDate" value="@Model.BookUseDate" />
+                                                    </div>
+                                                </div>
+
+                                                <!-- 档案号 -->
+                                                <div class="form-group">
+                                                    <label>档案号</label>
+                                                    <input type="text" class="form-control" id="BookFileNum" name="BookFileNum" placeholder="档案号" value="@Model.BookFileNum" />
+                                                </div>
+
+                                                <!-- 出版社 -->
+                                                <div class="form-group">
+                                                    <label>出版社</label>
+                                                    <input type="text" class="form-control" id="BookPress" name="BookPress" placeholder="出版社" value="@Model.BookPress" />
+                                                </div>
+
+                                            </div><!-- /.box-body -->
+
+                                            <div class="col-lg-6">
+
+                                                <!-- 保存年限 -->
+                                                <div class="form-group">
+                                                    <label>保存年限</label>
+                                                    <input type="text" class="form-control" id="BookStoreYears" name="BookStoreYears" placeholder="保存年限" value="@Model.BookStoreYears" />
+                                                </div>
+
+                                                <!-- 出版日期 -->
+                                                <div class="form-group">
+                                                    <label>出版日期</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-clock-o"></i>
+                                                        </div>
+                                                        <input type="text" class="form-control pull-right" data-provide="datepicker" data-date-format="yyyy-mm-dd" id="BookPressDate" name="BookPressDate" value="@Model.BookPressDate" />
+                                                    </div>
+                                                </div>
+
+                                                <!-- 使用方向 -->
+                                                <div class="form-group">
+                                                    <label>使用方向</label>
+                                                    <select class="form-control select2 " style="width: 100%;">
+                                                        <option selected="selected">01|自用</option>
+                                                        <option>02|出借</option>
+                                                        <option>03|出租</option>
+                                                        <option>04|其他</option>
+                                                    </select>
+                                                </div>
+
+                                            </div><!-- /.box-body -->
+
+                                        </div><!-- /.box-body -->
+                                    </div>
+                                </div><!-- /.tab-pane -->
+                                <!-- 特种动植物 -->
+                                <div id="animalInfo" style="display: none">
+                                    <!-- 特种动植物差异化属性 -->
+                                    <div class="box box-info">
+                                        <!-- Header -->
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">特种动植物</h3>
+                                            <div class="box-tools pull-right">
+                                                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                        <!-- Body -->
+                                        <div class="box-body">
+                                            <div class="box-body">
+                                                <!-- 出生/栽种年份 -->
+                                                <div class="form-group">
+                                                    <label>出生/栽种年份</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </div>
+                                                        <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                                                               id="AnimalBirthday" name="AnimalBirthday" value="@Model.AnimalBirthday" />
+                                                    </div>
+                                                </div>
+
+                                                <!-- 预计寿命/种龄 -->
+                                                <div class="form-group">
+                                                    <label>预计寿命/种龄</label>
+                                                    <input type="text" class="form-control" id="AnimalAge" name="AnimalAge" placeholder="预计寿命/种龄" value="@Model.AnimalAge" />
+                                                </div>
+
+                                                <!-- 纲属科 -->
+                                                <div class="form-group">
+                                                    <label>纲属科</label>
+                                                    <input type="text" class="form-control" id="AnimalClass" name="AnimalClass" placeholder="纲属科" value="@Model.AnimalClass" />
+                                                </div>
+
+                                                <!-- 产地 -->
+                                                <div class="form-group">
+                                                    <label>产地</label>
+                                                    <input type="text" class="form-control" id="AnimalPalce" name="AnimalPalce" placeholder="产地" value="@Model.AnimalPalce" />
+                                                </div>
+
+                                                <!-- 使用方向 -->
+                                                <div class="form-group">
+                                                    <label>使用方向</label>
+                                                    <select class="form-control select2 " style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                        <option selected="selected">01|自用</option>
+                                                        <option>02|出借</option>
+                                                        <option>03|出租</option>
+                                                        <option>04|其他</option>
+                                                    </select>
+                                                </div>
+
+                                            </div><!-- /.box-body -->
+
+                                        </div><!-- /.box-body -->
+                                    </div>
+                                    <input type="hidden" name="AttrId" value="">
+                                </div>
+                            </div>
+
+                            <!--- 资产照片-->
+                            <div class="tab-pane" id="tab_5">
+                                <!-- 资产照片信息 -->
+                                <div class="box box-info">
+                                    <!-- Header -->
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">资产照片</h3>
+                                        <div class="box-tools pull-right">
+                                            <input type="hidden" name="AssetsPicPath" value="@ViewBag.Main.AssetsPicPath" />
+                                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Body -->
+                                    <div class="box-body">
+                                        <div class="box-body">
+                                            <!-- 资产名称 -->
+                                            <div class="form-group">
+                                                <img src="../../img/changefile.PNG" style="position:absolute;margin-left:10px;"/>
+                                                <input type="file" name="imgOne" id="imgOne" value="@ViewBag.Main.AssetsPicPath" style="display:block; opacity: 0;filter: alpha(opacity=0);height: 114px;width: 114px;right: 0px;z-index: 9;float:left;margin-left:10px;">
+                                               
+                                                @*<p class="help-block">请选择资产照片位置</p>*@
+                                            </div>
+                                        </div><!-- /.box-body -->
+
+                                        <div class="col-lg-12">
+                                            <img class="img-responsive" id="imgPre" src="@Path.Combine(PortalSetting.UpLoadPicHttpPrix,ViewBag.Main.AssetsPicPath??"")" alt="图片预览" style="display: block;" />
+                                        </div>
+                                    </div><!-- /.box-body -->
+                                </div>
+                            </div><!-- /.tab-pane -->
+                        </div><!-- /.tab-content -->
+                    </div>
+                    <!-- 录入操作栏 -->
+                    <div class="row">
+                        <!-- 操作面板栏 -->
+                        <div class="row">
+                            <div class="col-lg-5"></div>
+                            <div class="col-lg-1"><button type="submit" class="btn btn-default btn-all">提交</button></div>
+                            <div class="col-lg-1"><button type="button" id="Cancel" name="Cancel" class="btn btn-default btn-all">取消</button></div>
+                            <div class="col-lg-5"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+        </div>
+    </form>
+</section>
+    
+
+<script src="~/Assets/datepicker/bootstrap-datepicker.js"></script>
+
+<script language="javascript">
+    
+    //
+    // 取消按钮事件处理
+    //
+    $("#Cancel").click(function() {
+        history.go(-1);
+    });
+   
+    //
+    // 资产修改的时候显示差异信息
+    //
+    if ($("#CatCode").val() != "") {
+        var classCode = $("#CatCode").val();
+        //alert(classCode);
+        var _type = getAssetsType(classCode);
+        //alert(_type);
+        ShowType(_type);
+
+    } 
+  
+    //
+    // 资产类别树点击事件处理
+    //
+    window.OnClassCodeSelected = function (classCode) {
+
+        //alert(classCode.ClassCode + "||" + classCode.NextNum + "||" + classCode.ClassName);
+
+        //
+        // 根据资产类别代码获取该资产属于哪一类
+        //
+        var _type = getAssetsType(classCode.ClassCode);
+        ShowType(_type);
+
+        $("#MeasurementUnits").val(classCode.Unit);
+        $("#GoodsName").val(classCode.ClassName);
+        $("#CatCode").val(classCode.ClassCode);
+        $("#AssetsNum").val(classCode.NextNum);
+        $("#AssetType").val(classCode.ClassCode.substring(0, 3));
+    }
+
+    //
+    // 选择资产图片
+    //
+    $("#imgOne").change(function() {
+        var f = document.getElementById('imgOne').files[0];
+        var src = window.URL.createObjectURL(f);
+        document.getElementById('imgPre').src = src;
+    });
+
+    //
+    // 判断资产类别
+    //
+    function getAssetsType(classcode) {
+
+        //
+        // 获取资产代码前三位
+        //
+        var _code = classcode.substring(0, 3);
+
+        //
+        // 资产十大类分类代码
+        //
+        var land = ["101"];
+        var house = ["102"];
+        var build = ["103"];
+        var car = ["203"];
+        var general = ["201", "202", "204", "210", "220", "230", "231", "232", "240", "241", "242"];
+        var special = ["301", "302", "303", "304", "305", "306", "307", "308", "310", "311", "314", "320", "321", "322", "324", "326", "327", "328", "339", "351", "352", "360", "370", "371", "372"];
+        var wenwu = ["401", "402"];
+        var jiaju = ["601", "602"];
+        var book = ["501"];
+        var animal = ["603", "604"];
+
+        //
+        // 根据资产代码返回资产类别
+        //
+        if (land.indexOf(_code) >= 0)
+        //return land.indexOf(_code);
+            return "土地";
+        if (house.indexOf(_code) >= 0)
+        //return house.indexOf(_code);
+            return "房屋";
+        if (build.indexOf(_code) >= 0)
+        //return build.indexOf(_code);
+            return "构筑物";
+        if (car.indexOf(_code) >= 0)
+            return "车辆";
+        if (general.indexOf(_code) >= 0)
+            return "通用设备";
+        if (special.indexOf(_code) >= 0)
+            return "专用设备";
+        if (wenwu.indexOf(_code) >= 0)
+            return "文物陈列品";
+        if (jiaju.indexOf(_code) >= 0)
+            return "家俱用具及装具";
+        if (book.indexOf(_code) >= 0)
+            return "图书档案";
+        if (animal.indexOf(_code) >= 0)
+            return "特种动植物";
+    }
+
+    //
+    // 选择显示界面
+    //
+    function ShowType(type) {
+
+        switch (type) {
+        case "土地":
+            document.getElementById("landInfo").style.display = ""; //显示
+            document.getElementById("houseInfo").style.display = "none"; //隐藏
+            document.getElementById("buildInfo").style.display = "none"; //隐藏
+            document.getElementById("carInfo").style.display = "none"; //隐藏
+            document.getElementById("generalInfo").style.display = "none"; //隐藏
+            document.getElementById("specialInfo").style.display = "none"; //隐藏
+            document.getElementById("Culturalrelic").style.display = "none"; //隐藏
+            document.getElementById("furniture").style.display = "none"; //隐藏
+            document.getElementById("bookInfo").style.display = "none"; //隐藏
+            document.getElementById("animalInfo").style.display = "none"; //隐藏
+
+            $("#navTitle").empty();
+            $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new {Area = "Account"})" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">土地</a></li></ol>');
+
+            break;
+        case "房屋":
+            document.getElementById("landInfo").style.display = "none"; //显示
+            document.getElementById("houseInfo").style.display = ""; //隐藏
+            document.getElementById("buildInfo").style.display = "none"; //隐藏
+            document.getElementById("carInfo").style.display = "none"; //隐藏
+            document.getElementById("generalInfo").style.display = "none"; //隐藏
+            document.getElementById("specialInfo").style.display = "none"; //隐藏
+            document.getElementById("Culturalrelic").style.display = "none"; //隐藏
+            document.getElementById("furniture").style.display = "none"; //隐藏
+            document.getElementById("bookInfo").style.display = "none"; //隐藏
+            document.getElementById("animalInfo").style.display = "none"; //隐藏
+
+            $("#navTitle").empty();
+            $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new {Area = "Account"})" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">房屋</a></li></ol>');
+
+            break;
+        case "构筑物":
+            document.getElementById("landInfo").style.display = "none"; //显示
+            document.getElementById("houseInfo").style.display = "none"; //隐藏
+            document.getElementById("buildInfo").style.display = ""; //隐藏
+            document.getElementById("carInfo").style.display = "none"; //隐藏
+            document.getElementById("generalInfo").style.display = "none"; //隐藏
+            document.getElementById("specialInfo").style.display = "none"; //隐藏
+            document.getElementById("Culturalrelic").style.display = "none"; //隐藏
+            document.getElementById("furniture").style.display = "none"; //隐藏
+            document.getElementById("bookInfo").style.display = "none"; //隐藏
+            document.getElementById("animalInfo").style.display = "none"; //隐藏
+
+            $("#navTitle").empty();
+            $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new {Area = "Account"})" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">构筑物</a></li></ol>');
+
+            break;
+        case "车辆":
+            document.getElementById("landInfo").style.display = "none"; //显示
+            document.getElementById("houseInfo").style.display = "none"; //隐藏
+            document.getElementById("buildInfo").style.display = "none"; //隐藏
+            document.getElementById("carInfo").style.display = ""; //隐藏
+            document.getElementById("generalInfo").style.display = "none"; //隐藏
+            document.getElementById("specialInfo").style.display = "none"; //隐藏
+            document.getElementById("Culturalrelic").style.display = "none"; //隐藏
+            document.getElementById("furniture").style.display = "none"; //隐藏
+            document.getElementById("bookInfo").style.display = "none"; //隐藏
+            document.getElementById("animalInfo").style.display = "none"; //隐藏
+
+            $("#navTitle").empty();
+            $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new {Area = "Account"})" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">车辆</a></li></ol>');
+
+            break;
+        case "通用设备":
+            document.getElementById("landInfo").style.display = "none"; //显示
+            document.getElementById("houseInfo").style.display = "none"; //隐藏
+            document.getElementById("buildInfo").style.display = "none"; //隐藏
+            document.getElementById("carInfo").style.display = "none"; //隐藏
+            document.getElementById("generalInfo").style.display = ""; //隐藏
+            document.getElementById("specialInfo").style.display = "none"; //隐藏
+            document.getElementById("Culturalrelic").style.display = "none"; //隐藏
+            document.getElementById("furniture").style.display = "none"; //隐藏
+            document.getElementById("bookInfo").style.display = "none"; //隐藏
+            document.getElementById("animalInfo").style.display = "none"; //隐藏
+
+            $("#navTitle").empty();
+            $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new {Area = "Account"})" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">通用设备</a></li></ol>');
+
+            break;
+        case "专用设备":
+            document.getElementById("landInfo").style.display = "none"; //显示
+            document.getElementById("houseInfo").style.display = "none"; //隐藏
+            document.getElementById("buildInfo").style.display = "none"; //隐藏
+            document.getElementById("carInfo").style.display = "none"; //隐藏
+            document.getElementById("generalInfo").style.display = "none"; //隐藏
+            document.getElementById("specialInfo").style.display = ""; //隐藏
+            document.getElementById("Culturalrelic").style.display = "none"; //隐藏
+            document.getElementById("furniture").style.display = "none"; //隐藏
+            document.getElementById("bookInfo").style.display = "none"; //隐藏
+            document.getElementById("animalInfo").style.display = "none"; //隐藏
+
+            $("#navTitle").empty();
+            $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new {Area = "Account"})" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">专用设备</a></li></ol>');
+
+            break;
+        case "文物陈列品":
+            document.getElementById("landInfo").style.display = "none"; //显示
+            document.getElementById("houseInfo").style.display = "none"; //隐藏
+            document.getElementById("buildInfo").style.display = "none"; //隐藏
+            document.getElementById("carInfo").style.display = "none"; //隐藏
+            document.getElementById("generalInfo").style.display = "none"; //隐藏
+            document.getElementById("specialInfo").style.display = "none"; //隐藏
+            document.getElementById("Culturalrelic").style.display = ""; //隐藏
+            document.getElementById("furniture").style.display = "none"; //隐藏
+            document.getElementById("bookInfo").style.display = "none"; //隐藏
+            document.getElementById("animalInfo").style.display = "none"; //隐藏
+
+            $("#navTitle").empty();
+            $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new {Area = "Account"})" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">文物陈列品</a></li></ol>');
+
+            break;
+        case "家俱用具及装具":
+            document.getElementById("landInfo").style.display = "none"; //显示
+            document.getElementById("houseInfo").style.display = "none"; //隐藏
+            document.getElementById("buildInfo").style.display = "none"; //隐藏
+            document.getElementById("carInfo").style.display = "none"; //隐藏
+            document.getElementById("generalInfo").style.display = "none"; //隐藏
+            document.getElementById("specialInfo").style.display = "none"; //隐藏
+            document.getElementById("Culturalrelic").style.display = "none"; //隐藏
+            document.getElementById("furniture").style.display = ""; //隐藏
+            document.getElementById("bookInfo").style.display = "none"; //隐藏
+            document.getElementById("animalInfo").style.display = "none"; //隐藏
+
+            $("#navTitle").empty();
+            $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new {Area = "Account"})" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">家俱用具及装具</a></li></ol>');
+
+            break;
+        case "图书档案":
+            document.getElementById("landInfo").style.display = "none"; //显示
+            document.getElementById("houseInfo").style.display = "none"; //隐藏
+            document.getElementById("buildInfo").style.display = "none"; //隐藏
+            document.getElementById("carInfo").style.display = "none"; //隐藏
+            document.getElementById("generalInfo").style.display = "none"; //隐藏
+            document.getElementById("specialInfo").style.display = "none"; //隐藏
+            document.getElementById("Culturalrelic").style.display = "none"; //隐藏
+            document.getElementById("furniture").style.display = "none"; //隐藏
+            document.getElementById("bookInfo").style.display = ""; //隐藏
+            document.getElementById("animalInfo").style.display = "none"; //隐藏
+
+            $("#navTitle").empty();
+            $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new {Area = "Account"})" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">图书档案</a></li></ol>');
+
+            break;
+        case "特种动植物":
+            document.getElementById("landInfo").style.display = "none"; //显示
+            document.getElementById("houseInfo").style.display = "none"; //隐藏
+            document.getElementById("buildInfo").style.display = "none"; //隐藏
+            document.getElementById("carInfo").style.display = "none"; //隐藏
+            document.getElementById("generalInfo").style.display = "none"; //隐藏
+            document.getElementById("specialInfo").style.display = "none"; //隐藏
+            document.getElementById("Culturalrelic").style.display = "none"; //隐藏
+            document.getElementById("furniture").style.display = "none"; //隐藏
+            document.getElementById("bookInfo").style.display = "none"; //隐藏
+            document.getElementById("animalInfo").style.display = ""; //隐藏
+
+            $("#navTitle").empty();
+            $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new {Area = "Account"})" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">特种动植物</a></li></ol>');
+
+            break;
+        default:
+            alert("错误资产类别！");
+            break;
+        }
+    }
+
+    //
+    // 格式错误后恢复控件颜色
+    //
+    function NumOnfocus(elementId) {
+        document.getElementById(elementId).style.backgroundColor = "white";
+    }
+
+    //
+    // 金额值判断
+    //
+    function NumOnblur(elementId) {
+        var num = /^[0-9]*(\.[0-9]{1,2})?$/;
+        if (!num.test(document.getElementById(elementId).value)) {
+            alert("请输入数字");
+            document.getElementById(elementId).style.backgroundColor = "pink";
+        } else {
+            //
+            // 自动填写财政性资金
+            //
+            var temMoney = (document.getElementById("Money").value - document.getElementById("NoneGovMoney").value).toFixed(2);
+            if (temMoney >= 0) {
+                document.getElementById("GovMoney").value = temMoney;
+            }
+
+            //
+            // 自动填写净值
+            //
+            temMoney = (document.getElementById("Money").value - document.getElementById("AccumulateDepreciation").value).toFixed(2);
+            if (temMoney >= 0) {
+                document.getElementById("NetWorth").value = temMoney;
+            }
+
+        }
+    }
+
+    //
+    // 小数判断并操作
+    //
+    function isNum(elementId) {
+        var regu = /^[+-]?[1-9]?[0-9]*\.[0-9]*$/; // 小数正则表达式
+        var re = new RegExp(regu);
+        if ((document.getElementById(elementId).value.search(re) != -1) || !isNaN(document.getElementById(elementId).value)) {
+            //
+            // 自动填独用面积
+            //
+            var temArea = document.getElementById("AllArea").value - document.getElementById("SharingArea").value;
+            if (temArea >= 0) {
+                document.getElementById("SingleArea").value = temArea;
+            }
+        } else {
+            alert("请输入数字");
+            document.getElementById(elementId).style.backgroundColor = "pink";
+        }
+
+    }
+
+    //
+    // 小数判断
+    //
+    function isNumEx(elementId) {
+        var regu = /^[+-]?[1-9]?[0-9]*\.[0-9]*$/; // 小数正则表达式
+        var re = new RegExp(regu);
+        if ((document.getElementById(elementId).value.search(re) != -1) || !isNaN(document.getElementById(elementId).value)) {
+
+        } else {
+            alert("请输入数字");
+            document.getElementById(elementId).style.backgroundColor = "pink";
+        }
+
+    }
+</script>
+
+
+
+
+

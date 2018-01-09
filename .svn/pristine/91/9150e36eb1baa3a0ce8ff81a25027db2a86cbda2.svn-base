@@ -1,0 +1,225 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using EAM.Data.Domain;
+using EAM.Data.Services;
+
+namespace EAM.Data.ImportAndExport.Import
+{
+    public class BxImport
+    {
+        private readonly IAssetsService _assetsService;
+        private IImportHistoryService _importHistoryService;
+        private  IUnImportAssetsService _unImportAssetsService;
+        public BxImport(IAssetsService assetsService, IImportHistoryService importHistoryService, IUnImportAssetsService unImportAssetsService)
+        {
+            _assetsService = assetsService;
+            _importHistoryService = importHistoryService;
+            _unImportAssetsService = unImportAssetsService;
+        }
+
+        public ImportResult DoImport(string filePath, ref ProgressInfo importProgress)
+        {
+            //
+            // 最后一次导入信息
+            //
+            int crntId = _importHistoryService.LastHistory().EntityId;
+            int crntType = _importHistoryService.LastHistory().ImportType;
+
+            //
+            // 将数据提取到List中
+            //
+            var list = BxReader.ReadData(filePath, ref importProgress, _importHistoryService,_unImportAssetsService);
+            if (list == null) {
+                ImportResult resultfalse = new ImportResult();
+                resultfalse.ImportMsg = false;
+                return resultfalse;
+            }
+            //
+            // 导入进度数据
+            //
+            double percent = 0.5;
+            int idx=0;
+            idx = BxReader.GetRows();
+            int percentStep1 = importProgress.ImportedPercentVal;
+
+            //
+            // 导入结果
+            //
+            ImportResult result = new ImportResult();
+            foreach (AssetsMain assets in list)
+            {
+                //
+                // 判断数据库中是否存在库存号
+                //                
+                if (!_assetsService.IsExistByStockNumber(assets.UsedNum2))
+                {
+                    //
+                    // 如果不存在该库存号则新增数据
+                    // 新增资产编号生成规则如下
+                    // 产资产类别加上该资产类别累计新增的数量
+                    //
+                    var num = _assetsService.GetNextAssetsNum(assets.CatCode);
+                    assets.AssetsNum = string.Format("{0}{1}", assets.CatCode, num.PadLeft(6, '0'));            // 生成资产编号
+                    assets.ImportId = crntId;//导入id
+                    assets.ImportType = crntType; //导入类型 办学
+
+                    //
+                    // 更新资产类别累计录入数量：自增1
+                    //
+                    _assetsService.UpdateNextAssetsNum(assets.CatCode);
+                    
+                    //
+                    // 默认可领用可借用
+                    //
+                    assets.IsBorrow = 1;
+                    assets.IsUse = 1;
+
+                    //
+                    // 将记录写入到数据库
+                    //
+                    _assetsService.AddAssets(assets);
+
+                    //
+                    // 新增导入记录
+                    //
+                    result.Imported.Add(assets);
+                  
+
+                }
+                //else
+                //{
+                //    result.UnImported.Add(new AssetsMainMsg(assets) {Message = "已存在 " + assets.StockNumber});
+                //}
+                else
+                {
+                    //
+                    // 判断备注栏是否为空
+                    // 如果为空则表示该资产没有被拆分过，直接覆盖
+                    // 如果不为空，则通过备注来判断数据库是否存在该条目
+                    // 如果存在该条目则覆盖，如果不存在则新增
+                    // 
+                    if (assets.Memo == "")
+                    {
+                        //
+                        // 表明资产没有被拆分，找到原有资产进行覆盖
+                        // 资产编码不变，其余信息全部覆盖
+                        //
+                        //
+                        var _existAssets = _assetsService.Get(assets.UsedNum2);// Get(assets.CatCode);
+                        assets.EntityId = _existAssets.EntityId;
+                        assets.AssetsNum = _existAssets.AssetsNum;
+                        assets.ImportId = crntId;//导入id
+                        assets.ImportType = crntType; //导入类型 办学
+
+                        //
+                        // 默认可领用可借用
+                        //
+                        assets.IsBorrow = 1;
+                        assets.IsUse = 1;
+
+                        //
+                        // 将记录写入到数据库
+                        //
+                        _assetsService.SaveAssets(assets);
+
+                        //
+                        // 新增导入记录
+                        //
+                        result.Imported.Add(assets);
+                        
+                        //
+                        // 删除原有的导入记录？
+                        //
+
+                    }
+                    else
+                    {
+                        if (!_assetsService.IsExistByMemo(assets.Memo))
+                        {
+                            //
+                            // 表明资产被拆分了，但是在数据库中又找不到该条目，则新增条目
+                            // 新增资产编号生成规则如下
+                            // 产资产类别加上该资产类别累计新增的数量
+                            //
+                            var num = _assetsService.GetNextAssetsNum(assets.CatCode);
+                            assets.AssetsNum = string.Format("{0}{1}", assets.CatCode, num.PadLeft(6, '0'));            // 生成资产编号
+                            assets.ImportId = crntId;//导入id
+                            assets.ImportType = crntType; //导入类型 办学
+
+                            //
+                            // 更新资产类别累计录入数量：自增1
+                            //
+                            _assetsService.UpdateNextAssetsNum(assets.CatCode);
+
+                            //
+                            // 默认可领用可借用
+                            //
+                            assets.IsBorrow = 1;
+                            assets.IsUse = 1;
+
+                            //
+                            // 将记录写入到数据库
+                            //
+                            _assetsService.AddAssets(assets);
+
+                            //
+                            // 新增导入记录
+                            //
+                            result.Imported.Add(assets);
+                      
+                            
+                        }
+                        else
+                        {
+                            //
+                            // 表明资产被拆分了，但是在数据库中存在该记录，则需要覆盖原记录
+                            //
+                            var _existAssets = _assetsService.GetByMemo(assets.Memo);// Get(assets.CatCode);
+                            assets.EntityId = _existAssets.EntityId;
+                            assets.AssetsNum = _existAssets.AssetsNum;
+                            assets.ImportId = crntId;//导入id
+                            assets.ImportType = crntType; //导入类型 办学
+
+                            //
+                            // 默认可领用可借用
+                            //
+                            assets.IsBorrow = 1;
+                            assets.IsUse = 1;
+
+                            //
+                            // 将记录写入到数据库
+                            //
+                            _assetsService.SaveAssets(assets);
+
+                            //
+                            // 新增导入记录
+                            //
+                            result.Imported.Add(assets);
+                      
+                            //
+                            // 删除原有的导入记录？
+                            //
+                            
+                        }
+                    }
+
+                    
+
+                }
+
+                //
+                // 进度显示
+                // 
+                percent = percent + 75.0/list.Count;
+                importProgress.ImportedPercentVal = percentStep1 + (int)percent; ;
+                importProgress.ImportedAssetsNum = idx;
+            }
+            //percent = percent + 60.0 / list.Count;
+            return result;
+        }
+    }
+
+}

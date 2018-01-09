@@ -1,0 +1,279 @@
+﻿@using Eam.Web.Portal.Areas
+@{
+    Layout = "~/Areas/AssetsFind/Views/AssetsFind/_AssetsFindLayout.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产借用</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 资产借用单 -->
+<section class="content">
+<div class="row">
+    <div class="col-lg-12">
+        <div class="box">
+            <!-- 表头 -->
+            <div class="box-header new-box-header">
+                <h3 class="box-title title-a">资产借用单</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-primary top_a" id="AddAsset" name="AddAsset">添加资产</button>
+                    <span></span>
+                    <button class="btn btn-primary top_a" id="CloseAdd" name="CloseAdd">关闭添加</button>
+                </div>
+            </div><!-- /.box-header -->
+            <!-- box content -->
+            <div class="box-body content">
+                <form method="post" action="" name="frmBorrow">
+                    <!-- 借用左侧栏/借用信息 -->
+                    <div class="col-lg-3">
+                        <!-- 借用信息 -->
+                        <div class="row" style="margin-left:0px;">
+                            <br />
+                            <label>借用人：</label><select class="form-control" type="text" name="BorrowPerson" id="BorrowPerson"></select>
+                            @*<input class="form-control" type="text" placeholder="借用人" id="BorrowPerson" name="BorrowPerson">*@
+                            @*<link rel="stylesheet" href="~/Assets/select2/select2.css" />*@
+                            <script src="~/Assets/select2/select2.js"></script>
+                            <script>
+                                $.post("/sysManage/sysManage/GetAllUsersMax", function (data) {
+                                    $("#BorrowPerson").select2({
+                                        placeholder: "借用人",
+                                        data: data
+                                    });
+                                })
+                            </script>
+                            <br />
+                            <br />
+                            <label>借用日期：</label><input class="form-control" type="text" placeholder="借用日期" readonly="readonly" id="BorrowDate" name="BorrowDate" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")">
+                            <br />
+                            <label>借用用途：</label><input class="form-control" type="text" placeholder="借用用途" id="BorrowUse" name="BorrowUse">
+                            <br />
+                            <label>预计归还日期：</label>
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input type="text" class="form-control" data-provide="datepicker" data-date-format="yyyy-mm-dd" id="BorrowLong" name="BorrowLong">
+                            </div>
+                            <br />
+                            <label>借用人联系方式：</label><input class="form-control" type="text" placeholder="借用人联系方式" id="BorrowPersonPhone" name="BorrowPersonPhone">
+                            <br />
+                            <label>借用人所在部门：</label><input class="form-control" type="text" placeholder="借用人所在部门" id="BorrowDepartment" name="BorrowDepartment">
+                            <script>
+                                buildTree("treediv2", "placeTree2", "BorrowDepartment", "/SysManage/SysManage/ListDept?t=" + new Date(), "name");
+                            </script>
+
+                        </div>
+                        <!-- 借用操作 -->
+                        <div class="row">
+                            <br />
+                            <div style="color:red">@Html.ValidationSummary()</div>
+                            <br />
+                            <div class="col-lg-offset-5">
+                                <button class="btn btn-default btn-all">确认借用</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 借用右侧栏/待借用资产 -->
+                    <div class="col-lg-9">
+                        <table id="tableOrderList" class="table table-bordered table-striped dataTable" role="grid">
+                            <thead>
+                                <tr role="row" class="row-bkg">
+                                    <th style="width: 250px;">资产编号</th>
+                                    <th>资产名称</th>
+                                    <th style="width: 300px;">资产类别</th>
+                                    <th style="width: 150px;">单价</th>
+                                    <th style="width: 100px;">数量</th>
+                                    <th style="width: 100px;">计量单位</th>
+                                    <th style="width: 100px;"><button id="btnRemoveAll" type="button" class="btn btn-default btn-all">批量删除</button></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+</section>
+
+<!-- 资产借出记录表 -->
+<section class="content">
+<div class="row">
+    <!--资产借出记录表 -->
+    <div class="col-lg-12">
+        <!-- 资产借出记录表 -->
+        <div class="box">
+            <div class="box-header new-box-header">
+                <h3 class="box-title title-a">资产借出记录</h3>
+
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div id="example1_wrapper" class="dataTables_wrapper form-inline">
+                 
+                    <div class="row" style="margin:0px;">
+                        <table id="BorrowTable" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                            <thead>
+                                <tr role="row" class="row-bkg">
+                                    <th style="width: 100px;">序号</th>
+                                    <th style="width: 150px;">借用人</th>
+                                    <th style="width: 180px;">借用时间</th>
+                                    <th>借用用途</th>
+                                    <th style="width: 250px;">借用期</th>
+                                    <th style="width: 200px;">借用人联系方式</th>
+                                    <th style="width: 200px;">借用人部门</th>
+                                    <th style="width: 120px;">&nbsp;</th>
+                                    <th style="width: 120px;"><button type="button" onclick="RemoveAll()" class="btn btn-default btn-all">批量删除</button></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="dataTables_info" id="borrowRecordNumInfo" role="status" aria-live="polite"></div>
+                        </div>
+                        <div class="col-sm-9">
+                            <ul id="borrowRecordPager"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.box-body -->
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+<script src="~/Assets/datatables/datatables.min.js"></script>
+<!-- 资产借用列表显示 -->
+<script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+<script type="text/javascript">
+
+    var borrowQueryUrl = "@Url.Action("AllBorrowRecordQuery", "AssetsFind", new { area = "AssetsFind" })";
+
+    function borrowRecordqueryData(pageIndex) {
+        $("#BorrowTable tbody").empty();
+        $("#borrowRecordPageIndex").val(pageIndex);
+        var d = $("#NoneFrm").serialize();
+        $.post(borrowQueryUrl, d, function (result) {
+            //$("#BorrowTable tbody").empty();
+            $(result.Items).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td><a target="_blank" href="/AssetsFind/AssetsFind/ViewDetail?entityId=' + item.EntityId + '">' + item.EntityId + '</a></td>');
+                row.append('<td>' + item.BorrowPerson + '</td>');
+                row.append('<td>' + item.BorrowDate + '</td>');
+                row.append('<td>' + item.BorrowUse + '</td>');
+                row.append('<td>' + item.BorrowLong + '</td>');
+                row.append('<td>' + item.BorrowPersonPhone + '</td>');
+                row.append('<td>' + item.BorrowDeparitment + '</td>');
+                row.append('<td><a class="btn btn-default btn-all" href="/AssetsFind/DoAssetsExport/ExportBorrow?doAssetsId=' + item.EntityId + '" class="btn btn-sm">导出借用单</a></td>');
+                row.append('<td><a class="btn btn-default btn-all" href="/AssetsFind/DoAssets/DeleteBorrowAssetsRecord?doAssetsId=' + item.EntityId + '" class="btn btn-sm remove">删除</a></td>');
+                $("#BorrowTable tbody").append(row);
+            });
+            $("#BorrowTable").DataTable();
+            
+            //$("#borrowRecordNumInfo").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " ,总共 " + result.TotalItemCount);
+            //if (result.TotalPageCount <= 1) {
+            //    $('#borrowRecordPager').empty();
+            //    return;
+            //}
+            //var optionsborrowRecord = {
+            //    bootstrapMajorVersion: 3, //版本
+            //    numberOfPages: 8,
+            //    currentPage: result.CurrentPageIndex,
+            //    totalPages: result.TotalPageCount,
+            //    itemTexts: function (type, page, current) {
+            //        switch (type) {
+            //            case "first":
+            //                return "首页";
+            //            case "prev":
+            //                return "上一页";
+            //            case "next":
+            //                return "下一页";
+            //            case "last":
+            //                return "末页";
+            //            case "page":
+            //                return page;
+            //        }
+            //    }, //点击事件，用于通过Ajax来刷新整个list列表
+            //    onPageClicked: function (event, originalEvent, type, page) {
+            //        borrowRecordqueryData(page);
+            //    }
+            //};
+            //$('#borrowRecordPager').bootstrapPaginator(optionsborrowRecord);
+        }, "json");
+    }
+
+    $(function () {
+        $("#borrowRecordPerPageSize").change(function () {
+            $("#borrowRecordPageSize").val($(this).val());
+            borrowRecordqueryData(1);
+        });
+
+        borrowRecordqueryData(1);
+    });
+</script>
+
+<!-- 将资产列表中的资产添加到待借用列表 -->
+<script type="text/javascript">
+
+    window.AddToOrderListCallBack = loadData;
+
+    var serviceUrl2 = "@Url.Action("Query", "OrderList", new {area = "Account"})";
+    function loadData() {
+        $.post(serviceUrl2, { "type": "@ConstTag.Borrow" }, function (result) {
+            $("#tableOrderList tbody").empty();
+            $(result).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td>' + item.UsedNum1 + '</td>');
+                row.append('<td>' + item.GoodsName + '</td>');
+                row.append('<td>' + item.CatCode + '</td>');
+                row.append('<td>' + item.Price + '</td>');
+                row.append('<td>' + item.Counts + '</td>');
+                row.append('<td>' + item.MeasurementUnits + '</td>');
+                row.append('<td><input type="hidden" name="AssetsNum" value="' + item.AssetsNum + '"/><span class="btn btn-default btn-all remove" data-id="' + item.EntityId + '">删除</span></td>');
+                $("#tableOrderList tbody").append(row);
+            });
+            $("#tableOrderList").DataTable();
+            $(".remove").click(function () {
+                var serviceUrlRemove = "@Url.Action("RemoveOne", "OrderList", new {area = "Account"})";
+                $.post(serviceUrlRemove, { "id": $(this).attr("data-id") }, function () {
+                    loadData();
+                });
+            });
+        });
+    }
+    function RemoveFormOrderList() {
+        $("#btnRemoveAll").click(function () {
+            var serviceUrlRemove = "@Url.Action("RemoveFormOrderList", "OrderList", new { area = "Account" })";
+            $.post(serviceUrlRemove, { "type": "@ConstTag.Borrow" }, function () {
+                loadData();
+            });
+        });
+    }
+    function RemoveAll()
+    {
+     
+            var serviceUrlRemove = "@Url.Action("DeleteAllBorrowAssetsRecord", "DoAssets", new { area = "AssetsFind" })";
+        $.post(serviceUrlRemove, { "type": "@ConstTag.Borrow" }, function () {
+        
+                borrowRecordqueryData(1);
+            });
+       
+    }
+    //初始加载
+    $(function() {
+        loadData();
+        RemoveFormOrderList();
+    });
+</script>

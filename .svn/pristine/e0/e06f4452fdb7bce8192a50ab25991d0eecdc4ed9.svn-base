@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EE3E057A-DD8C-47D2-89E7-2533A9C76DDB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EAM.Data.Services</RootNamespace>
+    <AssemblyName>EAM.Data.Services</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NPoco, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\RefDll\NPoco.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Dto\AcquireDto.cs" />
+    <Compile Include="Dto\SendBackDto.cs" />
+    <Compile Include="Impl\AssetsOptionService.cs" />
+    <Compile Include="AssetsTypeMapping\AssetsTypes.cs" />
+    <Compile Include="AssetsTypeMapping\AssetsTypesExt.cs" />
+    <Compile Include="AssetsTypeMapping\CodeTypeItem.cs" />
+    <Compile Include="Dto\AssetsResultDto.cs" />
+    <Compile Include="Dto\ScrapDto.cs" />
+    <Compile Include="Dto\ScrapApplyDto.cs" />
+    <Compile Include="Dto\InventoryDto.cs" />
+    <Compile Include="Dto\InventoryOperatorDto.cs" />
+    <Compile Include="Dto\RepairDto.cs" />
+    <Compile Include="Dto\ServicesDto.cs" />
+    <Compile Include="Dto\ReturnDto.cs" />
+    <Compile Include="Dto\BorrowDto.cs" />
+    <Compile Include="IAssetsAcquireServices.cs" />
+    <Compile Include="IImportHistoryServices.cs" />
+    <Compile Include="IAssetsOptionService.cs" />
+    <Compile Include="IAssetsBorrrowServices.cs" />
+    <Compile Include="Impl\AssetsAcquireServices.cs" />
+    <Compile Include="Impl\AssetsBorrrowServices.cs" />
+    <Compile Include="Impl\ClassCodeServices.cs" />
+    <Compile Include="Impl\ScrapService.cs" />
+    <Compile Include="Impl\SysWarningServices.cs" />
+    <Compile Include="IClassCodeServices.cs" />
+    <Compile Include="IInventoryService.cs" />
+    <Compile Include="Impl\ImportHistoryService.cs" />
+    <Compile Include="Impl\UnImportAssetsService.cs" />
+    <Compile Include="Impl\RoleService.cs" />
+    <Compile Include="IScrapService.cs" />
+    <Compile Include="IRepairService.cs" />
+    <Compile Include="ISystemService.cs" />
+    <Compile Include="ISysWarningService.cs" />
+    <Compile Include="ISysInfoService.cs" />
+    <Compile Include="Impl\UserService.cs" />
+    <Compile Include="IUnImportAssetsService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IRoleService.cs" />
+    <Compile Include="IUserService.cs" />
+    <Compile Include="IAssetsService.cs" />
+    <Compile Include="Impl\SysInfoServices.cs" />
+    <Compile Include="Impl\AssetsService.cs" />
+    <Compile Include="Impl\InventoryService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Impl\RepairService.cs" />
+    <Compile Include="Query\AllRecordQuery.cs" />
+    <Compile Include="Query\AssetsScrapQuery.cs" />
+    <Compile Include="Query\LedGerCachQuery.cs" />
+    <Compile Include="Query\ImportHistoryQuery.cs" />
+    <Compile Include="Query\LedgerQuery.cs" />
+    <Compile Include="Query\MergePageQuery.cs" />
+    <Compile Include="Query\UnImportAssetsQuery.cs" />
+    <Compile Include="Query\UserQuery.cs" />
+    <Compile Include="Query\AssetsQuery.cs" />
+    <Compile Include="Query\IQuery.cs" />
+    <Compile Include="Query\QueryBase.cs" />
+    <Compile Include="Impl\SystemService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Eam.Core.Utility\Eam.Core.Utility.csproj">
+      <Project>{4C3F568E-43B4-4DA7-8A11-621BDCA6F59D}</Project>
+      <Name>Eam.Core.Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EAM.Data.Comm\EAM.Data.Comm.csproj">
+      <Project>{A7EF0FD8-266C-4B7B-B2FC-9A80ADE55844}</Project>
+      <Name>EAM.Data.Comm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EAM.Data.Domain\EAM.Data.Domain.csproj">
+      <Project>{613CD9FF-CA8A-4040-9225-AF99935C016F}</Project>
+      <Name>EAM.Data.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EAM.Data.Repositories\EAM.Data.Repositories.csproj">
+      <Project>{9542B03F-DD9D-4160-99D3-889693B399FD}</Project>
+      <Name>EAM.Data.Repositories</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,1361 @@
+﻿@using Eam.Web.Portal.Areas.AssetsFind.Models
+@model Eam.Web.Portal.Areas.AssetsFind.Models.ScrapReplyModel
+
+@{
+    ViewBag.Title = "ScrapReply";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+    //BandPicModel BangPic = ViewBag.Main as BandPicModel;
+    //if (null == BangPic)
+    //{
+    //    BangPic = new BandPicModel();
+    //}
+}
+<style type="text/css">
+    .content {
+        min-height: 0px;
+    }
+</style>
+
+@*<script type="text/javascript">
+        document.write('<style>.noscript { display: none; }</style>');
+    </script>*@
+<style>
+    .noscript {
+        display: none;
+    }
+
+    #activityd {
+        text-align: center;
+        width: 100%;
+    }
+
+    #activityf {
+        text-align: center;
+        width: 100%;
+        display: none;
+    }
+
+    #activityt {
+        text-align: center;
+        width: 100%;
+        display: none;
+    }
+
+    #activityq {
+        text-align: center;
+        width: 100%;
+        display: none;
+    }
+
+    #activityd td {
+        width: 10%;
+        height: 40px;
+    }
+
+    #activityt td {
+        width: 10%;
+        height: 40px;
+    }
+
+    #activityf td {
+        width: 10%;
+        height: 40px;
+    }
+
+    #activityq td {
+        width: 10%;
+        height: 40px;
+    }
+
+    table input {
+        width: 50px;
+        text-align: center;
+    }
+</style>
+
+<section>
+
+    <!--- 顶部 路径显示 -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#navTitle").empty();
+            $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">报废批复</a></li></ol>');
+            //alert("YES");
+        });
+    </script>
+
+    <!-- 上部 资产报废申请记录 -->
+    <section class="content">
+        <div class="row">
+            <!--资产报废申请记录 -->
+            <div class="col-lg-12">
+                <!-- 资产报废申请记录 -->
+                <div class="box">
+                    <div class="box-header new-box-header">
+                        <h3 class="box-title title-a">资产报废申请记录</h3>
+                        <div class="box-tools pull-right">
+                            @*<span class="label label-danger">执行北京市公共事业单位固定资产分类标准</span>*@
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <input type="hidden" name="ScrapRecordPageIndex" id="ScrapyRecordPageIndex" value="1" />
+                            <input type="hidden" name="ScrapRecordPageSize" id="ScrapRecordPageSize" value="20" />
+                            @*<button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>*@
+                        </div>
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table id="ScrapRecordTable" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                        <thead>
+                                            <tr role="row" class="row-bkg">
+                                                <th>序号</th>
+                                                <th>报废申请人</th>
+                                                <th>报废申请单位</th>
+                                                <th>报废申请人联系方式</th>
+                                                <th>报废申请日期</th>
+                                                <th>报废状态</th>
+                                                <th>报废审核人</th>
+                                                <th>报废审核日期</th>
+                                                <th>&nbsp;</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="dataTables_info" id="ScrapRecordTableInfo" role="status" aria-live="polite"></div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <ul id="ScrapRecordPager"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- /.box-body -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 中部 报废分类选项卡(可按表头排序) -->
+    <div class="col-lg-12">
+        <!-- 资产批复分类 -->
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">计算机类</a></li>
+                <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">服务器类</a></li>
+                <li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="false">投影机类</a></li>
+                <li class=""><a href="#tab_4" data-toggle="tab" aria-expanded="false">其他类</a></li>
+                <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
+            </ul>
+            <div class="tab-content">
+                <!-- 计算机类 -->
+                <div class="tab-pane active" id="tab_1">
+                    <!-- 计算机类 -->
+                    <div class="box box-info">
+                        <!-- 分类且合并后的资产用列表显示 -->
+                        <table id="ScrapApplyTable1" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                            <thead>
+                                <tr role="row" class="row-bkg">
+                                    <th style="width: 300px;">资产名称</th>
+                                    <th style="width: 359px;">资产编号</th>
+                                    <th style="width: 318px;">品牌型号</th>
+                                    <th style="width: 200px;">数量</th>
+                                    <th style="width: 256px;">单价</th>
+                                    <th style="width: 256px;">取得日期</th>
+                                    <th style="width: 191px;">&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div><!-- /.box-body -->
+                </div>
+
+                <!---服务器类 -->
+                <div class="tab-pane" id="tab_2">
+                    <!-- 服务器类 -->
+                    <div class="box box-info">
+                        <!-- 分类且合并后的资产用列表显示 -->
+                        <table id="ScrapApplyTable2" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                            <thead>
+                                <tr role="row" class="row-bkg">
+                                    <th style="width: 300px;">资产名称</th>
+                                    <th style="width: 359px;">资产编号</th>
+                                    <th style="width: 318px;">品牌型号</th>
+                                    <th style="width: 256px;">数量</th>
+                                    <th style="width: 256px;">单价</th>
+                                    <th style="width: 256px;">取得日期</th>
+                                    <th style="width: 191px;">&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div><!-- /.box-body -->
+                </div>
+
+                <!-- 投影机类-->
+                <div class="tab-pane " id="tab_3">
+                    <!-- 投影机类 -->
+                    <div class="box box-info">
+                        <!-- 分类且合并后的资产用列表显示 -->
+                        <table id="ScrapApplyTable3" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                            <thead>
+                                <tr role="row" class="row-bkg">
+                                    <th style="width: 300px;">资产名称</th>
+                                    <th style="width: 359px;">资产编号</th>
+                                    <th style="width: 318px;">品牌型号</th>
+                                    <th style="width: 256px;">数量</th>
+                                    <th style="width: 256px;">单价</th>
+                                    <th style="width: 256px;">取得日期</th>
+                                    <th style="width: 191px;">&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div><!-- /.box-body -->
+                </div>
+
+                <!--- 其他类-->
+                <div class="tab-pane" id="tab_4">
+                    <!-- 其他类 -->
+                    <div class="box box-info">
+                        <!-- 分类且合并后的资产用列表显示 -->
+                        <table id="ScrapApplyTable4" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                            <thead>
+                                <tr role="row" class="row-bkg">
+                                    <th style="width: 300px;">资产名称</th>
+                                    <th style="width: 359px;">资产编号</th>
+                                    <th style="width: 318px;">品牌型号</th>
+                                    <th style="width: 256px;">数量</th>
+                                    <th style="width: 256px;">单价</th>
+                                    <th style="width: 256px;">取得日期</th>
+                                    <th style="width: 191px;">&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div><!-- /.box-body -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--↓↓↓↓↓↓↓↓ 图片浏览器CSS和JS引用 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓-->
+    @*<link rel="stylesheet" href="/Assets/Galleriffic/basic.css" type="text/css">*@
+    <link rel="stylesheet" href="/Assets/Galleriffic/galleriffic-2.css" type="text/css">
+    <script type="text/javascript" src="/Assets/Galleriffic/jquery.galleriffic.js"></script>
+    <script type="text/javascript" src="/Assets/Galleriffic/jquery.opacityrollover.js"></script>
+    <!--↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑-->
+
+    <form id="PicBandParaForm" name="PicBandParaForm" enctype="multipart/form-data" method="post">
+        <!-- 下部 资产批复报表及图片预览 -->
+        <div class="row col-lg-12">
+            <!-- 左边表格区 默认计算机类表 -->
+            <div class="col-lg-6" id="InfoInputTable">
+                <div class="box box-danger">
+                    <!-- body Header -->
+                    <div class="box-header new-box-header">
+                        <h3 class="box-title title-a">学校信息化设备报废申请与批复表</h3>
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div><!-- /.box-header -->
+
+                    <div class="box-body no-padding">
+                        <!-- 表格 -->
+                        <!-- 台式机及笔记本表格 -->
+                        <div class="tab-pane active" id="activityd">
+                            <section class="sidebar">
+                                <table id="LedgerTable" style="border-color: darkslategray" class=" table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <td colspan="10" style="font-weight: bolder;text-align:center">(台式机及笔记本)</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td colspan="2" style="font-weight: bolder;border-bottom-color: darkslategray"><div style="width:100px" id="d_tianbiaoren">填表人：</div></td>
+                                            <td colspan="2" style="border-bottom-color: darkslategray" contenteditable="false"><input id="D_TianBiaoren" name="D_TianBiaoren" style="width: 80px" value="@Model.D_TianBiaoren" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray;text-align:center;height:40px">学校名称</td>
+                                            <td colspan="8" style="border-color: darkslategray" contenteditable="false"><div id="d_xuexiaomingcheng">北京市海淀区太平路小学</div></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">信息化负责人</td>
+                                            <td colspan="3" style="border-color: darkslategray" contenteditable="false"><input id="D_Fuzeren" name="D_Fuzeren" style="width: 80px" value="@Model.D_Fuzeren" /></td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">电话</td>
+                                            <td colspan="4" style="border-color: darkslategray" contenteditable="false"><input id="D_FuzerenDianhua" name="D_FuzerenDianhua" style="width: 120px" value="@Model.D_FuzerenDianhua" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="font-weight: bolder;border-color: darkslategray">  2017  年度学校信息化设备报废明细表</td>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="6" colspan="2" style="font-weight: bolder;border-color: darkslategray"><br /><br /><br /><br /><br /><br />设备自然情况(主要参数)</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">名称及品牌</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">数量</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">购买日期</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">已经使用时间(年)</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">规定使用年限(年)</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="border-color: darkslategray"><div id="d_mingchengjipingpai"></div></td>
+                                            <td style="border-color: darkslategray"><div id="d_shuliang"></div></td>
+                                            <td style="border-color: darkslategray"><div id="d_goumaishijian"></div></td>
+                                            <td colspan="2" style="border-color: darkslategray"><div id="d_yishiyongshijian"></div></td>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="D_GuidingShiyongNianxian" name="D_GuidingShiyongNianxian" style="width: 80px" value="@Model.D_GuidingShiyongNianxian" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">CPU</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">主板</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">硬盘</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">内存</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray"><div style="width:100px">显卡<!--(集成或独立)--> </div></td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">光驱</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="CPU" name="CPU" style="width: 40px" value="@Model.CPU" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="Zhuban" name="Zhuban" style="width: 40px" value="@Model.Zhuban" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="Yingpan" name="Yingpan" style="width: 40px" value="@Model.Yingpan" /></td>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="Neicun" name="Neicun" style="width:80px" value="@Model.Neicun" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="Xianka" name="Xianka" style="width: 80px" value="@Model.Xianka" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="Guanqu" name="Guanqu" style="width: 40px" value="@Model.Guanqu" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">显示器(有无)</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">显示器尺寸</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">显示器类型</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">键盘(有无)</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">鼠标(有无)</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="HasXianshiqi" name="HasXianshiqi" style="width:40px" value="@Model.HasXianshiqi"></input></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="XianshiqiChicun" name="XianshiqiChicun" style="width: 40px" value="@Model.XianshiqiChicun" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="XianshiqiLeixing" name="XianshiqiLeixing" style="width: 40px" value="@Model.XianshiqiLeixing" /></td>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="HasKeybord" name="HasKeybord" style="width: 80px" value="@Model.HasKeybord" /></td>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="HasMouse" name="HasMouse" style="width: 80px" value="@Model.HasMouse" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">报废或更换理由</td>
+                                            <td colspan="8" style="border-color: darkslategray">设备损耗老化严重，元件损坏更换费用过高，无维修价值，已经影响学校工作的开展，申请报废。</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6" style="font-weight: bolder;border-color: darkslategray" contenteditable="false"><div style="float:left">学校信息化主管领导（签字）：</div></td>
+                                            <td colspan="4" style="font-weight: bolder;border-color: darkslategray" contenteditable="false">学校（公章）____年__月__日</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="font-weight: bolder;border-top-color: darkslategray;border-left-color:darkslategray;border-right-color:darkslategray">鉴定部门审核意见</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="border-color: darkslategray" contenteditable="false"></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6" style="font-weight: bolder;border-color: darkslategray" contenteditable="false"><div style="float:left">鉴定部门主管领导（签字）：&nbsp;</div></td>
+                                            <td colspan="4" style="font-weight: bolder;border-color: darkslategray" contenteditable="false">鉴定日期：____年__月__日</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </section>
+                        </div>
+
+                        <!-- 服务器表格-->
+                        <div class="tab-pane active" id="activityf">
+                            <section class="sidebar">
+                                <table id="LedgerTable" style="border-color: darkslategray" class=" table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <td colspan="10" style="font-weight: bolder;text-align:center">(服务器)</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td colspan="2" style="font-weight: bolder;border-bottom-color: darkslategray"><div style="width:100px">填表人：</div></td>
+                                            <td colspan="2" style="border-bottom-color: darkslategray" contenteditable="false"><input id="F_TianBiaoren" name="F_TianBiaoren" style="width: 80px" value="@Model.F_TianBiaoren" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray;text-align:center;height:40px">学校名称</td>
+                                            <td colspan="8" style="border-color: darkslategray" contenteditable="false"><div id="f_xuexiaomingcheng">北京市海淀区太平路小学</div></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">信息化负责人</td>
+                                            <td colspan="3" style="border-color: darkslategray" contenteditable="false"><input id="F_Fuzeren" name="F_Fuzeren" style="width: 80px" value="@Model.F_Fuzeren" /></td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">电话</td>
+                                            <td colspan="4" style="border-color: darkslategray" contenteditable="false"><input id="F_FuzerenDianhua" name="F_FuzerenDianhua" style="width: 120px" value="@Model.F_FuzerenDianhua" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="font-weight: bolder;border-color: darkslategray">  2017  年度学校信息化设备报废明细表</td>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="4" colspan="2" style="font-weight: bolder;border-color: darkslategray"><br /><br /><br />设备自然情况(主要参数)</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">名称及品牌</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">数量</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">购买日期</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">已经使用时间(年)</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">规定使用年限(年)</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="border-color: darkslategray"><div id="f_mingchengjipingpai"></div></td>
+                                            <td style="border-color: darkslategray"><div id="f_shuliang"></div></td>
+                                            <td style="border-color: darkslategray"><div id="f_goumaishijian"></div></td>
+                                            <td colspan="2" style="border-color: darkslategray"><div id="f_yishiyongshijian"></div></td>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="F_GuidingShiyongNianxian" name="F_GuidingShiyongNianxian" style="width: 80px" value="@Model.F_GuidingShiyongNianxian" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">CPU</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">主板</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">硬盘</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">内存</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray"><div style="width:100px">显卡<!--(集成或独立)--></div></td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">光驱</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="F_CPU" name="F_CPU" style="width: 80px" value="@Model.F_CPU" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="F_Zhuban" name="F_Zhuban" style="width: 40px" value="@Model.F_Zhuban" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="F_Yingpan" name="F_Yingpan" style="width: 40px" value="@Model.F_Yingpan" /></td>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="F_Neicun" name="F_Neicun" style="width: 80px" value="@Model.F_Neicun" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="F_Xianka" name="F_Xianka" style="width: 40px" value="@Model.F_Xianka" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="F_Guanqu" name="F_Guanqu" style="width: 40px" value="@Model.F_Guanqu" /></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">报废或更换理由</td>
+                                            <td colspan="8" style="border-color: darkslategray">设备损耗老化严重，元件损坏更换费用过高，无维修价值，已经影响学校工作的开展，申请报废。</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6" style="font-weight: bolder;border-color: darkslategray" contenteditable="false"><div style="float:left">学校信息化主管领导（签字）：</div></td>
+                                            <td colspan="4" style="font-weight: bolder;border-color: darkslategray" contenteditable="false">学校（公章）____年__月__日</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="font-weight: bolder;border-top-color: darkslategray;border-left-color:darkslategray;border-right-color:darkslategray">鉴定部门审核意见</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="border-color: darkslategray" contenteditable="false">&nbsp;&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6" style="font-weight: bolder;border-color: darkslategray" contenteditable="false"><div style="float:left">鉴定部门主管领导（签字）：&nbsp;</div></td>
+                                            <td colspan="4" style="font-weight: bolder;border-color: darkslategray" contenteditable="false">鉴定日期：____年__月__日</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </section>
+                        </div>
+
+                        <!-- 投影机表格-->
+                        <div class="tab-pane active" id="activityt">
+                            <section class="sidebar">
+                                <table id="LedgerTable" style="border-color: darkslategray" class=" table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <td colspan="10" style="font-weight: bolder;text-align:center">(投影机)</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td colspan="2" style="font-weight: bolder;border-bottom-color: darkslategray"><div style="width:100px">填表人：</div></td>
+                                            <td colspan="2" style="border-bottom-color: darkslategray" contenteditable="false"><input id="T_TianBiaoren" name="T_TianBiaoren" style="width: 80px" value="@Model.T_TianBiaoren" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray;text-align:center;height:40px">学校名称</td>
+                                            <td colspan="8" style="border-color: darkslategray" contenteditable="false"><div id="t_xuexiaomingcheng">北京市海淀区太平路小学</div></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">信息化负责人</td>
+                                            <td colspan="3" style="border-color: darkslategray" contenteditable="false"><input id="T_Fuzeren" name="T_Fuzeren" style="width: 80px" value="@Model.T_Fuzeren" /></td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">电话</td>
+                                            <td colspan="4" style="border-color: darkslategray" contenteditable="false"><input id="T_FuzerenDianhua" name="T_FuzerenDianhua" style="width: 120px" value="@Model.T_FuzerenDianhua" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="font-weight: bolder;border-color: darkslategray">  2017  年度学校信息化设备报废明细表</td>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="4" colspan="2" style="font-weight: bolder;border-color: darkslategray"><br /><br /><br />设备自然情况(主要参数)</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">名称及品牌</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">数量</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">购买日期</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">已经使用时间(年)</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">规定使用年限(年)</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="border-color: darkslategray"><div id="t_mingchengjipingpai"></div></td>
+                                            <td style="border-color: darkslategray"><div id="t_shuliang"></div></td>
+                                            <td style="border-color: darkslategray"><div id="t_goumaishijian"></div></td>
+                                            <td colspan="2" style="border-color: darkslategray"><div id="t_yishiyongshijian"></div></td>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="T_GuidingShiyongNianxian" name="T_GuidingShiyongNianxian" style="width: 80px" value="@Model.T_GuidingShiyongNianxian" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">显示技术</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">最高显示分辨率</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">标称光亮度</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">标称对比度</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="XianshiJishu" name="XianshiJishu" style="width: 80px" value="@Model.XianshiJishu" /></td>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="ZuigaoFenbianlv" name="ZuigaoFenbianlv" style="width: 80px" value="@Model.ZuigaoFenbianlv" /></td>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="BiaochengLiangdu" name="BiaochengLiangdu" style="width: 80px" value="@Model.BiaochengLiangdu" /></td>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="BiaoChengDuibiDu" name="BiaoChengDuibiDu" style="width: 80px" value="@Model.BiaoChengDuibiDu" /></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">报废或更换理由</td>
+                                            <td colspan="8" style="border-color: darkslategray">设备损耗老化严重，元件损坏更换费用过高，无维修价值，已经影响学校工作的开展，申请报废。</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5" style="font-weight: bolder;border-color: darkslategray" contenteditable="false"><div style="float:left">学校信息化主管领导（签字）：</div></td>
+                                            <td colspan="5" style="font-weight: bolder;border-color: darkslategray" contenteditable="false">学校（公章）____年__月__日</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="font-weight: bolder;border-top-color: darkslategray;border-left-color:darkslategray;border-right-color:darkslategray">鉴定部门审核意见</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="border-color: darkslategray" contenteditable="false">&nbsp;&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5" style="font-weight: bolder;border-color: darkslategray" contenteditable="false"><div style="float:left">鉴定部门主管领导（签字）：&nbsp;</div></td>
+                                            <td colspan="5" style="font-weight: bolder;border-color: darkslategray" contenteditable="false">鉴定日期：____年__月__日</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </section>
+                        </div>
+
+                        <!-- 其他表格-->
+                        <div class="tab-pane active" id="activityq">
+                            <section class="sidebar">
+                                <table id="LedgerTable" style="border-color: darkslategray" class=" table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <td colspan="10" style="font-weight: bolder;text-align:center">(其他)</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td style="border-bottom-color:darkslategray"></td>
+                                            <td colspan="2" style="font-weight: bolder;border-bottom-color: darkslategray"><div style="width:100px">填表人：</div></td>
+                                            <td colspan="2" style="border-bottom-color: darkslategray" contenteditable="false"><input id="Q_TianBiaoren" name="Q_TianBiaoren" style="width: 80px" value="@Model.Q_TianBiaoren" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray;text-align:center;height:40px">学校名称</td>
+                                            <td colspan="8" style="border-color: darkslategray" contenteditable="false"><div id="q_xuexiaomingcheng">北京市海淀区太平路小学</div></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">信息化负责人</td>
+                                            <td colspan="3" style="border-color: darkslategray" contenteditable="false"><input id="Q_Fuzeren" name="Q_Fuzeren" style="width: 80px" value="@Model.Q_Fuzeren" /></td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">电话</td>
+                                            <td colspan="4" style="border-color: darkslategray" contenteditable="false"><input id="Q_FuzerenDianhua" name="Q_FuzerenDianhua" style="width: 120px" value="@Model.Q_FuzerenDianhua" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="font-weight: bolder;border-color: darkslategray">  2017  年度学校信息化设备报废明细表</td>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="4" colspan="2" style="font-weight: bolder;border-color: darkslategray"><br /><br /><br />设备自然情况(主要参数)</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">名称及品牌</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">数量</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">购买日期</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">已经使用时间(年)</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">规定使用年限(年)</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="border-color: darkslategray"><div id="q_mingchengjipingpai"></div></td>
+                                            <td style="border-color: darkslategray"><div id="q_shuliang"></div></td>
+                                            <td style="border-color: darkslategray"><div id="q_goumaishijian"></div></td>
+                                            <td colspan="2" style="border-color: darkslategray"><div id="q_yishiyongshijian"></div></td>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="Q_GuidingShiyongNianxian" name="Q_GuidingShiyongNianxian" style="width: 80px" value="@Model.Q_GuidingShiyongNianxian" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">主要参数1</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">主要参数2</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">主要参数3</td>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">主要参数4</td>
+                                            <td style="font-weight: bolder;border-color: darkslategray"><div style="width:100px">主要参数5</div></td>
+                                            <td style="font-weight: bolder;border-color: darkslategray">主要参数6</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="MainPara1" name="MainPara1" style="width: 80px" value="@Model.MainPara1" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="MainPara2" name="MainPara2" style="width: 40px" value="@Model.MainPara2" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="MainPara3" name="MainPara3" style="width: 40px" value="@Model.MainPara3" /></td>
+                                            <td colspan="2" style="border-color: darkslategray" contenteditable="false"><input id="MainPara4" name="MainPara4" style="width: 80px" value="@Model.MainPara4" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="MainPara5" name="MainPara5" style="width: 40px" value="@Model.MainPara5" /></td>
+                                            <td style="border-color: darkslategray" contenteditable="false"><input id="MainPara6" name="MainPara6" style="width: 40px" value="@Model.MainPara6" /></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="2" style="font-weight: bolder;border-color: darkslategray">报废或更换理由</td>
+                                            <td colspan="8" style="border-color: darkslategray">设备损耗老化严重，元件损坏更换费用过高，无维修价值，已经影响学校工作的开展，申请报废。</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6" style="font-weight: bolder;border-color: darkslategray" contenteditable="false"><div style="float:left">学校信息化主管领导（签字）：</div></td>
+                                            <td colspan="4" style="font-weight: bolder;border-color: darkslategray" contenteditable="false">学校（公章）____年__月__日</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="font-weight: bolder;border-top-color: darkslategray;border-left-color:darkslategray;border-right-color:darkslategray">鉴定部门审核意见</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="border-color: darkslategray" contenteditable="false">&nbsp;&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6" style="font-weight: bolder;border-color: darkslategray" contenteditable="false"><div style="float:left">鉴定部门主管领导（签字）：&nbsp;</div></td>
+                                            <td colspan="4" style="font-weight: bolder;border-color: darkslategray" contenteditable="false">鉴定日期：____年__月__日</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </section>
+                        </div>
+
+                        <!-- 提交表格按钮 -->
+                        <div style="position:relative;left:45%;"><input type="submit" value="提交表格" class="btn btn-default btn-all" id="formsubmit" /></div><!-- 用SUBMIT提交 所以不用class点击事件（点击事件名：formsubmit） -->
+                    </div><!-- /.box-body -->
+                </div>
+            </div>
+
+            <!-- 右边图片区 选择以及显示图片-->
+            <div class="col-lg-6">
+                <div class="box box-danger">
+                    <!-- body Header -->
+                    <div class="box-header new-box-header">
+                        <h3 class="box-title title-a">选择批复图片</h3>
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div><!-- /.box-header -->
+
+                    <div class="box-body no-padding">
+                        <div>
+                            <input type="file" id="picFile" name="picFile" onchange="previewImage(this,'imgPrev')">
+                            <h4 id="txt1" name="txt1" style="display:none">(选择图片二)</h4>
+                            <input type="file" id="picFile1" name="picFile1" style="display:none" onchange="previewImage(this,'imgPrev1')">
+                        </div>
+                        <div>
+                            <img id="imgPrev" src="http://www.16sucai.com/uploadfile/show6/jqueryffxc/images/041.jpg" alt="" style="width:100%" height="700">
+                            <img id="imgPrev1" src="" alt="" style="display:none">
+                            <input id="PicPath" name="PicPath" value="@Model.PicPath" style="display:none" />
+                            <input id="PicPath1" name="PicPath1" value="@Model.PicPath1" style="display:none" />
+                            <input id="Type" name="Type" value="@Model.Type" style="display:none" />
+                            <input id="EntityId" name="EntityId" value="@Model.EntityId" style="display:none" />
+                            <input id="Biaodanhao" name="Biaodanhao" value="" style="display:none" />
+                        </div>
+                        <h3 style="text-align:center">预览</h3>
+
+                    </div><!-- /.box-body -->
+                    <div class="box-footer">
+                        <div style="float:left;"><input type="button" value="读取数据到表格" class="btn btn-default btn-all" id="duqucanshu" name="duqucanshu" /></div>
+                        <div style="float:right;"><input type="button" value="绑定数据到图片" class="btn btn-default btn-all" id="bangdingcanshu" name="bangdingcanshu" /></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部 已完成的报表打包（可批量生成） -->
+        <div class="col-lg-12">
+            <div class="box">
+                <!-- 表头 -->
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">导出列表</h3>
+                    <div class="infochangeBtn">
+                        <button type="button" class="btn btn-default btn-all exportScrap" id="printAll">导出</button>
+                        <button type="button" class="btn btn-default btn-all deletbtn" id="printAll">删除</button>
+                    </div>
+                    <div class="box-tools pull-right">
+                        <!--
+                            <button class="btn btn-primary" id="AddAsset" name="AddAsset">批量打印</button>
+                            <button class="btn btn-primary" id="CloseAdd" name="CloseAdd">批量导出</button>
+                            -->
+                    </div>
+                </div><!-- /.box-header -->
+                <!-- box content -->
+                <div class="box-body">
+                    <!-- 借用右侧栏/待借用资产 -->
+                    <div class="col-lg-12">
+                        <table id="tableGetOut" class="table table-bordered table-striped dataTable" role="grid">
+                            <thead>
+                                <tr role="row" class="row-bkg">
+                                    <th style="width: 100px;">全选</th>
+                                    <th style="width: 240px;">资产编号</th>
+                                    <th style="width: 380px;">资产名称</th>
+                                    <th style="width: 380px;">取得时间</th>
+                                    <th style="width: 318px;">填表人</th>
+                                    <th style="width: 246px;">打印状态<!--已打印或未打印--></th>
+
+                                </tr>
+
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+</section>
+
+<!-- 引用MD5插件 -->
+<script src="~/Assets/md5.js"></script>
+<script src="~/Assets/datatables/datatables.min.js"></script>
+<script src="~/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+<script type="text/javascript">
+    var selectPlaceNode = null;
+    var gallery;
+    var table1;
+    var table2;
+    var table3;
+    var table4;
+    var table5;
+
+    $(document).ready(function () {
+
+        //document.getElementById("IndexPanel").style.display = ""; //显示
+        //document.getElementById("TreeIndexPanel").style.display = ""; //显示
+
+        //
+        // 为筛选资产按钮添加函数
+        //
+    });
+
+    var scrapQueryUrl = "@Url.Action("AllScrapRecordQuery", "AssetsFind", new { area = "AssetsFind" })";
+
+    function queryScrapRecordData(pageIndex) {
+        $("#ScrapRecordPageIndex").val(pageIndex);
+        //var d = $("#NoneFrm").serialize();
+        $.post(scrapQueryUrl, function (result) {
+            $("#ScrapRecordTable tbody").empty();
+            $(result.Items).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td><span id="entityID">' + item.EntityId + '</span></td>');
+                row.append('<td>' + item.ScrapPerson + '</td>');
+                row.append('<td>' + item.ScrapUnit + '</td>');
+                row.append('<td>' + item.ScrapDate + '</td>');
+                if (item.HasScrap == 0)
+                    row.append('<td>未报废</td>');
+                else
+                    row.append('<td>已报废</td>');
+
+                row.append('<td>' + item.ScrapExaminePerson + '</td>');
+                row.append('<td>' + item.ScrapExamineDate + '</td>');
+
+                if (item.HasScrap == 0)
+                    row.append('<td><span class="btn btn-default btn-all scrapreply" data-id=' + item.EntityId + '>分类合并</span></td>');
+                else
+                    row.append('<td>&nbsp;</td>');
+                $("#ScrapRecordTable").append(row);
+            });
+
+            //
+            // 分类合并按钮事件
+            //
+            var scrapreply = "@Url.Action("DoPreScrapReply", "AssetsFind", new { area = "AssetsFind" })";
+
+            $(".scrapreply").click(function () {
+
+                var entity = $(this).attr("data-id");
+                $("#Biaodanhao").val(entity);
+                $.post(scrapreply, { "entity": entity }, function (result) {
+                    //
+                    // 如果分类合并成功则请求数据显示
+                    //
+                    if (result == "OK") {
+                        QueryMerge(entity);
+
+
+                    } else {
+                        alert("分类合并失败，原因：" + result);
+                    }
+                });
+            });
+
+            var findphoto = "@Url.Action("FindPhoto", "DoAssets", new { area = "AssetsFind" })";
+            //var photosrc = hex_md5(document.getElementById("imgPrev").src);  // 获取页面上图片路径
+
+
+            // 读取参数按钮点击事件
+            $("#duqucanshu").click(function () {
+                //
+                // 计算图片MD5值
+                //
+                var photosrc = hex_md5(document.getElementById("imgPrev").src);  // 获取页面上图片路径
+                var photosrc1 = hex_md5(document.getElementById("imgPrev1").src);  // 获取页面上图片路径
+
+                //
+                // 将MD5值写入dom元素㕜
+                //
+                $("#PicPath").val(photosrc);
+                $("#PicPath1").val(photosrc1);
+
+                var photoMD5 = $("#PicPath").val();
+                var photoMD5_1 = $("#PicPath1").val();
+                $.post(findphoto, { "src": photoMD5 }, function (rlt) {  // 向后台发送路径，获取返回值进行判断
+                    if (rlt == null || rlt == "") { // 判断是否第一次使用
+                        alert("此图尚未绑定参数，so无法读取到参数");
+                    } else {
+                        $("#D_TianBiaoren").val(rlt.D_TianBiaoren);
+                        $("#D_Fuzeren").val(rlt.D_Fuzeren);
+                        $("#D_FuzerenDianhua").val(rlt.D_FuzerenDianhua);
+                        $("#D_GuidingShiyongNianxian").val(rlt.D_GuidingShiyongNianxian);
+                        $("#F_TianBiaoren").val(rlt.F_TianBiaoren);
+                        $("#F_Fuzeren").val(rlt.F_Fuzeren);
+                        $("#F_FuzerenDianhua").val(rlt.F_FuzerenDianhua);
+                        $("#F_GuidingShiyongNianxian").val(rlt.F_GuidingShiyongNianxian);
+                        $("#T_TianBiaoren").val(rlt.T_TianBiaoren);
+                        $("#T_Fuzeren").val(rlt.T_Fuzeren);
+                        $("#T_FuzerenDianhua").val(rlt.T_FuzerenDianhua);
+                        $("#T_GuidingShiyongNianxian").val(rlt.T_GuidingShiyongNianxian);
+                        $("#Q_TianBiaoren").val(rlt.Q_TianBiaoren);
+                        $("#Q_Fuzeren").val(rlt.Q_Fuzeren);
+                        $("#Q_FuzerenDianhua").val(rlt.Q_FuzerenDianhua);
+                        $("#Q_GuidingShiyongNianxian").val(rlt.Q_GuidingShiyongNianxian);
+                        $("#MainPara1").val(rlt.MainPara1);
+                        $("#MainPara2").val(rlt.MainPara2);
+                        $("#MainPara3").val(rlt.MainPara3);
+                        $("#MainPara4").val(rlt.MainPara4);
+                        $("#MainPara5").val(rlt.MainPara5);
+                        $("#MainPara6").val(rlt.MainPara6);
+                        $("#CPU").val(rlt.CPU);
+                        $("#Zhuban").val(rlt.Zhuban);
+                        $("#Yingpan").val(rlt.Yingpan);
+                        $("#Neicun").val(rlt.Neicun);
+                        $("#Xianka").val(rlt.Xianka);
+                        $("#Guanqu").val(rlt.Guanqu);
+                        $("#HasXianshiqi").val(rlt.HasXianshiqi);
+                        $("#XianshiqiChicun").val(rlt.XianshiqiChicun);
+                        $("#XianshiqiLeixing").val(rlt.XianshiqiLeixing);
+                        $("#HasKeybord").val(rlt.HasKeybord);
+                        $("#HasMouse").val(rlt.HasMouse);
+                        $("#XianshiJishu").val(rlt.XianshiJishu);
+                        $("#ZuigaoFenbianlv").val(rlt.ZuigaoFenbianlv);
+                        $("#BiaochengLiangdu").val(rlt.BiaochengLiangdu);
+                        $("#BiaoChengDuibiDu").val(rlt.BiaoChengDuibiDu);
+                        $("#F_CPU").val(rlt.F_CPU);
+                        $("#F_Zhuban").val(rlt.F_Zhuban);
+                        $("#F_Yingpan").val(rlt.F_Yingpan);
+                        $("#F_Neicun").val(rlt.F_Neicun);
+                        $("#F_Xianka").val(rlt.F_Xianka);
+                        $("#F_Guanqu").val(rlt.F_Guanqu);
+                    }
+
+                }, "json");
+            });
+
+            var findphotoUrl = "@Url.Action("UpScrapReply", "DoAssets", new { area = "AssetsFind" })";
+
+            // 绑定参数按钮点击事件
+            $("#bangdingcanshu").click(function () {
+
+                var bandData = $("#PicBandParaForm").serialize();
+
+                $.post(findphotoUrl, bandData, function (result) {
+                    if (result == "OK") {
+                        alert("绑定成功!");
+                    } else {
+                        alert("绑定失败,原因:" + result);
+                    }
+
+                }, "json");
+
+            });
+
+            var upscraprely = "@Url.Action("ScrapReply", "DoAssets", new { area = "AssetsFind" })";
+            // 提交表格按钮点击事件处理
+            $(".formsubmit").click(function () {
+                var bandData = $("#PicBandParaForm").serialize();
+                $.post(upscraprely, bandData, function (result) {
+                    if (result.toString() == "NO") {
+                        alert("提交表格失败,原因：" + result);
+
+                    }
+                    else {
+                        alert("提交表格成功");
+                        AddGetOutTable();
+                    }
+                }, "json");
+            });
+
+        }, "json");
+    }
+
+    //
+    // 将数据显示到导出列表
+    //
+    function AddGetOutTable() {
+        var getOut = "@Url.Action("GetOut", "DoAssets", new { area = "AssetsFind" })";
+        $.post(getOut, function (result) {
+            if (result == null) {
+                alert("导出列表数据查询失败，原因：" + result);
+            } else {
+                //
+                // 清空列表内容
+                //
+                if (table5 != null) {
+                    table5.destroy();
+                }
+                $("#tableGetOut tbody").empty();
+                $(result.Items).each(function (index, item) {
+                    var row = $(" <tr role='row'>");
+                    row.append('<td><input type="checkbox" name="checkbox" del-id="' + item.EntityId + '" /></td>');
+                    row.append('<td>' + item.AssetsNum + '</td>');
+                    row.append('<td>' + item.AssetsName + '</td>');
+                    row.append('<td>' + item.GetsDate + '</td>');
+                    row.append('<td>' + item.FillPerson + '</td>');
+                    switch (item.HasGetOut) {
+                        case 0:
+                            row.append('<td>未批复</td>');
+                            break;
+                        case 1:
+                            row.append('<td>已导出</td>');
+                            break;
+                        case 2:
+                            row.append('<td>已批复，未导出</td>');
+                            break;
+                        default:
+                            break;
+                    }
+                    //row.append('<td><a  class="btn btn-default btn-all exportScrap" href="/AssetsFind/DoAssets/ExportSingleScrapTable?Entity=' + item.EntityId + '" >导出</a></td>');
+                    //row.append('<td><input type="button"  class="btn btn-default btn-all deletbtn" del-id="' + item.EntityId + '" name="' + item.EntityId + '" value="删除" /></td>');
+
+                    $("#tableGetOut").append(row);
+
+                });
+                table5 = $("#tableGetOut").DataTable();
+
+
+
+                //
+                // 注册删除按钮点击时间
+                //
+                var delet = "@Url.Action("DeletScrap", "DoAssets", new { area = "AssetsFind" })";
+
+                $(".deletbtn").click(function () {
+
+                    var test = $("input[name='checkbox']:checked");
+                    var checkBoxValue = "";
+                    test.each(function () {
+                        checkBoxValue += $(this).attr("del-id") + "|";
+                    });
+                    if (checkBoxValue.length < 1) { alert("请选择"); } else {
+                        //var entity = $(this).attr("del-id");
+                        $.post(delet, { "Entity": checkBoxValue }, function (result) {
+                            if (result == "OK")
+                                alert("删除成功");
+                        }, "json");
+                    }
+                });
+
+                //
+                // 注册导出按钮事件处理
+                //
+                $(".exportScrap").click(function () {
+
+                    var test = $("input[name='checkbox']:checked");
+                    var checkBoxValue = "";
+                    test.each(function () {
+                        checkBoxValue += $(this).attr("del-id") + "|";
+                    })
+                    if (checkBoxValue.length < 1) { alert("请选择"); } else {
+                        var ExpertScrapTable = '@Url.Action("ExportSingleScrapTable", "DoAssets", new { area = "AssetsFind" })';
+
+                        var entity = $(this).attr("exportScrap-id");
+
+                        //$.post(ExpertScrapTable, { "Entity": checkBoxValue });
+                        $.ajax({ url: ExpertScrapTable, type: 'POST', data: { "Entity": checkBoxValue },success:function(res){
+                            window.open(res);
+                        }
+                        });
+                        
+                        @*window.location.href = '@Url.Action("ExportSingleScrapTable", "DoAssets", new { area = "AssetsFind" })';*@
+
+
+                    }
+                });
+
+            }
+        });
+    }
+
+
+
+
+
+
+    //
+    // 刷新图片浏览器样式
+    //
+    //function shuaxin() {
+    //    //
+    //    // 图片浏览器控制
+    //    // We only want these styles applied when javascript is enabled
+    //    $('div.navigation').css({ 'width': '100%', 'float': 'left' });
+    //    $('div.content').css('display', 'block');
+
+    //    // Initially set opacity on thumbs and add
+    //    // additional styling for hover effect on thumbs
+    //    var onMouseOutOpacity = 0.67;
+    //    $('#thumbs ul.thumbs li').opacityrollover({
+    //        mouseOutOpacity: onMouseOutOpacity,
+    //        mouseOverOpacity: 1.0,
+    //        fadeSpeed: 'fast',
+    //        exemptionSelector: '.selected'
+    //    });
+
+    //    // Initialize Advanced Galleriffic Gallery
+    //    gallery = $('#thumbs').galleriffic({
+    //        delay: 2000,
+    //        numThumbs: 15,
+    //        preloadAhead: 10,
+    //        enableTopPager: true,
+    //        enableBottomPager: true,
+    //        maxPagesToShow: 7,
+    //        imageContainerSel: '#slideshow',
+    //        controlsContainerSel: '#controls',
+    //        captionContainerSel: '#caption',
+    //        loadingContainerSel: '#loading',
+    //        renderSSControls: true,
+    //        renderNavControls: true,
+    //        playLinkText: '播放幻灯片',
+    //        pauseLinkText: '暂停幻灯片',
+    //        prevLinkText: '&lsaquo; 上一张图片',
+    //        nextLinkText: '下一张图片 &rsaquo;',
+    //        nextPageLinkText: '下一页 &rsaquo;',
+    //        prevPageLinkText: '&lsaquo; 首页',
+    //        enableHistory: false,
+    //        autoStart: false,
+    //        syncTransitions: true,
+    //        defaultTransitionDuration: 900,
+    //        onSlideChange: function (prevIndex, nextIndex) {
+    //            // 'this' refers to the gallery, which is an extension of $('#thumbs')
+    //            this.find('ul.thumbs').children()
+    //                .eq(prevIndex).fadeTo('fast', onMouseOutOpacity).end()
+    //                .eq(nextIndex).fadeTo('fast', 1.0);
+    //        },
+    //        onPageTransitionOut: function (callback) {
+    //            this.fadeTo('fast', 0.0, callback);
+    //        },
+    //        onPageTransitionIn: function () {
+    //            this.fadeTo('fast', 1.0);
+    //        }
+    //    });
+    //}
+
+
+    $(function () {
+        $("#ScrapRecordPerPageSize").change(function () {
+            alert($(this).val());
+            $("#ScrapRecordPageSize").val($(this).val());
+            queryScrapRecordData(1);
+        });
+
+        queryScrapRecordData(1);
+        //$("#btnSearch").click(function() { //点击查询按钮后从第一页开始查询
+        //    queryData(1);
+        //    return false;
+        //});
+        $("#btnScrap").click(function () {
+            var d = $("#fromScrap").serialize();
+            $.post("/AssetsFind/DoAssets/ScrapAssets", d, function (result) {
+                if (result == "ok") {
+                    alert("操作成功");
+                    //document.getElementById("fromScrap").reset();
+                    //queryScrapRecordData($("#ScrapRecordPageIndex").val());
+                    window.location.reload();
+                    return;
+                }
+                alert(result);
+            }, "json");
+        });
+
+        AddGetOutTable();       // 页面加载完就显示导出列表
+        //shuaxin();
+
+
+    });
+
+
+    //
+    // 选择图片
+    //
+    function previewImage(file, prevId) {
+        var image = '';
+        if (!file.files || !file.files[0])
+            return;
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+            document.getElementById(prevId).src = evt.target.result;
+            image = evt.target.result;
+        }
+        reader.readAsDataURL(file.files[0]);
+    }
+
+    //
+    // 显示分类合并后记录表
+    //
+    var mergeResultQueryUrl = "@Url.Action("MergeRecordQuery", "DoAssets", new { area = "AssetsFind" })";
+
+
+    //
+    // 请求分类合并数据
+    //
+    function QueryMerge(formNo) {
+
+        //
+        // 当前页码索引值
+        //
+        //$("#acquireRecordPageIndex").val(formNo);
+
+        //
+        // 表单序列化，表单数据打包
+        // 如果有检索条件则在此表单里输入
+        //
+        //var d = $("#noneFrm").serialize();
+
+        //
+        // 向后台发送服务请求
+        //
+        $.post(mergeResultQueryUrl, { "formNum": formNo }, function (result) {
+            if (result == null) {
+                alert("分类合并数据查询失败，原因：" + result);
+            } else {
+                //
+                // 清空列表内容
+                //
+
+                if (table1 != null) {
+                    table1.destroy();
+                }
+                if (table2 != null) {
+                    table2.destroy();
+                }
+                if (table3 != null) {
+                    table3.destroy();
+                }
+                if (table4 != null) {
+                    table4.destroy();
+                }
+                $("#ScrapApplyTable1 tbody").empty();             //
+                $("#ScrapApplyTable2 tbody").empty();             // 避免重复添加到表
+                $("#ScrapApplyTable3 tbody").empty();             //
+                $("#ScrapApplyTable4 tbody").empty();             //
+
+                //
+                // 显示计算机表
+                //
+                $(result.ComputerPagedList.Items).each(function (index, item) {
+                    var row = $(" <tr role='row'>");
+                    row.append('<td>' + item.AssetsName + '</td>');
+                    row.append('<td>' + item.AssetsNum + '</td>');
+                    if (item.Brand != null && item.ModelSpecification != null)
+                        row.append('<td>' + item.Brand + item.ModelSpecification + '</td>');
+                    else if (item.ModelSpecification != null)
+                        row.append('<td>' + item.ModelSpecification + '</td>');
+                    else if (item.Brand != null)
+                        row.append('<td>' + item.Brand + '</td>');
+                    else
+                        row.append('<td>未知品牌型号</td>');
+                    row.append('<td>' + item.Counts + '</td>');
+                    row.append('<td>' + item.Price + '</td>');
+                    row.append('<td>' + item.GetsDate + '</td>');
+                    row.append('<td><span class="btn btn-default btn-all btnreply" data-id=' + item.AssetsNum + '>批复</span></td>');
+                    $("#ScrapApplyTable1").append(row);
+                });
+                table1 = $("#ScrapApplyTable1").DataTable();
+
+                //
+                // 显示服务器
+                //
+                $(result.ServicePagedList.Items).each(function (index, item) {
+                    var row = $(" <tr role='row'>");
+                    row.append('<td>' + item.AssetsName + '</td>');
+                    row.append('<td>' + item.AssetsNum + '</td>');
+                    if (item.Brand != null && item.ModelSpecification != null)
+                        row.append('<td>' + item.Brand + item.ModelSpecification + '</td>');
+                    else if (item.ModelSpecification != null)
+                        row.append('<td>' + item.ModelSpecification + '</td>');
+                    else if (item.Brand != null)
+                        row.append('<td>' + item.Brand + '</td>');
+                    else
+                        row.append('<td>未知品牌型号</td>');
+                    row.append('<td>' + item.Counts + '</td>');
+                    row.append('<td>' + item.Price + '</td>');
+                    row.append('<td>' + item.GetsDate + '</td>');
+                    row.append('<td><span class="btn btn-default btn-all btnreply" data-id=' + item.AssetsNum + '>批复</span></td>');
+                    $("#ScrapApplyTable2").append(row);
+                });
+                table2 = $("#ScrapApplyTable2").DataTable();
+
+                //
+                // 显示投影仪
+                //
+                $(result.TouYingPagedList.Items).each(function (index, item) {
+                    var row = $(" <tr role='row'>");
+                    row.append('<td>' + item.AssetsName + '</td>');
+                    row.append('<td>' + item.AssetsNum + '</td>');
+                    if (item.Brand != null && item.ModelSpecification != null)
+                        row.append('<td>' + item.Brand + item.ModelSpecification + '</td>');
+                    else if (item.ModelSpecification != null)
+                        row.append('<td>' + item.ModelSpecification + '</td>');
+                    else if (item.Brand != null)
+                        row.append('<td>' + item.Brand + '</td>');
+                    else
+                        row.append('<td>未知品牌型号</td>');
+                    row.append('<td>' + item.Counts + '</td>');
+                    row.append('<td>' + item.Price + '</td>');
+                    row.append('<td>' + item.GetsDate + '</td>');
+                    row.append('<td><span class="btn btn-default btn-all btnreply" data-id=' + item.AssetsNum + '>批复</span></td>');
+                    $("#ScrapApplyTable3").append(row);
+                });
+                table3 = $("#ScrapApplyTable3").DataTable();
+
+                //
+                // 显示其他类
+                //
+                $(result.OtherPagedList.Items).each(function (index, item) {
+                    var row = $(" <tr role='row'>");
+                    row.append('<td>' + item.AssetsName + '</td>');
+                    row.append('<td>' + item.AssetsNum + '</td>');
+                    if (item.Brand != null && item.ModelSpecification != null)
+                        row.append('<td>' + item.Brand + item.ModelSpecification + '</td>');
+                    else if (item.ModelSpecification != null)
+                        row.append('<td>' + item.ModelSpecification + '</td>');
+                    else if (item.Brand != null)
+                        row.append('<td>' + item.Brand + '</td>');
+                    else
+                        row.append('<td>未知品牌型号</td>');
+                    row.append('<td>' + item.Counts + '</td>');
+                    row.append('<td>' + item.Price + '</td>');
+                    row.append('<td>' + item.GetsDate + '</td>');
+                    row.append('<td><span class="btn btn-default btn-all btnreply" data-id=' + item.AssetsNum + '>批复</span></td>');
+                    $("#ScrapApplyTable4").append(row);
+                });
+                table4 = $("#ScrapApplyTable4").DataTable();
+            }
+
+            var replytable = "@Url.Action("ReplyTable", "AssetsFind", new { area = "AssetsFind" })";
+
+            // 批复按钮触发事件
+            $(".btnreply").click(function () {
+
+                $("#InfoInputTable input").val("");
+
+                $("#formsubmit").val("提交表格");
+
+                $.post(replytable, { "entity": $(this).attr("data-id") }, function (result) {
+                    $("#Type").val(result.type);  // 分类时给Type赋值
+                    $("#EntityId").val(result.EntityId);  // 分类时给EntityId赋值
+                    //
+                    // 根据资产的编号获取分类值，然后显示对应的表格，其余三个表格隐藏
+                    // 批复按钮data-id属性：首位为分类编号，其余为资产编号
+                    //
+                    switch (result.type) {
+                        case 1:
+                            // 计算机类显示，其余隐藏
+                            var div1 = document.getElementById('activityd');
+                            div1.style.display = "inline";
+                            var div2 = document.getElementById('activityf');
+                            div2.style.display = "none";
+                            var div3 = document.getElementById('activityt');
+                            div3.style.display = "none";
+                            var div4 = document.getElementById('activityq');
+                            div4.style.display = "none";
+                            var div5 = document.getElementById('picFile1');
+                            div5.style.display = "inline";
+                            var div6 = document.getElementById('txt1');
+                            div6.style.display = "inline";
+                            // 填入到表格
+                            //alert(result.GoodsName);
+                            document.getElementById('d_mingchengjipingpai').innerHTML = result.AssetsName + result.ModelSpecification;
+                            document.getElementById('d_shuliang').innerHTML = result.Counts;
+                            document.getElementById('d_goumaishijian').innerHTML = result.GetsDate.substring(0, result.GetsDate.length - 8);  // 甩掉时分秒
+                            document.getElementById('d_yishiyongshijian').innerHTML = "2016" - result.GetsDate.substring(0, 4);
+                            break;
+                        case 2:
+                            // 服务器类显示，其余隐藏
+                            var div1 = document.getElementById('activityd');
+                            div1.style.display = "none";
+                            var div2 = document.getElementById('activityf');
+                            div2.style.display = "inline";
+                            var div3 = document.getElementById('activityt');
+                            div3.style.display = "none";
+                            var div4 = document.getElementById('activityq');
+                            div4.style.display = "none";
+                            var div5 = document.getElementById('picFile1');
+                            div5.style.display = "none";
+                            var div6 = document.getElementById('txt1');
+                            div6.style.display = "none";
+                            // 填入到表格
+                            //alert(result.GoodsName);
+                            document.getElementById('f_mingchengjipingpai').innerHTML = result.AssetsName + result.ModelSpecification;
+                            document.getElementById('f_shuliang').innerHTML = result.Counts;
+                            document.getElementById('f_goumaishijian').innerHTML = result.GetsDate.substring(0, result.GetsDate.length - 8);  // 甩掉时分秒
+                            document.getElementById('f_yishiyongshijian').innerHTML = "2016" - result.GetsDate.substring(0, 4);
+                            break;
+                        case 3:
+                            // 投影机类显示，其余隐藏
+                            var div1 = document.getElementById('activityd');
+                            div1.style.display = "none";
+                            var div2 = document.getElementById('activityf');
+                            div2.style.display = "none";
+                            var div3 = document.getElementById('activityt');
+                            div3.style.display = "inline";
+                            var div4 = document.getElementById('activityq');
+                            div4.style.display = "none";
+                            var div5 = document.getElementById('picFile1');
+                            div5.style.display = "none";
+                            var div6 = document.getElementById('txt1');
+                            div6.style.display = "none";
+                            // 填入到表格
+                            //alert(result.GoodsName);
+                            document.getElementById('t_mingchengjipingpai').innerHTML = result.AssetsName + result.ModelSpecification;
+                            document.getElementById('t_shuliang').innerHTML = result.Counts;
+                            document.getElementById('t_goumaishijian').innerHTML = result.GetsDate.substring(0, result.GetsDate.length - 8);  // 甩掉时分秒
+                            document.getElementById('t_yishiyongshijian').innerHTML = "2016" - result.GetsDate.substring(0, 4);
+                            break;
+                        case 4:
+                            // 其他类显示，其余隐藏
+                            var div1 = document.getElementById('activityd');
+                            div1.style.display = "none";
+                            var div2 = document.getElementById('activityf');
+                            div2.style.display = "none";
+                            var div3 = document.getElementById('activityt');
+                            div3.style.display = "none";
+                            var div4 = document.getElementById('activityq');
+                            div4.style.display = "inline";
+                            var div5 = document.getElementById('picFile1');
+                            div5.style.display = "none";
+                            var div6 = document.getElementById('txt1');
+                            div6.style.display = "none";
+                            // 填入到表格
+                            //alert(result.GoodsName);
+                            document.getElementById('q_mingchengjipingpai').innerHTML = result.AssetsName + result.ModelSpecification;
+                            document.getElementById('q_shuliang').innerHTML = result.Counts;
+                            document.getElementById('q_goumaishijian').innerHTML = result.GetsDate.substring(0, result.GetsDate.length - 8);  // 甩掉时分秒
+                            document.getElementById('q_yishiyongshijian').innerHTML = "2016" - result.GetsDate.substring(0, 4);
+                            break;
+                        default:
+                            //qiang
+                            break;
+                    }
+                });
+            });
+        }, "json");
+    }
+
+</script>

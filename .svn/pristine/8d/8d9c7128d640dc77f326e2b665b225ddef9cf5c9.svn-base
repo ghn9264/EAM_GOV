@@ -1,0 +1,143 @@
+﻿@model EAM.Data.Domain.CarAttribute
+@{
+    ViewBag.Title = "条目输入界面";
+    Layout = "~/Areas/AssetsInput/Views/AssetsInput/Input.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">车辆</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 车辆资产差异化属性 -->
+<div class="col-lg-6">
+    <div class="box box-info">
+        <!-- Header -->
+        <div class="box-header with-border">
+            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">车辆信息</h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button> 
+            </div>
+        </div>
+        <!-- Body -->
+        <div class="box-body">
+            <div class="box-body">
+                <!-- 车辆用途 -->
+                <div class="form-group">
+                    <label>车辆用途</label>
+                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" id="CarUser" name="CarUser">
+                        <option selected="selected">正部级专车</option>
+                        <option>副部级专车</option>
+                        <option>一般公务用车</option>
+                        <option>专业技术用车</option>
+                        <option>其他用车</option>
+                        <option>执法执勤用车</option>
+                    </select>
+                </div>
+
+                <!-- 使用性质 -->
+                <div class="form-group">
+                    <label>使用性质</label>
+                    <input type="text" class="form-control" id="UsingType" name="UsingType" placeholder="使用性质" value="@Model.UsingType">
+                </div>
+
+                <!-- 品牌型号 -->
+                <div class="form-group">
+                    <label>品牌型号</label>
+                    <input type="text" class="form-control" id="UsingType" name="UsingType" placeholder="品牌型号" value="@Model.CarBrand">
+                </div>
+
+                <!-- 编制情况 -->
+                <div class="form-group">
+                    <label>编制情况</label>
+                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" id="Organization" name="Organization">
+                        <option selected="selected">财政在编</option>
+                        <option>非财政在编</option>
+                    </select>
+                </div>
+
+                <!-- 机动号牌号码 -->
+                <div class="form-group">
+                    <label>机动号牌号码</label>
+                    <input type="text" class="form-control" id="CarNum" name="CarNum" placeholder="机动号牌号码" value="@Model.CarNum">
+                </div>
+
+            </div><!-- /.box-body -->
+
+        </div><!-- /.box-body -->
+    </div>
+</div>
+
+<!-- 车辆资产差异化属性 -->
+<div class="col-lg-6">
+    <div class="box box-info">
+        <!-- Header -->
+        <div class="box-header with-border">
+            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">车辆信息</h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            </div>
+        </div>
+        <!-- Body -->
+        <div class="box-body">
+            <div class="box-body">
+                
+
+                <!-- 机动车辆识别代号 -->
+                <div class="form-group">
+                    <label>机动车辆识别代号</label>
+                    <input type="text" class="form-control" id="CarRecCode" name="CarRecCode" placeholder="机动车辆识别代号" @Model.CarRecCode>
+                </div>
+
+                <!-- 机动车辆行驶证发证日期 -->
+                <div class="form-group">
+                    <label>机动车辆行驶证发证日期</label>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        <input type="text" class="form-control pull-right" data-provide="datepicker" data-date-format="yyyy-mm-dd" 
+                               id="CarCertificateDate" name="CarCertificateDate" value="@Model.CarCertificateDate">
+                    </div>
+                </div>
+
+                <!-- 机动车排气量 -->
+                <div class="form-group">
+                    <label>机动车排气量</label>
+                    <input type="text" class="form-control" id="CarExhaust" name="CarExhaust" placeholder="机动车排气量" value="@Model.CarExhaust">
+                </div>
+
+                <!-- 机动车发动机号 -->
+                <div class="form-group">
+                    <label>机动车发动机号</label>
+                    <input type="text" class="form-control" id="CarEngineNum" name="CarEngineNum" placeholder="机动车发动机号" value="@Model.CarEngineNum">
+                </div>
+
+                <!-- 机动车行驶证注册登记日期 -->
+                <div class="form-group">
+                    <label>机动车行驶证注册登记日期</label>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        <input type="text" class="form-control pull-right" data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                               id="CarErollDare" name="CarErollDare" value="@Model.CarErollDare">>
+                    </div>
+                </div>
+
+                <!-- 机动车辆行驶证所有人 -->
+                <div class="form-group">
+                    <label>机动车辆行驶证所有人</label>
+                    <input type="text" class="form-control" id="CarOwner" name="CarOwner" placeholder="机动车辆行驶证所有人" value="@Model.CarOwner">> >
+                </div>
+
+            </div><!-- /.box-body -->
+        </div><!-- /.box-body -->
+    </div>
+</div>
+
+<input type="hidden" name="AttrId" value="@Model.AttrId">

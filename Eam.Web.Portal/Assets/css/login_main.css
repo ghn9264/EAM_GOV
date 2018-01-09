@@ -1,0 +1,230 @@
+*{
+	margin: 0px;
+	padding: 0px;
+	font-family: "微软雅黑";
+	color: rgb(101,101,101);
+}
+.login_top{
+	display: block;
+	height: 80px;
+	width: 100%;
+	/*border: 1px solid green;*/
+}
+.login_top .login_top_logo{
+	display: block;
+	position: absolute;
+	float: left;
+	margin-top: 5px;
+	margin-left: 30px;
+}
+.login_top .login_top_right{
+	display: block;
+	position: absolute;
+	line-height: 80px;
+	font-size: 14px;
+	font-family: "微软雅黑";
+	float: right;
+	margin-left: 75%;
+	color: rgb(105,105,105);
+	overflow: hidden;
+}
+
+.login_main{
+	display: block;
+	position: absolute;
+	height: 635px;
+	width: 100%;
+	margin-top: 0px;
+	/*border: 1px solid green;*/
+}
+.login_main .bg{
+	display: block;
+	position: absolute;
+	height: 635px;
+	width: 100%;
+	background: url(../../img/bg.jpg) no-repeat center center;
+	background-size:100%;
+}
+.login_main .login_main_lg{
+	display: block;
+	height: 500px;
+	margin: auto 0;
+	width:900px ;
+	/*border: 1px solid green;*/
+	position: absolute;
+	left:50%;
+	margin-left: -450px;
+	top:50%;
+	margin-top:-250px ;
+	overflow: hidden;
+}
+.login_main .login_main_lg .login_main_lg_left{
+	display: block;
+	position: absolute;
+	width: 600px;
+	background: white;
+	/*border: 1px solid green;*/
+}
+.login_main .login_main_lg .login_main_lg_left h1{
+	display: block;
+	font-weight: 100;
+	margin-left: 70px;
+	margin-top: 65px;
+}
+.login_main .login_main_lg .login_main_lg_left .input_group{
+	display: block;
+	height: 40px;
+	width: 400px;
+	margin-left: 70px;
+	margin-top: 60px;
+	/*border: 1px solid red;*/
+}
+.login_main .login_main_lg .login_main_lg_left .input_group_empty{
+	display: block;
+	height: 40px;
+	width: 400px;
+	margin-left: 70px;
+	margin-top: 10px;
+	font-size: 14px;
+	color: red;
+	line-height: 40px;
+	/*border: 1px solid red;*/
+}
+.login_main .login_main_lg .login_main_lg_left .input_group_user{
+	display: block;
+	height: 40px;
+	width: 400px;
+	margin-left: 70px;
+	margin-top: 10px;
+	/*border: 1px solid red;*/
+}
+.login_main .login_main_lg .login_main_lg_left a{
+	display: inline-block;
+	margin-left: 2px;
+	margin-top: 10px;
+}
+.login_main .login_main_lg .login_main_lg_left .login_username{
+	display: inline-block;
+	margin-left:15px;
+	width: 280px;
+	height: 35px;
+	border: none;
+	outline:medium;
+}
+/*.login_main .login_main_lg .login_main_lg_left .login_hr{
+	display: block;
+	margin-left: 70px;
+	width: 400px;
+}*/
+.login_main .login_main_lg .login_main_lg_left .login_password{
+	display: inline-block;
+	margin-left:15px;
+	width: 280px;
+	height: 35px;
+	margin-top: 1px;
+	border: none;
+	outline:medium;
+}
+.login_main .login_main_lg .login_main_lg_left .input_group_check{
+	display: block;
+	height: 40px;
+	width: 400px;
+	margin-left: 70px;
+	margin-top: 20px;
+}
+.login_main .login_main_lg .login_main_lg_left .input_group_button{
+	display: block;
+	height: 40px;
+	width: 400px;
+	margin-left: 70px;
+	margin-top: 2px;
+}
+.login_main .login_main_lg .login_main_lg_left .remember_check{
+	display: block;
+	float: left;
+	margin-left: 2px;
+	margin-top: 3.9px;
+	height: 15px;
+	width: 15px;
+}
+.login_main .login_main_lg .login_main_lg_left .remember{
+	display: inline-block;
+	margin-left: 5px;
+	margin-top: 1px;
+	font-size: 14px;
+}
+.login_main .login_main_lg .login_main_lg_left .forget{
+	display: block;
+	float: right;
+	margin-top: 1px;
+	font-size: 14px;
+	text-decoration: none;
+	color: rgb(101,101,101);
+}
+.login_main .login_main_lg .login_main_lg_left .input_group_button_login{
+	display: block;
+	width: 150px;
+	height: 40px;
+	background: rgb(1,137,255);
+	color: white;
+	font-size: 17px;
+	border: 0;
+}
+.empty{
+	display: block;
+	height: 91px;
+	width: 600px;
+}
+.login_main .login_main_lg .login_main_lg_right{
+	display: block;
+	position: absolute;
+	margin-left: 600px;
+	width: 300px;
+	height: 500px;
+	background: rgb(1,137,255);
+	/*border: 1px solid red;*/
+}
+.login_main .login_main_lg .login_main_lg_right .login_main_lg_right_top{
+	display: block;
+	position: absolute;
+	height: 100px;
+	width: 200px;
+	text-align: center;
+	margin-left:50px;
+	margin-top: 65px;
+	/*border:1px solid;*/
+}
+.login_main .login_main_lg .login_main_lg_right .login_main_lg_right_top .login_main_lg_right_a span{
+	font-size: 23px;
+	word-spacing: 25px;
+	color: white;
+	padding: 8px;
+	font-family: "宋体";
+}
+.login_main .login_main_lg .login_main_lg_right .login_main_lg_right_top p{
+	font-size: 13px;
+	word-spacing: 5px;
+	color: white;
+	padding: 12px;
+	font-family: "宋体";
+}
+.login_main .login_main_lg .login_main_lg_right .login_main_lg_right_bottom{
+	display: block;
+	position: absolute;
+	height: 50px;
+	width: 250px;
+	text-align: center;
+	margin-left:25px;
+	margin-top: 410px;
+	/*border:1px solid;*/
+}
+.login_main .login_main_lg .login_main_lg_right .login_main_lg_right_bottom p{
+	font-size: 15px;
+	color: white;
+	letter-spacing: 1px;
+	font-family: "宋体";
+}
+.login_main .login_main_lg .login_main_lg_right .login_main_lg_right_bottom .p_letter{
+	font-size: 9px;
+	color: white;
+}

@@ -1,0 +1,756 @@
+﻿@using Eam.Web.Portal._Comm
+@model dynamic
+
+@{
+    ViewBag.Title = "用户管理";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+<script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">人员部门</a></li></ol>');
+        //alert("YES");
+    });
+    function fn() {
+        var obj1 = document.getElementById("importPeo");
+        var obj2 = document.getElementById("peopleMana");
+        obj1.style.display = "block";
+        obj2.style.marginTop = "15px";
+    }
+</script>
+<link href="~/Assets/css/changeZtree.css" rel="stylesheet" />
+<link href="~/Assets/css/peopleMa-main.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.core.js"></script>
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.exedit.js"></script>
+<script src="~/Assets/SelectTree.js"></script>
+<!-- 人员导入 --><!-- 2017-05-26 wnn -->
+<div id="importPeo" class="col-sm-12 new-PM">
+    <div class="box box-danger">
+        <!-- body Header -->
+        <!-- 表头 -->
+        <div class="box-header new-box-header">
+            <h3 class="box-title title-a">人员导入</h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            </div>
+        </div><!-- /.box-header -->
+        <!-- body -->
+        <form method="post" id=" frmDtUpload" enctype="multipart/form-data">
+            <div class="box-body content">
+                <div class="row">
+                    <div class="box-body" style="margin-left:23px;color: rgb(171,171,171);">
+                        <!-- 文件上传 -->
+                        <p style="font-size: 16px;">
+                            上传人员表之前请下载"<a href="@Url.Action("DownLoadUserSample")">人员导入模板.xls</a>"。
+                        </p>
+                    </div>
+                    <br />
+
+                    <!-- 数据上传 -->
+                    <div class="box-body">
+                        <!-- 文件上传 -->
+                        <img src="../../img/changefile.PNG" style="position:absolute;margin-left:20px;" />
+                        <input type="file" id="file" name="file" style="display:block; opacity: 0;filter: alpha(opacity=0);height: 114px;width: 114px;right: 0px;z-index: 9;float:left;margin-left:20px;">
+                    </div>
+                    <br />
+                    <!-- 数据上传 -->
+                    <div class="box-body new-people-btn">
+                        <a class="btn btn-default btn-people-add" id="upload">上传人员列表</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="~/Assets/js/datatables.min.js"></script>
+
+<script>
+    $("#file")[0].onchange = fileSelected;
+    $("#upload")[0].onclick = uploadFile;
+    function fileSelected() {
+        var file = $('#file')[0].files[0];
+        if (file) {
+            var fileSize = 0;
+            if (file.size > 1024 * 1024)
+                fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+            else
+                fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+            $('#fileName')[0].innerHTML = file.name;
+            $('#fileSize')[0].innerHTML = fileSize;
+        }
+    }
+    var xhr;
+    function uploadFile() {
+        $('#UpLoadModel').modal({ backdrop: 'static', keyboard: false });
+        var fd = new FormData($("form")[0]);
+        xhr = new XMLHttpRequest();
+        //xhr.upload.addEventListener("progress", uploadProgress, false);
+        xhr.addEventListener("load", uploadComplete, false);
+        xhr.addEventListener("error", uploadFailed, false);
+        xhr.addEventListener("abort", uploadCanceled, false);
+
+        xhr.open("POST", "/SycData/Syc/UserDataInput");//修改成自己的接口
+        xhr.send(fd);
+
+        $("#progressNumber").css("width", 0 + '%');
+        $("#progressNumber").attr("aria-valuenow", 0);
+        intervalProcess = setInterval("uploadProgress()", 100);
+    }
+    var intervalProcess;
+    function uploadProgress() {
+        $.post("/SycData/syc/QueryProgress", null, function (e) {
+            $("#progressNumber").css("width", e.ImportedPercentVal.toString() + '%');
+            $("#progressNumber").attr("aria-valuenow", e.ImportedPercentVal.toString());
+            //document.getElementById('progressNumber').innerHTML = e.ImportedPercentVal.toString() + '%';
+            document.getElementById('progressNumber').innerHTML = e.ImportedPercentVal.toString() + '%  (' + e.ImportedAssetsNum + '/' + e.TotalAssetsNum + ')';
+
+        });
+    }
+    var tableDtImported, tableDtUnImported;
+    function uploadComplete(evt) {
+        $('#UpLoadModel').modal('hide');
+        var result = JSON.parse(xhr.response);
+        clearInterval(intervalProcess);
+        if (result.type == 0) {
+            alert("已经导入" + result.ImportedNum + "未导入" + result.UnImportedNum);  //
+            // alert("已经导入" + result.ImportedItems.length + "未导入" + result.UnImportedItems.length);
+            queryDtHistory(1); //更新办学导入记录
+            // var lstId = $("#LastImportedId").val();
+            // LastImportedId
+            queryDtImported(1, result.LastImportedId); //更新已导入记录详细信息
+            queryDtUnImported(1, result.LastImportedId);//更新本次未导入详细信息
+
+            loadUser(1);
+            /* //-------------------------------liu 0715--------------------------------------------------------//
+             history.go(0);
+             //-----------------------------------------------------------------------------------------------//
+             $("#tableDtImported").empty();
+             $("#tableDtUnImported").empty();
+             if (tableDtImported != null) {
+                 tableDtImported.destroy();
+             }
+             if (tableDtUnImported != null) {
+                 tableDtUnImported.destroy();
+             }
+              tableDtImported= $("#tableDtImported").DataTable({
+                 data: result.ImportedItems,
+                 "order": [[1, "desc"]],
+                 "bDestory": true,
+                 columns: [
+                     { title: "资产名称" ,data:"GoodsName"},
+                     { title: "资产代码" ,data:"CatCode"},
+                     { title: "价值" ,data:"Money"},
+                     { title: "存放地点" ,data:"StorePlace"},
+                     { title: "经办人" ,data:"Agent"},
+                     { title: "使用属性" ,data:"UsingAttribute"},
+                     {title:"使用状况",data:"UsingState"}
+                 ],
+             });
+              tableDtUnImported= $("#tableDtUnImported").DataTable({
+                 data: result.UnImportedItems,
+                 "order": [[1, "desc"]],
+                 "bDestory": true,
+                 columns: [
+                     { title: "资产名称", data: "AssetsMain.GoodsName" },
+                     { title: "资产代码", data: "AssetsMain.CatCode" },
+                     { title: "价值", data: "AssetsMain.Money" },
+                     { title: "存放地点", data: "AssetsMain.StorePlace" },
+                     { title: "经办人", data: "AssetsMain.Agent" },
+                     { title: "使用属性", data: "AssetsMain.UsingAttribute" },
+                     { title: "使用状况", data: "AssetsMain.UsingState" },
+                 { title: "未导入原因", data: "Message" }
+                 ],
+              });*/
+
+        } else {
+            queryDtUnImported(1, result.LastImportedId);//更新本次未导入详细信息
+            // alert(result.msg);
+        }
+    }
+    function uploadFailed(evt) {
+        clearInterval(intervalProcess);
+        alert("上传文件时出错");
+    }
+    function uploadCanceled(evt) {
+        clearInterval(intervalProcess);
+        alert("取消上传");
+    }
+</script>
+<section class="content">
+    <!-- 部门树和部门成员列表 -->
+    <div class="row">
+
+        <!-- 部门人员表 -->
+        <div class="col-sm-12 new-PM" id="peopleMana">
+
+            <div class="box box-danger">
+                <!-- body Header -->
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">人员管理</h3>
+                    <div class="box-tools pull-right">
+                        <a onclick="fn()" class="btn btn-default btn-people-add">人员导入</a>
+                        <a href="/SysManage/SysManage/CreateUser" class="btn btn-default btn-people-add">新增人员</a>
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+
+                <hr />
+                <!-- 人员列表 -->
+                <div class="box-body new-box-body" id="userListDiv">
+                    <div class="dataTables_wrapper form-inline">
+                        <!-- 人员列表 -->
+                        <div class="row new-row-people">
+                            <div class="col-sm-12">
+                                <table id="tableUser" class="table table-striped dataTable newTable" role="grid">
+                                    <!--<thead>
+                                        <tr role="row">
+                                            <th class="sorting_asc">序号</th>
+                                            <th class="sorting">人员ID</th>
+                                            <th class="sorting">姓名</th>
+                                            <th class="sorting">所在部门</th>
+                                            <th class="sorting">联系方式</th>
+                                            <th class="sorting" width="200"><a href="/SysManage/SysManage/CreateUser" class="btn btn-danger btn-sm">新增人员</a></th>
+                                        </tr>
+                                    </thead>-->
+                                    <tbody></tbody>
+                                    <tfoot>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- 分页 -->
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <div class="dataTables_info" id="example1_info" role="status" aria-live="polite"></div>
+                            </div>
+                            <div class="col-lg-7">
+                                <ul id="divUserPager"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+
+
+
+            </div><!-- /.box-header -->
+        </div>
+
+        <!-- 部门树 -->
+        <div>
+            <!-- 部门树 -->
+            <div class="col-sm-6 new-PM">
+                <div class="box box-danger">
+                    <!-- body Header -->
+                    <div class="box-header new-box-header">
+                        <h3 class="box-title title-a">部门管理</h3>
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div><!-- /.box-header -->
+                    <hr />
+                    <!-- 部门树 -->
+                    <div class="box-body padding-new" style="height: 230px;overflow:auto;">
+                        <ul id="departmentTree" class="ztree"></ul>
+
+                    </div><!-- /.box-body -->
+                    <div class="box-footer text-center">
+                        <button class="btn btn-default btn-people-add" id="btnNewDept">新增</button>
+                        <button class="btn btn-default btn-people-add" id="btnEditDept">编辑</button>
+                        <button class="btn btn-default btn-people-add" id="btnDeleteDept">删除</button>
+                    </div><!-- /.box-footer -->
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="box box-danger">
+                    <!-- body Header -->
+                    <div class="box-header new-box-header">
+                        <h3 class="box-title title-a">新增状态</h3>
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="box-body padding-new">
+                        <div class="progressBar-People">
+                            <h2>人员新增</h2>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="60"
+                                     aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="progressBar-Manage">
+                            <h2>部门新增</h2>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-danger" role="progressbar"
+                                     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                                     style="width:80%;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 新增/编辑 部门-->
+        <div class="modal fade" id="deptModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="deptModalLabel">新增部门</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form id="deptForm" name="deptForm" method="post">
+                            <div class="form-group">
+                                <label>父级部门</label>
+                                <input type="text" class="form-control" readonly="readonly" id="deptParentName" name="deptParentName" placeholder="父级部门" />
+                                <input type="hidden" class="form-control" readonly="readonly" id="deptParentId" name="deptParentId" />
+                            </div>
+                            <div class="form-group">
+                                <label>部门名称</label>
+                                <input type="text" class="form-control" id="DeptName" name="DeptName" placeholder="部门名称" maxlength="20" />
+                                <input type="hidden" class="form-control" readonly="readonly" id="DeptId" name="DeptId" />
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" id="btnDeptSave">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- 权限管理 --><!-- 2017-05-27 wnn -->
+        <!-- 权限树 -->
+        <div>
+            <!-- 权限树 -->
+            <div class="col-sm-6"></div>
+            <div class="col-sm-6">
+                <div class="box box-danger">
+                    <!-- body Header -->
+                    <div class="box-header new-box-header">
+                        <h3 class="box-title title-a">权限</h3>
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div><!-- /.box-header -->
+                    <hr />
+                    <!-- 权限树 -->
+                    <div class="box-body padding-new">
+                        <ul id="roleTree" class="ztree"></ul>
+                    </div><!-- /.box-body -->
+                    <div class="box-footer text-center">
+                        <button class="btn btn-default btn-people-add" id="btnNewRole">新增角色</button>
+                        <button class="btn btn-default btn-people-add" id="btnEditRole">编辑权限</button>
+                    </div><!-- /.box-footer -->
+                </div>
+            </div>
+        </div>
+        <!-- 新增/编辑 权限-->
+        <div class="modal fade" id="roleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="roleModalLabel">新增角色</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form id="roleForm" name="roleForm" method="post">
+                            <div class="form-group">
+                                <label>部门名称</label>
+                                <input type="text" class="form-control" id="Roles" name="Roles" placeholder="角色名称" maxlength="20" />
+                                <input type="hidden" class="form-control" readonly="readonly" id="RoleId" name="RoleId" />
+                                <label>权限</label>
+                                <div id="Permissions">
+                                    @Html.CheckBoxList("BusinessPermissionList")
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" id="btnRoleSave">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+
+    window.OnDeptSelected = function (dept) {
+        $("#UserDeptId").val(dept.DeptId);
+        $("#UserDeptName").val(dept.DeptName);
+    };
+
+    function loadUser(pageIndex) {
+        $.post("/SysManage/SysManage/GetAllUsers?pageIndex=" + pageIndex, function (result) {
+            $("#tableUser tbody").empty();
+            $(result.Items).each(function (index, item) {
+                var row = $(" <tr role='row' class='people-tr'>");
+                row.append('<td width="83px;">序号</td>');
+                row.append('<td class="td-content">' + item.EntityId + '</td>');
+                row.append('<td width="109px;">人员ID</td>');
+                row.append('<td class="td-content">' + item.UserId + '</td>');
+                row.append('<td width="81px;">姓名</td>');
+                row.append('<td class="td-content">' + item.UserName + '</td>');
+                row.append('<td width="136px;">所在部门</td>');
+                row.append('<td class="td-content">' + item.DepartMent + '</td>');
+                row.append('<td width="136px;">联系方式</td>');
+                row.append('<td class="td-content">' + item.Tel + '</td>');
+                row.append('<td width="214px;"><button type="button" class="btn btn-default btn-people-add" rel="' + item.EntityId + '">删除</button>' +
+                    ' <a href="/SysManage/SysManage/EditUser?id=' + item.EntityId + '" class="btn btn-default btn-people-add">修改</a></td>');
+                $("#tableUser").append(row);
+            });
+
+            $(".userdel").click(function () {
+                if (confirm('确认删除用户吗？')) {
+                    var uid = $(this).attr("rel");
+                    delUser(uid);
+                }
+            });
+
+            //$("#example1_info").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " , 总共 " + result.TotalItemCount);
+
+            if (result.TotalPageCount <= 1) {
+                $('#divUserPager').empty();
+                return;
+            }
+            var options = {
+                bootstrapMajorVersion: 3, //版本
+                numberOfPages: 8,
+                currentPage: result.CurrentPageIndex,
+                totalPages: result.TotalPageCount,
+                itemTexts: function (type, page, current) {
+                    switch (type) {
+                        case "first":
+                            return "首页";
+                        case "prev":
+                            return "上一页";
+                        case "next":
+                            return "下一页";
+                        case "last":
+                            return "末页";
+                        case "page":
+                            return page;
+                    }
+                }, //点击事件，用于通过Ajax来刷新整个list列表
+                onPageClicked: function (event, originalEvent, type, page) {
+                    loadUser(page);
+                }
+            };
+            $('#divUserPager').bootstrapPaginator(options);
+        });
+    }
+
+    function delUser(id) {
+        $.post("/SysManage/SysManage/DeleteUser?uid=" + id, function (result) {
+            if (result == "ok") {
+                alert("删除成功");
+                loadUser(1);
+                return;
+            }
+            alert(result);
+        });
+    }
+    $(function () {
+        loadUser(1);
+    });
+
+    var selectDeptNode = null;
+    var selectRoleNode = null;
+    function buildTree() {
+        $.fn.zTree.destroy("departmentTree");
+        var setting = {
+            callback: {
+                onClick: deptNodeClick
+            }
+        };
+        $.getJSON("/SysManage/SysManage/ListDept?t=" + new Date(), function (result) {
+            $.fn.zTree.init($("#departmentTree"), setting, result);
+        });
+        ///////////////权限  start
+        $.fn.zTree.destroy("roleTree");
+        var set = {
+            callback: {
+                onClick: roleNodeClick
+            }
+        };
+        $.getJSON("/SysManage/SysManage/ListRole?t=" + new Date(), function (result) {
+            $.fn.zTree.init($("#roleTree"), setting, result);
+        });
+        ///////////////权限 end
+    }
+
+    function deptNodeClick(event, treeId, treeNode) {
+        selectDeptNode = treeNode;
+    }
+    function roleNodeClick(event, treeId, treeNode) {
+        selectRoleNode = treeNode;
+    }
+
+    $(function () {
+        buildTree();
+        $("#btnNewDept").click(function () {
+            $("#deptParentName").val("");
+            $("#deptParentId").val("");
+            $("#DeptName").val("");
+            $("#DeptId").val("");
+
+            if (null != selectDeptNode) {
+                $("#deptParentName").val(selectDeptNode.name);
+                $("#deptParentId").val(selectDeptNode.id);
+            }
+
+            $("#deptModalLabel").text("新增部门");
+            $('#deptModal').modal('show');
+        });
+        $("#btnEditDept").click(function () {
+            if (null == selectDeptNode) {
+                alert("请选择一个部门");
+                return;
+            }
+            $("#deptModalLabel").text("编辑部门");
+
+            $("#deptParentName").val(selectDeptNode.pName);
+            $("#deptParentId").val(selectDeptNode.pId);
+            $("#DeptName").val(selectDeptNode.name);
+            $("#DeptId").val(selectDeptNode.id);
+            $('#deptModal').modal('show');
+        });
+
+        $("#btnDeptSave").click(function () {
+            if ($("#deptName").val() == "") {
+                alert("部门名称不能为空");
+                return;
+            }
+            var deptData = $("#deptForm").serialize();
+            $.post("/SysManage/SysManage/SaveDept", deptData, function (result) {
+                if (result == "ok") {
+                    if ($("#deptModalLabel").text() == "新增部门") {
+                        alert("添加成功");
+                    } else {
+                        alert("保存成功!");
+                    }
+
+                    $('#deptModal').modal('hide');
+                    buildTree();
+                    return;
+                }
+                alert(result);
+            });
+        });
+        $("#btnDeleteDept").click(function () {
+            if (null == selectDeptNode) {
+                alert("请选择一个部门");
+                return;
+            }
+            if (confirm('确定要删除部门【' + selectDeptNode.name + '】吗?')) {
+                $.post("/SysManage/SysManage/DeleteDept?deptid=" + selectDeptNode.id, function (result) {
+                    if (result == "ok") {
+                        alert("删除成功");
+                        buildTree();
+                        return;
+                    }
+                    alert(result);
+                });
+            }
+        });
+        //权限  start
+        $("#btnNewRole").click(function () {
+            $("#Roles").val("");
+            $("#RoleId").val("");
+            $("#roleModalLabel").text("新增角色");
+            $('#roleModal').modal('show');
+            $("[name='BusinessPermissionList']").each(function () {
+                $(this).removeAttr("checked");
+            });
+        });
+
+        $("#btnEditRole").click(function () {
+            //$("[name='BusinessPermissionList']").removeAttr("checked");//取消全选   
+            if (null == selectRoleNode) {
+                alert("请选择一个角色");
+                return;
+            }
+            $("#roleModalLabel").text("编辑权限");
+            $("#Roles").val(selectRoleNode.name);
+            $("#RoleId").val(selectRoleNode.id);
+            $("#Roles").attr({ "disabled": "disabled" });
+
+            $("[name='BusinessPermissionList']").each(function () {
+                var Cts = selectRoleNode.pName;
+                if (Cts.indexOf($(this).val()) > 0) {
+                    $(this).attr("checked", 'true');
+                }
+
+            })
+
+            $('#roleModal').modal('show');
+        });
+        $("#btnRoleSave").click(function () {
+            if ($("#Roles").val() == "") {
+                alert("角色名称不能为空");
+                return;
+            }
+            var roleData = $("#roleForm").serialize();
+            obj = document.getElementsByName("BusinessPermissionList");
+            var check_val = "";//权限
+            for (k in obj) {
+                if (obj[k].checked) {
+                    check_val += obj[k].value;
+                    check_val += ",";
+                }
+
+            }
+            var Roles = $("#Roles").val();//角色
+            var RoleId = $("#RoleId").val();
+
+            $.post("/SysManage/SysManage/SaveRole", { EntityId: RoleId, Roles: Roles, Permissions: check_val }, function (result) {
+                if (result == "ok") {
+                    if ($("#roleModalLabel").text() == "新增角色") {
+                        alert("添加成功");
+                    } else {
+                        alert("保存成功!");
+                    }
+
+                    $('#roleModal').modal('hide');
+                    buildTree();
+                    return;
+                }
+                alert(result);
+            });
+        });
+
+        //权限  end
+    });
+</script>
+
+<script src="~/Assets/js/datatables.min.js"></script>
+
+<script>
+    $("#file")[0].onchange = fileSelected;
+    $("#upload")[0].onclick = uploadFile;
+    function fileSelected() {
+        var file = $('#file')[0].files[0];
+        if (file) {
+            var fileSize = 0;
+            if (file.size > 1024 * 1024)
+                fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+            else
+                fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+            $('#fileName')[0].innerHTML = file.name;
+            $('#fileSize')[0].innerHTML = fileSize;
+        }
+    }
+    var xhr;
+    function uploadFile() {
+        $('#UpLoadModel').modal({ backdrop: 'static', keyboard: false });
+        var fd = new FormData($("form")[0]);
+        xhr = new XMLHttpRequest();
+        //xhr.upload.addEventListener("progress", uploadProgress, false);
+        xhr.addEventListener("load", uploadComplete, false);
+        xhr.addEventListener("error", uploadFailed, false);
+        xhr.addEventListener("abort", uploadCanceled, false);
+
+        xhr.open("POST", "/SycData/Syc/UserDataInput");//修改成自己的接口
+        xhr.send(fd);
+
+        $("#progressNumber").css("width", 0 + '%');
+        $("#progressNumber").attr("aria-valuenow", 0);
+        intervalProcess = setInterval("uploadProgress()", 100);
+    }
+    var intervalProcess;
+    function uploadProgress() {
+
+        $.post("/SycData/syc/QueryProgress", null, function (e) {
+
+            $("#progressNumber").css("width", e.ImportedPercentVal.toString() + '%');
+            $("#progressNumber").attr("aria-valuenow", e.ImportedPercentVal.toString());
+            //document.getElementById('progressNumber').innerHTML = e.ImportedPercentVal.toString() + '%';
+            document.getElementById('progressNumber').innerHTML = e.ImportedPercentVal.toString() + '%  (' + e.ImportedAssetsNum + '/' + e.TotalAssetsNum + ')';
+
+        });
+    }
+    var tableDtImported, tableDtUnImported;
+    function uploadComplete(evt) {
+        $('#UpLoadModel').modal('hide');
+        var result = JSON.parse(xhr.response);
+        clearInterval(intervalProcess);
+        if (result.type == 0) {
+            alert("已经导入" + result.ImportedNum + "未导入" + result.UnImportedNum); buildTree();
+            //
+            // alert("已经导入" + result.ImportedItems.length + "未导入" + result.UnImportedItems.length);
+            queryDtHistory(1); //更新办学导入记录
+            // var lstId = $("#LastImportedId").val();
+            // LastImportedId
+            queryDtImported(1, result.LastImportedId); //更新已导入记录详细信息
+            queryDtUnImported(1, result.LastImportedId);//更新本次未导入详细信息
+
+
+            /* //-------------------------------liu 0715--------------------------------------------------------//
+             history.go(0);
+             //-----------------------------------------------------------------------------------------------//
+             $("#tableDtImported").empty();
+             $("#tableDtUnImported").empty();
+             if (tableDtImported != null) {
+                 tableDtImported.destroy();
+             }
+             if (tableDtUnImported != null) {
+                 tableDtUnImported.destroy();
+             }
+              tableDtImported= $("#tableDtImported").DataTable({
+                 data: result.ImportedItems,
+                 "order": [[1, "desc"]],
+                 "bDestory": true,
+                 columns: [
+                     { title: "资产名称" ,data:"GoodsName"},
+                     { title: "资产代码" ,data:"CatCode"},
+                     { title: "价值" ,data:"Money"},
+                     { title: "存放地点" ,data:"StorePlace"},
+                     { title: "经办人" ,data:"Agent"},
+                     { title: "使用属性" ,data:"UsingAttribute"},
+                     {title:"使用状况",data:"UsingState"}
+                 ],
+             });
+              tableDtUnImported= $("#tableDtUnImported").DataTable({
+                 data: result.UnImportedItems,
+                 "order": [[1, "desc"]],
+                 "bDestory": true,
+                 columns: [
+                     { title: "资产名称", data: "AssetsMain.GoodsName" },
+                     { title: "资产代码", data: "AssetsMain.CatCode" },
+                     { title: "价值", data: "AssetsMain.Money" },
+                     { title: "存放地点", data: "AssetsMain.StorePlace" },
+                     { title: "经办人", data: "AssetsMain.Agent" },
+                     { title: "使用属性", data: "AssetsMain.UsingAttribute" },
+                     { title: "使用状况", data: "AssetsMain.UsingState" },
+                 { title: "未导入原因", data: "Message" }
+                 ],
+              });*/
+
+        } else {
+            queryDtUnImported(1, result.LastImportedId);//更新本次未导入详细信息
+            // alert(result.msg);
+        }
+    }
+    function uploadFailed(evt) {
+        clearInterval(intervalProcess);
+        alert("上传文件时出错");
+    }
+    function uploadCanceled(evt) {
+        clearInterval(intervalProcess);
+        alert("取消上传");
+    }
+</script>

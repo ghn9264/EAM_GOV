@@ -1,0 +1,156 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "录入界面首页";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> </ol>');
+        //alert("YES");
+    });
+</script>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+
+    <!--最顶部的标题栏-->
+    @*<h1>
+        固定资产
+        <small>资产登记</small>
+    </h1>*@
+
+    <!--顶部标题栏右侧的层级显示栏-->
+    @*<ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Examples</a></li>
+        <li class="active">Blank page</li>
+    </ol>*@
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="box ">
+        <span></span>
+</div>
+  </section >
+        <section class="content" style="margin-left: 240px">
+            <!-- 分类资产列表 -->
+            <div class="col-lg-12">
+                <!-- 资产类别表 -->
+                <div class="box box-danger">
+                    <!-- 资产类别表头 -->
+                    <div class="box-header with-border">
+                        <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">资产类别</h3>
+                        <div class="box-tools pull-right">
+                            <span class="label label-danger">执行北京市公共事业单位固定资产分类标准</span>
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div><!-- /.box-header -->
+                    <!-- 资产类别表内容 -->
+                    <div class="box-body no-padding">
+                        <ul class="users-list clearfix">
+                            <!-- 土地 -->
+                            <li>
+                                <a class="users-list-name" href="@Url.Action("InputLand")">
+                                    <img src="/Image/LandIcon.jpg" alt="User Image">
+                                    <div class="row">土地</div>
+                                </a>
+                                <span class="users-list-date">资产代码：101</span>
+                            </li>
+
+                            <!-- 房屋 -->
+                            <li>
+                                <a class="users-list-name" href="@Url.Action("InputHouse")">
+                                    <img src="/Image/House.jpg" alt="User Image">
+                                    <div class="row">房屋</div>
+                                </a>
+                                <span class="users-list-date">资产代码：102</span>
+                            </li>
+
+                            <!-- 构筑物 -->
+                            <li>
+                                <a class="users-list-name" href="@Url.Action("InputBuilding")">
+                                    <img src="/Image/Gouzhuwu.jpg" alt="User Image">
+                                    <div class="row">构筑物</div>
+                                </a>
+                                <span class="users-list-date">资产代码：103</span>
+                            </li>
+
+                            <!-- 车辆 -->
+                            <li>
+                                <a class="users-list-name" href="@Url.Action("InputCar")">
+                                    <img src="/Image/Car.jpg" alt="User Image">
+                                    <div class="row">车辆</div>
+                                </a>
+                                <span class="users-list-date">资产代码：203</span>
+                            </li>
+
+                            <!-- 通用设备 -->
+                            <li>
+                                <a class="users-list-name" href="@Url.Action("InputGeneralequipment")">
+                                    <img src="/Image/Computer.jpg" alt="User Image">
+                                    <div class="row">通用设备</div>
+                                </a>
+                                <span class="users-list-date">资产代码：201</span>
+                            </li>
+
+                            <!-- 专用设备 -->
+                            <li>
+                                <a class="users-list-name" href="@Url.Action("InputSpecialequipment")">
+                                    <img src="/Image/Zhuanyong.jpg" alt="User Image">
+                                    <div class="row">专用设备</div>
+                                </a>
+                                <span class="users-list-date">资产代码：301</span>
+                            </li>
+
+                            <!-- 文物陈列品 -->
+                            <li>
+                                <a class="users-list-name" href="@Url.Action("InputCulturalrelic")">
+                                    <img src="/Image/Wenwu.jpg" alt="User Image">
+                                    <div class="row">文物陈列品</div>
+                                </a>
+                                <span class="users-list-date">资产代码：401</span>
+                            </li>
+
+                            <!-- 家具、用具及装具 -->
+                            <li>
+                                <a class="users-list-name" href="@Url.Action("InputFurniture")">
+                                    <img src="/Image/Jiaju.jpg" alt="User Image">
+                                    <div class="row">家具、用具及装具</div>
+                                </a>
+                                <span class="users-list-date">资产代码：601</span>
+                            </li>
+
+                            <!-- 图书档案 -->
+                            <li>
+                                <a class="users-list-name" href="@Url.Action("InputBooks")">
+                                    <img src="/Image/Book.jpg" alt="User Image">
+                                    <div class="row">图书档案</div>
+                                </a>
+                                <span class="users-list-date">资产代码：501</span>
+                            </li>
+
+                            <!-- 特种植物 -->
+                            <li>
+                                <a class="users-list-name" href="@Url.Action("InputAnimalandplant")">
+                                    <img src="/Image/Animal.jpg" alt="User Image">
+                                    <div class="row">特种植物</div>
+                                </a>
+                                <span class="users-list-date">资产代码：603</span>
+                            </li>
+                        </ul><!-- /.users-list -->
+                    </div><!-- /.box-body -->
+                    <!-- 资产类别表底栏 -->
+                    <div class="box-footer text-center">
+                        <a href="#" class="uppercase">请选择要录入的资产类别</a>
+                    </div><!-- /.box-footer -->
+                </div><!--/.box -->
+            </div>
+
+        </section>
+
+

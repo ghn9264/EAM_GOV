@@ -1,0 +1,44 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Page</title>
+    <link href="~/Assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <ul id="demopager">
+    </ul>
+
+    <script src="/Assets/jQuery/jQuery-2.1.4.min.js"></script>  '
+    <script src="~/Assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+    <script type="text/javascript">
+        var options = {
+            bootstrapMajorVersion:3, //版本
+            currentPage: 5, //当前页数
+            totalPages: 20, //总页数
+            itemTexts: function (type, page, current) {
+                switch (type) {
+                    case "first":
+                        return "首页";
+                    case "prev":
+                        return "上一页";
+                    case "next":
+                        return "下一页";
+                    case "last":
+                        return "末页";
+                    case "page":
+                        return page;
+                }
+            }
+        };
+        $('#demopager').bootstrapPaginator(options);
+    </script>
+</body>
+</html>

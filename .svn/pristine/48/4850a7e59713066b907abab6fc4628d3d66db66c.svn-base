@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<repositories>
+  <repository path="..\Eam.Web.Comm\packages.config" />
+  <repository path="..\Eam.Web.Portal\packages.config" />
+</repositories>

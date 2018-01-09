@@ -1,0 +1,93 @@
+﻿@using Eam.Core.Config
+@using Eam.Web.Portal._Comm
+@{
+    Layout = null;
+    var adminMenuConfig = CachedConfigContext.Current.AdminMenuConfig;
+
+    UserSession userSession = null;
+    if (HttpContext.Current.Request.IsAuthenticated)
+    {
+        //if (null != ViewBag.UserSession)
+        {
+            userSession = ViewBag.UserSession as UserSession;
+        }
+        userSession = userSession ?? new UserSession();
+    }
+}
+<div class="cont-box">
+    <div id="left-box" style="height:100%;">
+        <!--<aside class="main-sidebar">-->
+
+        <ul style="max-height:88%;overflow:auto;">
+            <div class="first_li"></div>
+            <a href="/Account/DeskTop">
+                <li>
+                    <p>
+                        <img style="margin-left: 44px;" src="/img/xt_ico.png" alt="">
+                        <i>系统首页</i>
+                    </p>
+                </li>
+            </a>
+            @{
+                var permissions = userSession.BusinessPermission.Select(x => x.ToString()).ToArray();
+
+                foreach (var group in adminMenuConfig.AdminMenuGroups)
+                {
+                    if (!string.IsNullOrEmpty(group.Permission) && !permissions.Contains(group.Permission))
+                    {
+                        continue;
+                    }
+                    var menus = group.AdminMenuArray.Where(m => string.IsNullOrEmpty(m.Permission) || permissions.Contains(m.Permission));
+                    var hasSub = menus.Any();
+
+                    if (!hasSub && string.IsNullOrEmpty(group.Url))
+                    {
+                        continue;
+                    }
+                    <li>
+                        <p>
+                            <img src="@group.Icon" />
+                            @*<i class="@group.Icon"></i>*@
+                            <a href="@group.Url">@group.Name</a>
+                        </p>
+                        @if (group.Name != "资产查询")
+                        {
+                            <img src="/img/right.png" class="li_p_img" />
+                        }
+                        <div class="come-down">
+                            @foreach (var menu in group.AdminMenuArray)
+                            {
+                                if (!string.IsNullOrEmpty(menu.Permission) && !permissions.Contains(menu.Permission))
+                                {
+                                    continue;
+                                }
+                                <a href="@menu.Url">
+                                    <div>@menu.Name</div>
+                                </a>
+                            }
+                        </div>
+                    </li>
+                }
+            }
+            <li class="" style="text-align:center;">
+                <span style="color:#fff;font-size:13px;">版本3.24</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script src="~/Assets/js/jquery-1.11.1.js"></script>
+<script>
+    $(function () {
+        $('#left-box ul li p').click(function () {//切换菜单列表
+            $(this).siblings('.come-down').slideToggle();
+            $(this).parents('li').siblings().find('.come-down').slideUp();
+            if ($(this).siblings('.li_p_img').attr("src") == "/img/right.png") { //如果 当前点击的盒子旁边的img标签 里面往右的时候
+                $('.li_p_img').attr("src", "/img/right.png");   //所有盒子往右
+                $(this).siblings('.li_p_img').attr("src", "/img/bottom.png"); //当前点击的盒子旁边的img标签  链接改成往下
+            } else {
+                $(this).siblings('.li_p_img').attr("src", "/img/right.png"); //否则当前点击的盒子旁边的img标签  链接改成往右
+            }
+        });
+    })
+</script>;

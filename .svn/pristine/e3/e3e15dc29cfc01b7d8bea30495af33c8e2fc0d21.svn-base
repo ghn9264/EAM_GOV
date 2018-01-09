@@ -1,0 +1,255 @@
+﻿@using Eam.Web.Portal.Areas
+@{
+    Layout = "~/Areas/AssetsFind/Views/AssetsFind/_AssetsFindLayout.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产维修</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 资产报修单 -->
+<section class="content">
+    <div class="row">
+        <div class="col-lg-12">
+
+            <div class="box">
+                <!-- 表头 -->
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">资产报修单</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-primary top_a" id="AddAsset" name="AddAsset">添加资产</button>
+                        <span></span>
+                        <button class="btn btn-primary top_a" id="CloseAdd" name="CloseAdd">关闭添加</button>
+                    </div>
+                </div><!-- /.box-header -->
+                <!-- box content -->
+                <div class="box-body content">
+                    <form id="repairForm" method="POST">
+                        <!-- 报修左侧栏/报修信息 -->
+                        <div class="col-lg-3">
+                            <!-- 报修信息 -->
+                            <div class="row" style="margin-left:0px;">
+                                @*<label>报修人：</label><input class="form-control" type="text" placeholder="报修人" id="RepairPerson" name="RepairPerson">*@
+                                <label>报修人：</label><select class="form-control" type="text" name="RepairPerson" id="RepairPerson"></select>
+                                <script src="~/Assets/select2/select2.js"></script>
+                                <script>
+                                    $.post("/sysManage/sysManage/GetAllUsersMax", function (data) {
+                                        $("#RepairPerson").select2({
+                                            placeholder: "报修人",
+                                            data: data
+                                        });
+                                    })
+                                </script>
+                                <br />
+                                <br />
+                                <label>报修日期：</label><input class="form-control" type="text" placeholder="报修日期" id="RepairDate" name="RepairDate" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")">
+                                <br />
+                                <label>报修部门：</label><input class="form-control" type="text" placeholder="报修部门" id="RepairDepartment" name="RepairDepartment">
+                                <script>
+                                    buildTree("treediv1", "placeTree1", "RepairDepartment", "/SysManage/SysManage/ListDept?t=" + new Date(), "name");
+                                </script>
+
+                                <br />
+                                <label>报修人联系方式：</label><input class="form-control" type="text" placeholder="报修人联系方式" id="RepairPersonPhone" name="RepairPersonPhone">
+                            </div>
+                            <!-- 报修操作 -->
+                            <div class="row">
+                                <br />
+                                <div class="col-lg-offset-5">
+                                    <button class="btn btn-default btn-all">确认报修</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 报修右侧栏/待报修资产 -->
+                        <div class="col-lg-9">
+                            <table id="repairTable" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                <thead>
+                                    <tr role="row" class="row-bkg">
+                                        <th style="width: 293px;">资产编号</th>
+                                        <th style="width: 359px;">资产名称</th>
+                                        <th style="width: 318px;">资产类别</th>
+                                        <th style="width: 256px;">单价</th>
+                                        <th style="width: 256px;">数量</th>
+                                        <th style="width: 256px;">计量单位</th>
+                                        <th style="width: 180px;"><button id="btnRemoveAll" type="button" class="btn btn-default btn-all">批量删除</button></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 资产报修记录表 -->
+<section class="content">
+    <div class="row">
+        <!--资产报修记录表 -->
+        <div class="col-lg-12">
+            <!-- 资产报修记录表 -->
+            <div class="box">
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">资产报修记录</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        <form name="noneFrm" id="noneFrm">
+                            <input type="hidden" name="PageIndex" id="PageIndex" value="1" />
+                            <input type="hidden" name="PageSize" id="PageSize" value="10" />
+                        </form>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="RepairRecordTable" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                    <thead>
+                                        <tr role="row" class="row-bkg">
+                                            <th style="width: 293px;">序号</th>
+                                            <th style="width: 359px;">报修人</th>
+                                            <th style="width: 318px;">报修时间</th>
+                                            <th style="width: 256px;">报修人联系方式</th>
+                                            <th style="width: 191px;">报修部门</th>
+                                            <th style="width: 180px;">&nbsp;</th>
+                                            <th style="width: 180px;"><button onclick="return window.location.href = '/AssetsFind/DoAssets/DeleteAllRepairRecord';"  type="button" class="btn btn-default btn-all">批量删除</button></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="dataTables_info" id="RepairRecordTableInfo" role="status" aria-live="polite"></div>
+                            </div>
+                            <div class="col-sm-9">
+                                <ul id="RepairRecordPager"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+            </div>
+        </div>
+    </div>
+    </section>
+    <!-- 将资产列表中的资产添加到待报修列表 -->
+    <script type="text/javascript">
+
+        window.AddToOrderListCallBack = loadData;
+
+        var serviceUrl2 = "@Url.Action("Query", "OrderList", new {area = "Account"})";
+
+        function loadData() {
+            $.post(serviceUrl2, { "type": "@ConstTag.Repair" }, function (result) {
+                $("#repairTable tbody").empty();
+                $(result).each(function (index, item) {
+                    var row = $(" <tr role='row'>");
+                    row.append('<td><input type="hidden" name="AssetsNum" value="' + item.AssetsNum + '"/>' + item.UsedNum1 + '</td>');
+                    row.append('<td>' + item.GoodsName + '</td>');
+                    row.append('<td>' + item.CatCode + '</td>');
+                    row.append('<td>' + item.Price + '</td>');
+                    row.append('<td>' + item.Counts + '</td>');
+                    row.append('<td>' + item.MeasurementUnits + '</td>');
+                    row.append('<td><span class="btn btn-default btn-all" data-id="' + item.EntityId + '">删除</span></td>');
+                    $("#repairTable tbody").append(row);
+                });
+                $(".remove").click(function () {
+                    var serviceUrlRemove = "@Url.Action("RemoveOne", "OrderList", new {area = "Account"})";
+                    $.post(serviceUrlRemove, { "id": $(this).attr("data-id") }, function () {
+                        loadData();
+                    });
+                });
+                $("#repairTable").DataTable();
+            });
+        }
+        function RemoveFormOrderList() {
+            $("#btnRemoveAll").click(function () {
+                var serviceUrlRemove = "@Url.Action("RemoveFormOrderList", "OrderList", new { area = "Account" })";
+                $.post(serviceUrlRemove, { "type": "@ConstTag.Repair" }, function () {
+                    loadData();
+                });
+            });
+        }
+        //初始加载
+        $(function () {
+            loadData();
+            RemoveFormOrderList();
+        });
+    </script>
+<script src="~/Assets/datatables/datatables.min.js"></script>
+    <!-- 资产报修记录表显示 -->
+    <script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+    <script type="text/javascript">
+
+        var repairQueryUrl = "@Url.Action("RepairRecordQuery", "AssetsFind", new {area = "AssetsFind"})";
+
+        function queryRepairRecordData(pageIndex) {
+            $("#PageIndex").val(pageIndex);
+            var d = $("#noneFrm").serialize();
+            $.post(repairQueryUrl, d, function (result) {
+                $("#RepairRecordTable tbody").empty();
+                $(result.Items).each(function (index, item) {
+                    var row = $(" <tr role='row'>");
+                    row.append('<td>' + item.EntityId + '</td>');
+                    row.append('<td>' + item.RepairPerson + '</td>');
+                    row.append('<td>' + item.RepairDate + '</td>');
+                    row.append('<td>' + item.RepairPersonPhone + '</td>');
+                    row.append('<td>' + item.RepairDepartment + '</td>');
+                    row.append('<td><a class="btn btn-default btn-all" href="/AssetsFind/DoAssetsExport/ExportRepair?doAssetsId=' + item.EntityId + '" class="btn btn-sm">导出报修单</a></td>');
+                    row.append('<td><a class="btn btn-default btn-all" href="/AssetsFind/DoAssets/DeleteRepairRecord?doAssetsId=' + item.EntityId + '" class="btn btn-sm">删除</a></td>');
+
+                    $("#RepairRecordTable").append(row);
+
+                });
+                $("#RepairRecordTable").DataTable();
+                //$("#RepairRecordTableInfo").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " ,总共 " + result.TotalItemCount);
+                //if (result.TotalPageCount <= 1) {
+                //    $('#RepairRecordPager').empty();
+                //    return;
+                //}
+                //var repairRecordOptions = {
+                //    bootstrapMajorVersion: 3, //版本
+                //    numberOfPages: 8,
+                //    currentPage: result.CurrentPageIndex,
+                //    totalPages: result.TotalPageCount,
+                //    itemTexts: function (type, page, current) {
+                //        switch (type) {
+                //            case "first":
+                //                return "首页";
+                //            case "prev":
+                //                return "上一页";
+                //            case "next":
+                //                return "下一页";
+                //            case "last":
+                //                return "末页";
+                //            case "page":
+                //                return page;
+                //        }
+                //    }, //点击事件，用于通过Ajax来刷新整个list列表
+                //    onPageClicked: function (event, originalEvent, type, page) {
+                //        queryRepairRecordData(page);
+                //    }
+                //};
+                //$('#RepairRecordPager').bootstrapPaginator(repairRecordOptions);
+            }, "json");
+        }
+
+        $(function () {
+            $("#RepairRecordPerPageSize").change(function () {
+              
+                $("#RepairRecordPageSize").val($(this).val());
+                queryRepairRecordData(1);
+            });
+
+            queryRepairRecordData(1);
+        });
+    </script>

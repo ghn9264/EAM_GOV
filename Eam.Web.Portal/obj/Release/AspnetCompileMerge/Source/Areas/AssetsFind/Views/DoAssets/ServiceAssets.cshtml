@@ -1,0 +1,273 @@
+﻿@{
+
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产维修</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 资产报修记录表 -->
+<section class="content">
+    <div class="row">
+        <!--资产报修记录表 -->
+        <div class="col-lg-12">
+            <!-- 资产报修记录表 -->
+            <div class="box">
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">资产报修记录</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        <form name="noneFrm" id="noneFrm">
+                            <input type="hidden" name="PageIndex" id="PageIndex" value="1" />
+                            <input type="hidden" name="PageSize" id="PageSize" value="10" />
+                        </form>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="RepairRecordTable" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                    <thead>
+                                        <tr role="row" class="row-bkg">
+                                            <th>序号</th>
+                                            <th>报修人</th>
+                                            <th>报修时间</th>
+                                            <th>报修人联系方式</th>
+                                            <th>报修部门</th>
+                                            <th>维修状态</th>
+                                            <th>维修人</th>
+                                            <th>维修时间</th>
+                                            <th>&nbsp;</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="dataTables_info" id="RepairRecordTableInfo" role="status" aria-live="polite"></div>
+                            </div>
+                            <div class="col-sm-9">
+                                <ul id="RepairRecordPager"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 资产维修单 -->
+<section class="content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box">
+                <!-- 表头 -->
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">资产维修单</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <!-- box content -->
+                <div class="box-body content">
+                    <form method="post" id="fromRepair" name="fromRepair">
+                        <!-- 维修左侧栏/维修信息 -->
+                        <div class="col-lg-3">
+                            <!-- 维修信息 -->
+                            <div class="row" style="margin-left:0px;">
+                                <br />
+                                @*<label>维修人：</label>
+                                    <input class="form-control" type="text" placeholder="维修人" id="ServicePerson" name="ServicePerson">*@
+                                <label>维修人：</label><select class="form-control" type="text" name="ServicePerson" id="ServicePerson"></select>
+                                <script src="~/Assets/select2/select2.js"></script>
+                                <script>
+                                    $.post("/sysManage/sysManage/GetAllUsersMax", function (data) {
+                                        $("#ServicePerson").select2({
+                                            placeholder: "维修人",
+                                            data: data
+                                        });
+                                    })
+                                </script>
+                                <br />
+                                <br />
+                                <label>维修时间：</label>
+                                <input class="form-control" type="text" placeholder="维修时间" id="ServiceDate" name="ServiceDate" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")">
+                                <br />
+                                <label>维修备注：</label>
+                                <input class="form-control" type="text" placeholder="维修备注" id="ServicesMemo" name="ServicesMemo">
+                                <br />
+                                <label>维修人联系方式：</label>
+                                <input class="form-control" type="text" placeholder="维修人联系方式" id="ServicePersonPhone" name="ServicePersonPhone">
+                            </div>
+                            <!-- 维修操作 -->
+                            <div class="row">
+                                <br />
+                                <div class="col-lg-offset-5">
+                                    <input type="hidden" id="RepairId" name="RepairId">
+                                    <button type="button" class="btn btn-default btn-all" id="btnRepair">提交维修结果</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 维修右侧栏/待维修资产 -->
+                        <div class="col-lg-8 col-lg-offset-1">
+                            <div class="row">
+                                <div class="row">
+                                    <div class="row col-lg-offset-4">
+                                        <label style="font-size:25px;">资产报修单</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px">报修人:</label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px" id="RepairPerson"></label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px">报修日期:</label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px" id="RepairDate"></label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px">报修部门:</label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px" id="RepairDepartment"></label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px">报修人联系方式:</label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label style="font-size:10px" id="RepairPersonPhone"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 资产维修列表 -->
+                            <div class="row">
+                                <table id="RepairDetailListTable" class="table table-bordered table-striped dataTable" role="grid">
+                                    <thead>
+                                        <tr role="row" class="row-bkg">
+                                            <th>资产编号</th>
+                                            <th>资产名称</th>
+                                            <th>计量单位</th>
+                                            <th>维修结果</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="~/Assets/datatables/datatables.min.js"></script>
+<!-- 资产报修记录表显示 -->
+<script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+<script type="text/javascript">
+
+    var repairQueryUrl = "@Url.Action("AllRepairRecordQuery", "AssetsFind", new {area = "AssetsFind"})";
+
+    function queryRepairRecordData(pageIndex) {
+        $("#PageIndex").val(pageIndex);
+        var d = $("#noneFrm").serialize();
+        $.post(repairQueryUrl, d, function (result) {
+            $("#RepairRecordTable tbody").empty();
+            $(result.Items).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td>' + item.EntityId + '</td>');
+                row.append('<td>' + item.RepairPerson + '</td>');
+                row.append('<td>' + item.RepairDate + '</td>');
+                row.append('<td>' + item.RepairPersonPhone + '</td>');
+                row.append('<td>' + item.RepairDepartment + '</td>');
+                //row.append('<td><input type="checkbox" data-id=' + item.EntityId + '></td>');
+                // 判断是否已经维修
+                if (item.HasServices == 0)
+                    row.append('<td>未维修</td>');
+                else
+                    row.append('<td>已维修</td>');
+                // 维修人信息
+                row.append('<td>' + item.ServicesPerson + '</td>');
+                row.append('<td>' + item.ServicesDate + '</td>');
+                // 维修按钮
+                if (item.HasServices == 0)
+                    row.append('<td><span class="btn btn-default btn-all Service" data-id=' + item.EntityId + '>维修</span></td>');
+                else
+                    row.append('<td><a class="btn btn-default btn-all" href="/AssetsFind/DoAssetsExport/ExportService?doAssetsId=' + item.EntityId + '" class="btn btn-default btn-all">导出维修单</a></td>');
+
+                $("#RepairRecordTable").append(row);
+            });
+            $("#RepairRecordTable").DataTable();
+            $(".Service").click(function () {
+                var val = $(this).attr("data-id");
+                showRepairInfo(val);
+            });
+        }, "json");
+    }
+
+    // 显示报修单
+    function showRepairInfo(repairId) {
+        $.post("/AssetsFind/DoAssets/RepairDetail", { repairId: repairId }, function (result) {
+            // 报修单详情
+            $("#RepairId").val(result.RepairInfo.EntityId);
+            $("#RepairPerson").text(result.RepairInfo.RepairPerson);
+            $("#RepairDate").text(result.RepairInfo.RepairDate);
+            $("#RepairPersonPhone").text(result.RepairInfo.RepairPersonPhone);
+            $("#RepairDepartment").text(result.RepairInfo.RepairDepartment);
+            $("#RepairDetailListTable tbody").empty();
+
+            // 报修设备表
+            $(result.Details).each(function (index, item) {
+                var row = $("<tr role='row'>");
+                row.append('<td>' + item.AssetsNo + '</td>');
+                row.append('<td>' + item.GoodsName + '</td>');
+                row.append('<td>' + item.MeasurementUnits + '</td>');
+                row.append('<td><input type="text" maxlength="50" width="40" name="_REPAIRRESULT_' + item.AssetsNo + '"/><td>');
+                $("#RepairDetailListTable").append(row);
+            });
+        });
+    }
+
+    $(function () {
+        $("#RepairRecordPerPageSize").change(function () {
+            $("#PageSize").val($(this).val());
+            queryRepairRecordData(1);
+        });
+
+        queryRepairRecordData(1);
+
+        // 提交维修单
+        $("#btnRepair").click(function () {
+            var d = $("#fromRepair").serialize();
+            $.post("/AssetsFind/DoAssets/ServiceAssets", d, function (result) {
+                if (result == "ok") {
+                    alert("操作成功");
+                    //document.getElementById("fromRepair").reset();
+                    //$("#RepairDetailListTable tbody").empty();
+                    //queryRepairRecordData($("#PageIndex").val());
+                    window.location.reload();
+                    return;
+                }
+                alert(result);
+            }, "json");
+        });
+    });
+</script>

@@ -1,0 +1,145 @@
+﻿@{
+    ViewBag.Title = "设置";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+
+<style type="text/css">
+    .qrcode {
+    }
+
+    .printed {
+        background: #286090;
+    }
+</style>
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">打印设置</a></li> </ol>');
+    });
+</script>
+
+<section class="content">
+    <div class="row">
+        <!--资产领用维护面板 -->
+        <div class="col-lg-12">
+            <!-- 资产领用维护面板 -->
+            <div class="box">
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">打印设置</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body" style="padding-left:30px;">
+
+                    <div class="form-group single-line">
+                        <label>资产名称</label>
+                        <input type="checkbox" name="assetname" onclick="Select(this)" value="1" />
+                    </div>
+                    <div class="form-group">
+                        <label>资产编号</label>
+                        <input type="checkbox" name="assetcode" onclick="Select(this)" value="1" />
+                    </div>
+                    <div class="form-group">
+                        <label>品牌型号</label>
+                        <input type="checkbox" name="brandtype" onclick="Select(this)"  value="1" />
+                    </div>
+                    <div class="form-group">
+                        <label>存放地点</label>
+                        <input type="checkbox" name="storeplace"  onclick="Select(this)" value="1" />
+                    </div>
+                    <div class="form-group">
+                        <label>使用人</label>
+                        <input type="checkbox" name="user" onclick="Select(this)"  value="1" />
+                    </div>
+                    <div class="form-group">
+                        <label>部门</label>
+                        <input type="checkbox" name="department"  onclick="Select(this)" value="1" />
+                    </div>
+                    <div class="form-group">
+                        <label>取得日期</label>
+                        <input type="checkbox" name="datetime"  value="1" />
+                    </div>
+                    <div class="box-danger">
+                        <h3 class="box-title title-a">标题位置设置</h3>
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+
+                        <div class="form-group single-line">
+                            <label>左边距</label>
+                            <input name="titleX" id="titleX"  value="200" type="number">
+                        </div>
+                        <div class="form-group">
+                            <label>上边距</label>
+                            <input name="titleY" id="titleY" value="10" type="number">
+                        </div>
+                    </div>
+                    <div class="box-danger">
+                        <h3 class="box-title title-a">二维码位置设置</h3>
+                    </div><div class="box-body">
+
+                              <div class="form-group single-line">
+                                  <label>左边距</label>
+                                  <input name="codeX" id="codeX"  value="5" type="number">
+                              </div>
+                              <div class="form-group">
+                                  <label>上边距</label>
+                                  <input name="codeY" id="codeY" value="130" type="number">
+                              </div>
+
+                        
+                    </div>
+                    <div class="form-group">
+                        <a class="btn btn-default btn-all" onclick="SetCookie()">保存修改</a>
+                    </div>
+
+                </div>
+         
+
+            </div><!-- /.box-body -->
+        </div>
+
+    </div>
+
+</section> 
+<script src="~/Assets/jquery.cookie.js"></script>
+<script>
+    var setting = $.cookie('printset');
+    $("input").each(function () {
+        if (setting.indexOf(this.name)>=0) {
+            this.checked = true;
+        }
+    });
+
+    $("#titleX").val($.cookie('printTitleX'));
+    $("#titleY").val($.cookie('printTitleY'));
+    $("#codeX").val($.cookie('printcodeX'));
+    $("#codeY").val($.cookie('printcodeY'));
+
+
+  
+    function Select(e) {
+        if (e.checked == true) {
+       
+            if ($("input:checked").length > 6) {
+                e.checked = false;
+                alert("只能选择6项");
+                return false;
+            }
+        }
+    }
+    function SetCookie() {
+        var str = "";
+        var titlestr = "";
+        $("input:checked").each(function (index, element) {
+            str += "-"+element.name;
+        });
+        str = str.substr(1);
+        $.cookie("printset", str, { expires: 7 });
+    
+        $.cookie("printTitleX", $("#titleX").val(), { expires: 7 });
+        $.cookie("printTitleY", $("#titleY").val(), { expires: 7 });
+        $.cookie("printcodeX", $("#codeX").val(), { expires: 7 });
+        $.cookie("printcodeY", $("#codeY").val(), { expires: 7 });
+        window.location = "/AssetsFind/DoAssets/QueryAssets";
+    }
+</script>

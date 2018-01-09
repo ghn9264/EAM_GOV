@@ -1,0 +1,128 @@
+﻿@model EAM.Data.Domain.HouseAttribute
+@{
+    ViewBag.Title = "条目输入界面";
+    Layout = "~/Areas/AssetsInput/Views/AssetsInput/Input.cshtml";
+}
+
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">房屋</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+<!-- 房屋资产差异化属性 -->
+<div class="col-lg-6">
+    <div class="box box-info">
+        <!-- Header -->
+        <div class="box-header with-border">
+            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">房屋信息</h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            </div>
+        </div>
+        <!-- Body -->
+        <div class="box-body">
+            <div class="box-body">
+                <!-- 产权形式 -->
+                <div class="form-group">
+                    <label>产权形式</label>
+                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" id="PropertyForm" name="PropertyForm">
+                        <option selected="selected">有产权</option>
+                        <option>有产权证</option>
+                        <option>有证明文件</option>
+                        <option>无产权</option>
+                    </select>
+                </div>
+
+                <!-- 权属证明 -->
+                <div class="form-group">
+                    <label>权属证明</label>
+                    <input type="text" class="form-control" id="OwnershipCertificate" name="OwnershipCertificate" placeholder="权属证明" value="@Model.OwnershipCertificate">
+                </div>
+
+                <!-- 权属年限 -->
+                <div class="form-group">
+                    <label>权属年限</label>
+                    <input type="text" class="form-control" id="OwnershipTime" name="OwnershipTime" placeholder="权属年限" value="@Model.OwnershipTime">
+                </div>
+
+                <!-- 权属证号 -->
+                <div class="form-group">
+                    <label>权属证号</label>
+                    <input type="text" class="form-control" id="OwnershipCertifiateNum" name="OwnershipCertifiateNum" placeholder="权属证号" value="@Model.OwnershipCertifiateNum"></div>
+
+                <!-- 发证日期 -->
+                <div class="form-group">
+                    <label>发证日期</label>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd"
+                               data-inputmask="'alias': 'yyyy-mm-dd'" id="IssuingDate" name="IssuingDate" value="@Model.IssuingDate">
+                    </div>
+                </div>
+
+            </div><!-- /.box-body -->
+        </div><!-- /.box-body -->
+    </div>
+</div>
+
+<!-- 房屋资产差异化属性 -->
+<div class="col-lg-6">
+    <div class="box box-info">
+        <!-- Header -->
+        <div class="box-header with-border">
+            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">房屋信息</h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button> 
+            </div>
+        </div>
+        <!-- Body -->
+        <div class="box-body">
+            <div class="box-body"> 
+
+                <!-- 房屋所有权人 -->
+                <div class="form-group">
+                    <label>房屋所有权人</label>
+                    <input type="text" class="form-control" id="HouseOwner" name="HouseOwner" placeholder="房屋所有权人" value="@Model.HouseOwner">
+                </div>
+
+                <!-- 设计用途 -->
+                <div class="form-group">
+                    <label>设计用途</label>
+                    <input type="text" class="form-control" id="DesignUse" name="DesignUse" placeholder="设计用途" value="@Model.DesignUse">
+                </div>
+
+                <!-- 坐落位置 -->
+                <div class="form-group">
+                    <label>坐落位置</label>
+                    <input type="text" class="form-control" id="Location" name="Location" placeholder="坐落位置" value="@Model.Location">
+                </div>
+
+                <!-- 建筑结构 -->
+                <div class="form-group">
+                    <label>建筑结构</label>
+                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" id="BuildingStruccture" name="BuildingStruccture">
+                        <option selected="selected">钢结构</option>
+                        <option>钢混结构</option>
+                        <option>砖混结构</option>
+                        <option>砖木结构</option>
+                        <option>其他</option>
+                    </select>
+                </div>
+
+                <!-- 建筑面积 -->
+                <div class="form-group">
+                    <label>建筑面积</label>
+                    <input type="text" class="form-control" id="Area" name="Area" placeholder="建筑面积" onblur="isNumEx('Area')" onfocus="NumOnfocus('Area')" value="@Model.Area">>
+                </div>
+
+            </div><!-- /.box-body -->
+        </div><!-- /.box-body -->
+    </div>
+</div>
+<input type="hidden" name="AttrId" value="@Model.AttrId">

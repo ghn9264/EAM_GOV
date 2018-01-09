@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<AdminMenuConfig>
+  <AdminMenuGroups>
+    <!--<AdminMenuGroup name="管理首页" url="/Account/DeskTop/Index" icon="icon-home" info="欢迎登录EAM系统！">
+    </AdminMenuGroup>-->
+
+    <AdminMenuGroup icon="/img/搜索.png"  name="资产查询" url="/AssetsFind/DoAssets/QueryAssetsEx" info="资产查询" permission="Assets_Statistics_Query" >
+    </AdminMenuGroup>
+
+
+    <AdminMenuGroup name="资产登记" icon="/img/资产等级.png"  >
+      <AdminMenuArray>
+
+        <AdminMenu name="条目录入" url="/AssetsInput/SingleInput/SingleInput" info="条目录入" permission="Assets_Input_Single" />
+        <AdminMenu name="办学导入" url="/SycData/Syc/Index" info="办学导入" permission="SycData_Syc_BanXue" />
+        <AdminMenu name="动态导入" url="/SycData/Syc/DynamicDataInput" info="动态导入" permission="SycData_Syc_Dynamic" />
+        <AdminMenu name="盘盈导入" url="/SycData/Syc/DynamicPDataInput" info="盘盈导入" permission="SycData_Syc_Dynamic" />
+        <!--<AdminMenu name="资产导入" url="/AssetsInput/BatchInput/Index" info="资产导入" permission="Assets_Input_Batch" />-->
+        <!--liu 2016-5-24-->
+      </AdminMenuArray>
+    </AdminMenuGroup>
+
+    <AdminMenuGroup name="资产维护" icon="/img/fa-files-o.png">
+      <AdminMenuArray>
+        <AdminMenu name="领用维护" url="/AssetsFind/AssetsMaintain/AcquireMaintian" info="领用维护" permission="Assets_Maintain_Acquire" />
+        <AdminMenu name="借出维护" url="/AssetsFind/AssetsMaintain/LendMaintian" info="借出维护" permission="Assets_Maintain_Lend" />
+        <AdminMenu name="信息更变" url="/AssetsFind/AssetsMaintain/InfoChange" info="信息更变" permission="Assets_Maintain_Change" />
+      </AdminMenuArray>
+    </AdminMenuGroup>
+
+    <AdminMenuGroup name="数据同步" icon="/img/fa-th.png">
+      <AdminMenuArray>
+        <AdminMenu name="数据比对" url="/SycData/Syc/Diff" info="数据比对" permission="SycData_Syc_Diff" />
+        <AdminMenu name="动态导出" url="/SycData/Syc/DynamicDataExport" info="动态导出" permission="SycData_Syc_Export" />
+      </AdminMenuArray>
+    </AdminMenuGroup>
+
+    <AdminMenuGroup name="资产统计" icon="/img/fa-apple.png" >
+      <AdminMenuArray>
+
+        <AdminMenu name="资产台账" url="/AssetsFind/Statistics/Ledger" info="资产台账" permission="Assets_Statistics_Ledger" />
+      </AdminMenuArray>
+    </AdminMenuGroup>
+    <AdminMenuGroup name="资产打印" icon="/img/fa-windows.png" >
+      <AdminMenuArray>
+        <AdminMenu name="条码打印" url="/AssetsFind/DoAssets/QueryAssets" info="资产查询" permission="Assets_Statistics_Query" />
+        <AdminMenu name="打印设置" url="/AssetsFind/AssetsFind/QrPrintSetting" info="打印设置" permission="Assets_Statistics_Query" />
+      </AdminMenuArray>
+    </AdminMenuGroup>
+
+    <AdminMenuGroup name="资产领用" icon="/img/fa-pie-chart.png" >
+      <AdminMenuArray>
+        <AdminMenu name="资产领用" url="/AssetsFind/DoAssets/AcquireAssets" info="资产领用" permission="Assets_Do_Acquire" />
+        <AdminMenu name="资产退还" url="/AssetsFind/DoAssets/SendBackAssets" info="资产退还" permission="Assets_Do_SendBack" />
+      </AdminMenuArray>
+    </AdminMenuGroup>
+
+    <AdminMenuGroup name="资产借用" icon="/img/fa-laptop.png">
+      <AdminMenuArray>
+        <AdminMenu name="资产借出" url="/AssetsFind/DoAssets/BorrowAssets" info="填写资产借用单" permission="Assets_Do_Borrow" />
+        <AdminMenu name="资产归还" url="/AssetsFind/DoAssets/ReturnAssets" info="归还已借用资产" permission="Assets_Do_Return" />
+      </AdminMenuArray>
+    </AdminMenuGroup>
+
+    <AdminMenuGroup name="资产维修" icon="/img/fa-edit.png">
+      <AdminMenuArray>
+        <AdminMenu name="资产报修" url="/AssetsFind/DoAssets/RepairAssets" info="添加资产报修单" permission="Assets_Do_Repair" />
+        <AdminMenu name="资产维修" url="/AssetsFind/DoAssets/ServiceAssets" info="维护资产报修单" permission="Assets_Do_Service" />
+      </AdminMenuArray>
+    </AdminMenuGroup>
+
+    <AdminMenuGroup name="资产盘点" icon="/img/fa-table.png" >
+      <AdminMenuArray>
+        <AdminMenu name="盘点计划" url="/AssetsFind/DoAssets/InventoryPlanAssets" info="添加资产盘点计划单" permission="Assets_Do_InventoryPlan" />
+        <AdminMenu name="资产盘点" url="/AssetsFind/DoAssets/InventoryAssets" info="维护资产盘点单" permission="Assets_Do_Inventory" />
+      </AdminMenuArray>
+    </AdminMenuGroup>
+
+    <AdminMenuGroup name="资产报废" icon="/img/fa-calendar.png" >
+      <AdminMenuArray>
+        <AdminMenu name="报废申请" url="/AssetsFind/DoAssets/ScrapApply" info="申请资产报废" permission="Assets_Do_ScrapApply" />
+        <AdminMenu name="资产报废" url="/AssetsFind/DoAssets/ScrapAssets" info="管理资产报废申请记录" permission="Assets_Do_Scrap" />
+        <AdminMenu name="报废设置" url="/AssetsFind/DoAssets/ScrapSet" info="设置资产报废" permission="Set_Do_Scrap" />
+        <AdminMenu name="报废批复" url="/AssetsFind/DoAssets/ScrapReply" info="资产报废批复" permission="Scrap_Reply" />
+      </AdminMenuArray>
+    </AdminMenuGroup>
+
+    <!--<AdminMenuGroup name="资产报表" icon="fa fa-calendar now_style" >
+      <AdminMenuArray>
+        <AdminMenu name="资产报表" url="/AssetsFind/DoAssets/ExportData" info="导出资产报表" permission="Assets_Do_ExportData" />
+      </AdminMenuArray>
+    </AdminMenuGroup>-->
+    <!--2017-05-24 wnn-->
+
+    <AdminMenuGroup name="系统管理" icon="/img/fa-envelope.png">
+      <AdminMenuArray>
+        <AdminMenu name="人员管理" url="/SysManage/SysManage/UserAndDepartmenManage" info="维护系统人员与部门 " permission="SysManage_Manage_UserAndDepartmen" />
+        <AdminMenu name="位置管理" url="/SysManage/SysManage/StockAndPlaceManage" info="维护系统位置和货架 " permission="SysManage_Manage_StockAndPlace" />
+        <AdminMenu name="综合管理" url="/SysManage/SysManage/InterfaceManage" info="管理系统界面" permission="SysManage_Manage_Interface" />
+        <AdminMenu name="系统消息" url="/SysManage/SysManage/SysMessage" info="系统消息提醒" permission="SysManage_Manage_SysMessage" />
+      </AdminMenuArray>
+    </AdminMenuGroup>
+
+  </AdminMenuGroups>
+</AdminMenuConfig>

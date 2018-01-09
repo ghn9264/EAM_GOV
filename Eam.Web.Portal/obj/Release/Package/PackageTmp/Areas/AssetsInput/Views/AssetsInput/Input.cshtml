@@ -1,0 +1,733 @@
+﻿@using EAM.Data.Domain
+@using Eam.Web.Portal.Areas.AssetsInput.Models
+@model dynamic
+
+@{
+    ViewBag.Title = "条目输入界面";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+
+    AssetsMain Main = ViewBag.Main as AssetsMain;
+    if (null == Main)
+    {
+        Main = new AssetsMain();
+    }
+}
+<link href="~/Assets/datepicker/datepicker1.css" rel="stylesheet" />
+<!-- 属性输入区顶部 -->
+<section class="content-header">
+
+    <!--最顶部的标题栏-->
+    @*<h1>
+        固定资产
+        <small>条目输入</small>
+    </h1>*@
+
+    <!--顶部标题栏右侧的层级显示栏-->
+    @*<ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">固定资产</a></li>
+        <li class="active">条目输入</li>
+    </ol>*@
+</section>
+
+<form method="POST" enctype="multipart/form-data">
+    <section class="content">
+
+        <!-- 开一行 -->
+        <div class="row">
+            
+            <!-- 左侧栏/资产类别树 -->
+            <div class="col-lg-2">
+                <!-- 右侧列 -->
+                <div class="col-lg-12">
+                    <div class="box box-danger">
+                        <!-- body Header -->
+                        <div class="box-header with-border">
+                            <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);"></h3>
+                            <div class="box-tools pull-right">
+                                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <!-- 资产类型列表 -->
+                        <div class="box-body no-padding">
+                            <h3 class="control-sidebar-heading">资产分类</h3>
+                            <section class="sidebar">
+                                <!-- 资产类别树 -->
+                                <ul id="classTree" class="ztree"></ul>
+                            </section>
+                            <script type="text/javascript">
+                                var catSetting = { callback: { onDblClick: onCatNodeDblClick } };
+
+                                //
+                                // 资产类树点击回调函数
+                                //
+                                function onCatNodeDblClick(event, treeId, treeNode) {
+
+                                    //
+                                    // 判断是否为父节点
+                                    // 如果是父节点则双击没有反应
+                                    //
+                                    if (treeNode.isParent)
+                                        return;
+
+                                    //
+                                    // 
+                                    //
+                                    if ($.isFunction(window.OnClassCodeSelected)) {
+                                        var obj = {};
+                                        obj.ClassCode = treeNode.id;
+                                        obj.ClassName = treeNode.name;
+                                        obj.Unit = treeNode.unit;
+                                        $.get("/Account/Desktop/GetClassCode?catCode=" + treeNode.id, function (nextNum) {
+
+                                            //
+                                            // 通过js从数据库取回nextNum值
+                                            //
+                                            obj.NextNum = nextNum;
+
+                                            //
+                                            // 调用OnClassCodeSelected函数
+                                            //
+                                            window.OnClassCodeSelected(obj);
+                                        });
+                                    };
+                                }
+
+                                //
+                                // ajax呈现资产树
+                                //
+                                $(document).ready(function () {
+
+                                    //
+                                    // 从数据库取资产类别树
+                                    //
+                                    $.post("/Account/DeskTop/GetClassCodeTree?t=" + new Date(),
+                                        function (result) {
+
+                                            //
+                                            // 根据取回来的数据创建资产树
+                                            //
+                                            $.fn.zTree.init($("#classTree"), catSetting, result);
+                                        }, "json");
+                                });
+                            </script>
+
+                        </div><!-- /.box-body -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧栏/资产属性录入栏 -->
+            <div class="col-lg-10">
+
+                <!-- 公共属性录入栏 -->
+                <div class="row">
+                    <!-- 左侧列 -->
+                    <div class="col-lg-6">
+                        <!-- 公共属性录入区域/基础信息 -->
+                        <div class="box box-info" id="BaseInfo" style="display: ">
+                            <!-- Header -->
+                            <div class="box-header with-border">
+                                <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">资产基础信息</h3>
+                                <div class="box-tools pull-right">
+                                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="box-body">
+                                <div class="box-body">
+                                    <!-- 资产名称 -->
+                                    <div class="form-group">
+                                        <label>资产名称</label>
+                                        <input type="text" class="form-control" id="GoodsName" name="GoodsName" placeholder="资产名称" value="@Main.GoodsName">
+                                    </div>
+
+                                    <!-- 资产分类 -->
+                                    <div class="form-group">
+                                        <label>资产分类</label>
+                                        <a href="#" data-toggle="control-sidebar">
+                                            <input type="text" class="form-control" id="CatCode" name="CatCode" placeholder="资产分类" value="@Main.CatCode" />
+                                        </a>
+                                    </div>
+
+                                    <!-- 资产代码 -->
+                                    <div class="form-group">
+                                        <label>资产代码</label>
+                                        <input type="text" class="form-control" id="AssetsNum" name="AssetsNum" placeholder="资产代码" value="@Main.AssetsNum" />
+                                    </div>
+
+                                    <!-- 资产曾用编号1 -->
+                                    <div class="form-group">
+                                        <label>资产曾用编号1</label>
+                                        <input type="text" class="form-control" id="UsedNum1" name="UsedNum1" placeholder="资产曾用编号1" value="@Main.UsedNum1">
+                                    </div>
+
+                                    <!-- 资产曾用编号2 -->
+                                    <div class="form-group">
+                                        <label>资产曾用编号2</label>
+                                        <input type="text" class="form-control" id="UsedNum2" name="UsedNum2" placeholder="资产曾用编号2" value="@Main.UsedNum2">
+                                    </div>
+
+                                    <!-- 计量单位 -->
+                                    <div class="form-group">
+                                        <label>计量单位</label>
+                                        <input type="text" class="form-control" id="MeasurementUnits" name="MeasurementUnits" placeholder="计量单位" value="@Main.MeasurementUnits">
+                                    </div>
+
+                                    <!-- 取得方式 -->
+                                    <div class="form-group">
+                                        <label>取得方式</label>
+                                        <select class="form-control select2 select2-hidden-accessible" id="GetWay" name="GetWay" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                            <option selected="selected">购置</option>
+                                            <option>调拨</option>
+                                            <option>自建</option>
+                                            <option>捐赠</option>
+                                            <option>划拨</option>
+                                            <option>置换</option>
+                                            <option>自行研制</option>
+                                            <option>其他</option>
+                                            <option>有偿取得</option>
+                                            <option>租凭</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- 取得日期 -->
+                                    <div class="form-group">
+                                        <label>取得日期</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd" value="@Main.GetDate.ToString("yyyy-MM-dd")"
+                                                   data-inputmask="'alias': 'yyyy-mm-dd'" data-mask="yyyy-mm-dd" id="GetDate" name="GetDate"/>
+                                        </div>
+                                        @*<div class="input-group date form_date col-md-5" data-date="" data-date-format="" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                            <input class="form-control" size="16" type="text" value="" readonly>
+                                            <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                        </div>
+                                        <input type="hidden" id="dtp_input2" value="@Main.GetDate.ToString("yyyy-MM-dd")" /><br />*@
+                                    </div>
+
+                                    <!-- 经办人 -->
+                                    <div class="form-group">
+                                        <label>经办人</label>
+                                        <input type="text" class="form-control" id="Agent" name="Agent" placeholder="经办人" value="@Main.Agent"/>
+                                    </div>
+                                </div><!-- /.box-body -->
+
+                            </div><!-- /.box-body -->
+                        </div>
+
+                        <!-- 资产照片信息 -->
+                        <div class="box box-info">
+                            <!-- Header -->
+                            <div class="box-header with-border">
+                                <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">资产照片</h3>
+                                <div class="box-tools pull-right">
+                                    <input type="hidden" name="AssetsPicPath" value="@Main.AssetsPicPath"/>
+                                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="box-body">
+                                <div class="box-body">
+                                    <!-- 资产名称 -->
+                                    <div class="form-group">
+                                        <input type="file" name="imgOne" id="imgOne"/>
+                                        <p class="help-block">请选择资产照片位置</p>
+                                    </div>
+                                </div><!-- /.box-body -->
+
+                                <div class="col-lg-12">
+                                    <img class="img-responsive" id="imgPre" src="@Path.Combine(PortalSetting.UpLoadPicHttpPrix,Main.AssetsPicPath??"")" alt="图片预览" style="display: block;" />
+                                </div>
+                            </div><!-- /.box-body -->
+                        </div>
+                    </div>
+
+                    <!-- 中间列 -->
+                    <div class="col-lg-6">
+                        <!-- 使用信息 -->
+                        <div class="box box-info">
+                            <!-- Header -->
+                            <div class="box-header with-border">
+                                <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">使用信息</h3>
+                                <div class="box-tools pull-right">
+                                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                </div>
+                            </div>
+                            <!-- Body -->
+                            <div class="box-body">
+                                <div class="box-body">
+                                    <!-- 使用属性 -->
+                                    <div class="form-group">
+                                        <label>使用属性</label>
+                                        <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" id="UsingAttribute" name="UsingAttribute">
+                                            <option selected="selected">办公设备</option>
+                                            <option>专用设备</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- 使用状况 -->
+                                    <div class="form-group">
+                                        <label>使用状况</label>
+                                        <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" id="UsingState" name="UsingState">
+                                            <option selected="selected">在用</option>
+                                            <option>闲置</option>
+                                            <option>摧毁待报废</option>
+                                            <option>其他</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- 使用方式 -->
+                                    <div class="form-group">
+                                        <label>使用方式</label>
+                                        <input type="text" class="form-control" id="UsingStyle" name="UsingStyle" placeholder="使用方式" value="@Main.UsingStyle">
+                                    </div>
+
+                                    <!-- 存放地点 -->
+                                    <div class="form-group">
+                                        <label>存放地点</label>
+                                        <input type="text" class="form-control" id="StorePlace" name="StorePlace" placeholder="存放地点" value="@Main.StorePlace">
+                                    </div>
+                                </div><!-- /.box-body -->
+                             
+                            </div>
+
+                            <!-- 财务信息 -->
+                            <div class="box box-info">
+                                <!-- Header -->
+                                <div class="box-header with-border">
+                                    <h3 class="box-title" style="font-size: 18px;font-family: '微软雅黑';color: rgb(18, 136, 198);">资产财务信息</h3>
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button> 
+                                    </div>
+                                </div>
+                                <!-- Body -->
+                                <div class="box-body">
+                                    <div class="box-body">
+                                        <!-- 价值类型 -->
+                                        <div class="form-group">
+                                            <label>价值类型</label>
+                                            <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" id="ValueType" name="ValueType">
+                                                <option selected="selected">原值</option>
+                                                <option>暂估值</option>
+                                                <option>重置值</option>
+                                                <option>无价值</option>
+                                                <option>评估值</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- 价值 -->
+                                        <div class="form-group">
+                                            <label>价值</label>
+                                            <input type="text" class="form-control" id="Money" name="Money" placeholder="价值" onfocus="NumOnfocus('Money')" onblur="NumOnblur('Money')" value="@Main.Money">
+                                        </div>
+
+                                        <!-- 财政性资金 -->
+                                        <div class="form-group">
+                                            <label>财政性资金</label>
+                                            <input type="text" class="form-control" id="GovMoney" name="GovMoney" placeholder="财政性资金" onfocus="NumOnfocus('GovMoney')" onblur="NumOnblur('GovMoney')" value="@Main.GovMoney">
+                                        </div>
+
+                                        <!-- 非财政性资金 -->
+                                        <div class="form-group">
+                                            <label>非财政性资金</label>
+                                            <input type="text" class="form-control" id="NoneGovMoney" name="NoneGovMoney" placeholder="非财政性资金" onfocus="NumOnfocus('NoneGovMoney')" onblur=" NumOnblur('NoneGovMoney')" value="@Main.NoneGovMoney">
+                                        </div>
+
+                                        <!-- 入账日期 -->
+                                        <div class="form-group">
+                                            <label>入账日期</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-calendar"></i>
+                                                </div>
+                                                <input type="text" class="form-control " data-provide="datepicker" data-date-format="yyyy-mm-dd" data-inputmask="'alias': 'yyyy-mm-dd'"
+                                                       id="PostingDate" name="PostingDate" value="@Main.PostingDate.ToString("yyyy-MM-dd")">
+                                            </div>
+                                        </div>
+
+                                        <!-- 折旧 -->
+                                        <div class="form-group">
+                                            <label>折旧</label>
+                                            <input type="text" class="form-control" id="Depreciation" name="Depreciation" placeholder="折旧" onfocus="NumOnfocus('Depreciation')" onblur="NumOnblur('Depreciation')" value="@Main.Depreciation">
+                                        </div>
+
+                                        <!-- 累计折旧 -->
+                                        <div class="form-group">
+                                            <label>累计折旧</label>
+                                            <input type="text" class="form-control" id="AccumulateDepreciation" name="AccumulateDepreciation" placeholder="累计折旧" onfocus="NumOnfocus('AccumulateDepreciation')" onblur="NumOnblur('AccumulateDepreciation')" value="@Main.AccumulateDepreciation">
+                                        </div>
+
+                                        <!-- 净值 -->
+                                        <div class="form-group">
+                                            <label>净值</label>
+                                            <input type="text" class="form-control" id="NetWorth" name="NetWorth" placeholder="净值" onfocus="NumOnfocus('NetWorth')" onblur="NumOnblur('NetWorth')" value="@Main.NetWorth">
+                                        </div>
+
+                                        <!-- 会计凭证号 -->
+                                        <div class="form-group">
+                                            <label>会计凭证号</label>
+                                            <input type="text" class="form-control" id="AcountDocNum" name="AcountDocNum" placeholder="会计凭证号" value="@Main.AcountDocNum">
+                                        </div>
+
+                                    </div><!-- /.box-body -->
+                                </div><!-- /.box-body -->
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- 资产差异属性录入栏 -->
+                    <div class="row"> 
+                        @RenderBody()
+                    </div>
+
+                    <!-- 操作面板栏 -->
+                    <div class="row">
+                        <div class="col-lg-5"></div>
+                        <div class="col-lg-1"><button type="submit" class="btn btn-primary">提交</button></div>
+                        <div class="col-lg-1"><button type="reset" class="btn btn-primary">取消</button></div>
+                        <div class="col-lg-5"></div>
+                    </div>
+
+                </div>
+                <!-- 右侧栏/资产类型快速切换栏 -->
+                
+            </div>
+            
+            
+        </div>
+    
+    </section>
+
+</form>
+<script src="~/Assets/datepicker/bootstrap-datepicker.js"></script>
+<script language="javascript">
+
+    //
+    // 资产类别树点击事件处理
+    //
+    window.OnClassCodeSelected = function (classCode) {
+
+        //alert(classCode.ClassCode + "||" + classCode.NextNum + "||" + classCode.ClassName);
+
+        //
+        // 根据资产类别代码获取该资产属于哪一类
+        //
+        ShowType(getAssetsType(classCode.ClassCode));
+        
+        $("#MeasurementUnits").val(classCode.Unit);
+        $("#CatCode").val(classCode.ClassCode);
+        $("#AssetsNum").val(classCode.NextNum);
+    }
+
+    //
+    // 选择资产图片
+    //
+    $("#imgOne").change(function() {
+        var f = document.getElementById('imgOne').files[0];
+        var src = window.URL.createObjectURL(f);
+        document.getElementById('imgPre').src = src;
+    });
+
+    //
+    // 判断资产类别
+    //
+    function getAssetsType(classcode) {
+
+        //
+        // 获取资产代码前三位
+        //
+        var _code = classcode.substring(0, 3);
+
+        //
+        // 资产十大类分类代码
+        //
+        var land = ["101"];
+        var house = ["102"];
+        var build = ["103"];
+        var car = ["203"];
+        var general = ["201","202","204","210","220","230","231","232","240","241","242"];
+        var special = ["301","302","303","304","305","306","307","308","310","311","314","320","321","322","324","326","327","328","339","351","352","360","370","371","372"];
+        var wenwu = ["401","402"];
+        var jiaju = ["601","602"];
+        var book = ["501"];
+        var animal = ["603", "604"];
+
+        //
+        // 根据资产代码返回资产类别
+        //
+        if (land.indexOf(_code) >= 0)
+            //return land.indexOf(_code);
+            return "土地";
+        if (house.indexOf(_code) >= 0)
+            //return house.indexOf(_code);
+            return "房屋";
+        if (build.indexOf(_code) >= 0)
+            //return build.indexOf(_code);
+            return "构筑物";
+        if (car.indexOf(_code) >= 0)
+            return "车辆";
+        if (general.indexOf(_code) >= 0)
+            return "通用设备";
+        if (special.indexOf(_code) >= 0)
+            return "专用设备";
+        if (wenwu.indexOf(_code) >= 0)
+            return "文物陈列品";
+        if (jiaju.indexOf(_code) >= 0)
+            return "家俱用具及装具";
+        if (book.indexOf(_code) >= 0)
+            return "图书档案";
+        if (animal.indexOf(_code) >= 0)
+            return "特种动植物";
+    }
+
+    //
+    // 选择显示界面
+    //
+    function ShowType(type) {
+
+        switch (type) {
+            case "土地":
+                document.getElementById("landInfo").style.display="";//显示 
+                document.getElementById("houseInfo").style.display="none";//隐藏 
+                document.getElementById("buildInfo").style.display="none";//隐藏
+                document.getElementById("carInfo").style.display="none";//隐藏  
+                document.getElementById("generalInfo").style.display="none";//隐藏  
+                document.getElementById("specialInfo").style.display="none";//隐藏  
+                document.getElementById("Culturalrelic").style.display="none";//隐藏  
+                document.getElementById("furniture").style.display="none";//隐藏  
+                document.getElementById("bookInfo").style.display="none";//隐藏  
+                document.getElementById("animalInfo").style.display="none";//隐藏  
+
+                $("#navTitle").empty();
+                $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">土地</a></li></ol>');
+        
+                break;
+            case "房屋":
+                document.getElementById("landInfo").style.display="none";//显示 
+                document.getElementById("houseInfo").style.display="";//隐藏 
+                document.getElementById("buildInfo").style.display="none";//隐藏
+                document.getElementById("carInfo").style.display="none";//隐藏  
+                document.getElementById("generalInfo").style.display="none";//隐藏  
+                document.getElementById("specialInfo").style.display="none";//隐藏  
+                document.getElementById("Culturalrelic").style.display="none";//隐藏  
+                document.getElementById("furniture").style.display="none";//隐藏  
+                document.getElementById("bookInfo").style.display="none";//隐藏  
+                document.getElementById("animalInfo").style.display="none";//隐藏  
+
+                $("#navTitle").empty();
+                $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">房屋</a></li></ol>');
+        
+                break;
+            case "构筑物":
+                document.getElementById("landInfo").style.display="none";//显示 
+                document.getElementById("houseInfo").style.display="none";//隐藏 
+                document.getElementById("buildInfo").style.display="";//隐藏
+                document.getElementById("carInfo").style.display="none";//隐藏  
+                document.getElementById("generalInfo").style.display="none";//隐藏  
+                document.getElementById("specialInfo").style.display="none";//隐藏  
+                document.getElementById("Culturalrelic").style.display="none";//隐藏  
+                document.getElementById("furniture").style.display="none";//隐藏  
+                document.getElementById("bookInfo").style.display="none";//隐藏  
+                document.getElementById("animalInfo").style.display="none";//隐藏  
+
+                $("#navTitle").empty();
+                $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">构筑物</a></li></ol>');
+        
+                break;
+            case "车辆":
+                document.getElementById("landInfo").style.display="none";//显示 
+                document.getElementById("houseInfo").style.display="none";//隐藏 
+                document.getElementById("buildInfo").style.display="none";//隐藏
+                document.getElementById("carInfo").style.display="";//隐藏  
+                document.getElementById("generalInfo").style.display="none";//隐藏  
+                document.getElementById("specialInfo").style.display="none";//隐藏  
+                document.getElementById("Culturalrelic").style.display="none";//隐藏  
+                document.getElementById("furniture").style.display="none";//隐藏  
+                document.getElementById("bookInfo").style.display="none";//隐藏  
+                document.getElementById("animalInfo").style.display="none";//隐藏  
+
+                $("#navTitle").empty();
+                $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">车辆</a></li></ol>');
+        
+                break;
+            case "通用设备":
+                document.getElementById("landInfo").style.display="none";//显示 
+                document.getElementById("houseInfo").style.display="none";//隐藏 
+                document.getElementById("buildInfo").style.display="none";//隐藏
+                document.getElementById("carInfo").style.display="none";//隐藏  
+                document.getElementById("generalInfo").style.display="";//隐藏  
+                document.getElementById("specialInfo").style.display="none";//隐藏  
+                document.getElementById("Culturalrelic").style.display="none";//隐藏  
+                document.getElementById("furniture").style.display="none";//隐藏  
+                document.getElementById("bookInfo").style.display="none";//隐藏  
+                document.getElementById("animalInfo").style.display="none";//隐藏  
+
+                $("#navTitle").empty();
+                $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">通用设备</a></li></ol>');
+        
+                break;
+            case "专用设备":
+                document.getElementById("landInfo").style.display="none";//显示 
+                document.getElementById("houseInfo").style.display="none";//隐藏 
+                document.getElementById("buildInfo").style.display="none";//隐藏
+                document.getElementById("carInfo").style.display="none";//隐藏  
+                document.getElementById("generalInfo").style.display="none";//隐藏  
+                document.getElementById("specialInfo").style.display="";//隐藏  
+                document.getElementById("Culturalrelic").style.display="none";//隐藏  
+                document.getElementById("furniture").style.display="none";//隐藏  
+                document.getElementById("bookInfo").style.display="none";//隐藏  
+                document.getElementById("animalInfo").style.display="none";//隐藏  
+
+                $("#navTitle").empty();
+                $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">专用设备</a></li></ol>');
+        
+                break;
+            case "文物陈列品":
+                document.getElementById("landInfo").style.display="none";//显示 
+                document.getElementById("houseInfo").style.display="none";//隐藏 
+                document.getElementById("buildInfo").style.display="none";//隐藏
+                document.getElementById("carInfo").style.display="none";//隐藏  
+                document.getElementById("generalInfo").style.display="none";//隐藏  
+                document.getElementById("specialInfo").style.display="none";//隐藏  
+                document.getElementById("Culturalrelic").style.display="";//隐藏  
+                document.getElementById("furniture").style.display="none";//隐藏  
+                document.getElementById("bookInfo").style.display="none";//隐藏  
+                document.getElementById("animalInfo").style.display="none";//隐藏  
+
+                $("#navTitle").empty();
+                $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">文物陈列品</a></li></ol>');
+        
+                break;
+            case "家俱用具及装具":
+                document.getElementById("landInfo").style.display="none";//显示 
+                document.getElementById("houseInfo").style.display="none";//隐藏 
+                document.getElementById("buildInfo").style.display="none";//隐藏
+                document.getElementById("carInfo").style.display="none";//隐藏  
+                document.getElementById("generalInfo").style.display="none";//隐藏  
+                document.getElementById("specialInfo").style.display="none";//隐藏  
+                document.getElementById("Culturalrelic").style.display="none";//隐藏  
+                document.getElementById("furniture").style.display="";//隐藏  
+                document.getElementById("bookInfo").style.display="none";//隐藏  
+                document.getElementById("animalInfo").style.display="none";//隐藏  
+
+                $("#navTitle").empty();
+                $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">家俱用具及装具</a></li></ol>');
+        
+                break;
+            case "图书档案":
+                document.getElementById("landInfo").style.display="none";//显示 
+                document.getElementById("houseInfo").style.display="none";//隐藏 
+                document.getElementById("buildInfo").style.display="none";//隐藏
+                document.getElementById("carInfo").style.display="none";//隐藏  
+                document.getElementById("generalInfo").style.display="none";//隐藏  
+                document.getElementById("specialInfo").style.display="none";//隐藏  
+                document.getElementById("Culturalrelic").style.display="none";//隐藏  
+                document.getElementById("furniture").style.display="none";//隐藏  
+                document.getElementById("bookInfo").style.display="";//隐藏  
+                document.getElementById("animalInfo").style.display="none";//隐藏  
+
+                $("#navTitle").empty();
+                $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">图书档案</a></li></ol>');
+        
+                break;
+            case "特种动植物":
+                document.getElementById("landInfo").style.display="none";//显示 
+                document.getElementById("houseInfo").style.display="none";//隐藏 
+                document.getElementById("buildInfo").style.display="none";//隐藏
+                document.getElementById("carInfo").style.display="none";//隐藏  
+                document.getElementById("generalInfo").style.display="none";//隐藏  
+                document.getElementById("specialInfo").style.display="none";//隐藏  
+                document.getElementById("Culturalrelic").style.display="none";//隐藏  
+                document.getElementById("furniture").style.display="none";//隐藏  
+                document.getElementById("bookInfo").style.display="none";//隐藏  
+                document.getElementById("animalInfo").style.display="";//隐藏  
+
+                $("#navTitle").empty();
+                $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">资产登记</a></li> <li><a href="#" style="font-size: 18px">特种动植物</a></li></ol>');
+        
+                break;
+            default :
+                alert("错误资产类别！");
+                break;
+    }
+
+    //
+    // 格式错误后恢复控件颜色
+    //
+    function NumOnfocus(elementId) {
+        document.getElementById(elementId).style.backgroundColor = "white";
+    }
+
+    //
+    // 金额值判断
+    //
+    function NumOnblur(elementId) {
+        var num = /^[0-9]*(\.[0-9]{1,2})?$/;
+        if (!num.test(document.getElementById(elementId).value)) {
+            alert("请输入数字");
+            document.getElementById(elementId).style.backgroundColor = "pink";
+        } else {
+            //
+            // 自动填写财政性资金
+            //
+            var temMoney = (document.getElementById("Money").value - document.getElementById("NoneGovMoney").value).toFixed(2);
+            if (temMoney >= 0) {
+                document.getElementById("GovMoney").value = temMoney;
+            }
+
+            //
+            // 自动填写净值
+            //
+            temMoney = (document.getElementById("Money").value - document.getElementById("AccumulateDepreciation").value).toFixed(2);
+            if (temMoney >= 0) {
+                document.getElementById("NetWorth").value = temMoney;
+            }
+
+        }
+    }
+
+    //
+    // 小数判断并操作
+    //
+    function isNum(elementId) {
+        var regu = /^[+-]?[1-9]?[0-9]*\.[0-9]*$/; // 小数正则表达式
+        var re = new RegExp(regu);
+        if ((document.getElementById(elementId).value.search(re) != -1) || !isNaN(document.getElementById(elementId).value)) {
+            //
+            // 自动填独用面积
+            //
+            var temArea = document.getElementById("AllArea").value - document.getElementById("SharingArea").value;
+            if (temArea >= 0) {
+                document.getElementById("SingleArea").value = temArea;
+            }
+        } else {
+            alert("请输入数字");
+            document.getElementById(elementId).style.backgroundColor = "pink";
+        }
+
+    }
+
+    //
+    // 小数判断
+    //
+    function isNumEx(elementId) {
+        var regu = /^[+-]?[1-9]?[0-9]*\.[0-9]*$/; // 小数正则表达式
+        var re = new RegExp(regu);
+        if ((document.getElementById(elementId).value.search(re) != -1) || !isNaN(document.getElementById(elementId).value)) {
+
+        } else {
+            alert("请输入数字");
+            document.getElementById(elementId).style.backgroundColor = "pink";
+        }
+
+    }
+    
+</script>

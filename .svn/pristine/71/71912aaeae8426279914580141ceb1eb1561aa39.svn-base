@@ -1,0 +1,253 @@
+﻿@using Eam.Web.Portal.Areas
+@{
+
+    Layout = "~/Areas/AssetsFind/Views/AssetsFind/_AssetsFindLayout.cshtml";
+}
+<link href="~/Assets/css/Home_main.css" rel="stylesheet" />
+<link href="~/Assets/css/search_main.css" rel="stylesheet" />
+<link href="~/Assets/css/inventory-main.css" rel="stylesheet" />
+<!--- 路径显示 -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navTitle").empty();
+        $("#navTitle").append('<ol class="breadcrumb"> <li><a href="@Url.Action("Index", "DeskTop", new { Area = "Account" })" style="font-size: 18px"><i class="fa fa-dashboard"></i>首页</a></li> <li><a href="#" style="font-size: 18px">盘点计划</a></li></ol>');
+        //alert("YES");
+    });
+</script>
+
+    <!-- 资产盘点单 -->
+    <section class="content new_content">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="box box-inventory">
+                    <!-- 表头 -->
+                    <div class="box-header new-box-header">
+                        <h3 class="box-title title-a">资产盘点计划单</h3>
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-primary top_a" id="AddAsset" name="AddAsset">添加资产</button>
+                            <button class="btn btn-primary top_a" id="CloseAdd" name="CloseAdd">关闭添加</button>
+                        </div>
+                    </div>
+
+                    <form id="InForm" method="post">
+                        <div class="box-body content con-th">
+                            <!-- 盘点右侧栏/待盘点资产 -->
+
+                            <table id="InventoryPlanTable" class="table table-bordered table-striped dataTable new-table" role="grid" aria-describedby="example1_info">
+                                <thead>
+                                    <tr role="row" class="tabletr">
+                                        <th style="width: 293px;">资产编号</th>
+                                        <th style="width: 359px;">资产名称</th>
+                                        <th style="width: 318px;">资产类别</th>
+                                        <th style="width: 256px;">单价</th>
+                                        <th style="width: 256px;">数量</th>
+                                        <th style="width: 256px;">计量单位</th>
+                                        <th style="width: 191px;"><button id="btnRemoveAll" type="button" class="btn btn-danger btn-sm btn-delete-inven">批量删除</button></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+
+                        </div>
+</div>
+            </div>
+            <div class="col-lg-3 clo-inven">
+                <div class="box box-inventory">
+                    <!-- 盘点信息 -->
+                    <form id="InventoryForm" method="POST">
+                        <div class="row row-inven">
+                            <br />
+                            <br />
+                            <div class="div-inven">
+                                <label>盘点人：</label><select class="form-control new-control" type="text" name="InventoryPerson" id="InventoryPerson" style="width:100px;"></select>
+                                <script src="/Assets/select2/select2.js"></script>
+                                <script>
+                                    $.post("/sysManage/sysManage/GetAllUsersMax", function (data) {
+                                        $("#InventoryPerson").select2({
+                                            placeholder: "盘点人",
+                                            data: data
+                                        });
+                                    })
+                                </script>
+                            </div>
+                            <div class="div-inven">
+                                <label>盘点部门：</label><input class="form-control new-control" placeholder="盘点部门" type="text" id="InventoryDepartment" name="InventoryDepartment" style="width:150px;">
+                                <script>
+                                    buildTree("treediv1", "placeTree1", "InventoryDepartment", "/SysManage/SysManage/ListDept?t=" + new Date(), "name");
+                                </script>
+                            </div>
+                            <div class="div-inven">
+                                <label>盘点时间：</label><input class="form-control new-control" type="text" id="InventoryDate" name="InventoryDate" readonly="readonly" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")" style="width:150px;">
+                            </div>
+                        </div>
+
+                    </form>
+</form>
+<!-- 盘点操作 -->
+<div class="row">
+    <br />
+    <div class="col-lg-offset-5 div-inven">
+        <label></label>
+        <button class="btn btn-primary btn-flat btn-delete-inven" style="height:36px" onclick="javascript:subPlans();">确认盘点</button>
+    </div>
+</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 资产盘点计划表 -->
+<section class="content content-inven">
+    <div class="row">
+        <!--资产列表面板 -->
+        <div class="col-lg-12">
+            <!-- 资产列表面板 -->
+            <div class="box box-inventory">
+                <div class="box-header new-box-header">
+                    <h3 class="box-title title-a">资产盘点计划</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        <input type="hidden" name="InventoryRecordPageIndex" id="InventoryRecordPageIndex" value="1" />
+                        <input type="hidden" name="InventoryRecordPageSize" id="InventoryRecordPageSize" value="20" />
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body new-box-body">
+                    <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="InventoryRecordTable" class="table table-bordered table-striped dataTable new-table" role="grid" aria-describedby="example1_info">
+                                    <thead>
+                                        <tr role="row" class="tabletr">
+                                            <th style="width: 300px;">序号</th>
+                                            <th style="width: 300px;">盘点人</th>
+                                            <th style="width: 300px;">盘点日期</th>
+                                            <th style="width: 160px;">盘点部门</th>
+                                            <th style="width: 160px;">&nbsp;</th>
+                                            <th style="width: 160px;"><button type="button" onclick="RemoveAll()" class="btn btn-danger btn-sm btn-delete-inven">批量删除</button></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="dataTables_info" id="InventoryRecordTableInfo" role="status" aria-live="polite"></div>
+                            </div>
+                            <div class="col-sm-9">
+                                <ul id="InventoryRecordPager"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.box-body -->
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<script src="~/Assets/datatables/datatables.min.js"></script>
+<!-- 将资产列表中的资产添加到待盘点列表 -->
+<script type="text/javascript">
+
+    window.AddToOrderListCallBack = loadData;
+
+    var serviceUrl2 = "@Url.Action("Query", "OrderList", new {area = "Account"})";
+
+    function loadData() {
+        $.post(serviceUrl2, { "type": "@ConstTag.Inventory" }, function (result) {
+            $("#InventoryPlanTable tbody").empty();
+            $(result).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td><input type="hidden" name="AssetsNum" value="' + item.AssetsNum + '"/>' + item.UsedNum1 + '</td>');
+                row.append('<td>' + item.GoodsName + '</td>');
+                row.append('<td>' + item.CatCode + '</td>');
+                row.append('<td>' + item.Price + '</td>');
+                row.append('<td>' + item.Counts + '</td>');
+                row.append('<td>' + item.MeasurementUnits + '</td>');
+                row.append('<td><span class="btn remove" data-id="' + item.EntityId + '">删除</span></td>');
+                $("#InventoryPlanTable tbody").append(row);
+            });
+            $(".remove").click(function () {
+                var serviceUrlRemove = "@Url.Action("RemoveOne", "OrderList", new {area = "Account"})";
+                $.post(serviceUrlRemove, { "id": $(this).attr("data-id") }, function () {
+                    loadData();
+                });
+            });
+            $("#InventoryPlanTable").DataTable();
+        });
+    }
+    function RemoveFormOrderList() {
+        $("#btnRemoveAll").click(function () {
+            var serviceUrlRemove = "@Url.Action("RemoveFormOrderList", "OrderList", new { area = "Account" })";
+            $.post(serviceUrlRemove, { "type": "@ConstTag.Inventory" }, function () {
+                loadData();
+            });
+        });
+    }
+    function RemoveAll() {
+        var serviceUrlRemove = "@Url.Action("DeleteAllInventoryPlanRecord", "DoAssets", new { area = "AssetsFind" })";
+        $.post(serviceUrlRemove, null, function () {
+
+            queryInventoryRecordData(1);
+        });
+    }
+    function subPlans() {
+        $("#InForm").submit();
+    }
+    //初始加载
+    $(function () {
+        loadData();
+        RemoveFormOrderList();
+    });
+</script>
+
+<!-- 资产盘点计划表显示 -->
+<script src="/Assets/bootstrap-paginator/bootstrap-paginator.min.js"></script>
+<script type="text/javascript">
+
+    var inventoryQueryUrl = "@Url.Action("AllInventoryRecordQuery", "AssetsFind", new { area = "AssetsFind" })";
+
+    function queryInventoryRecordData(pageIndex) {
+        $("#InventoryRecordPageIndex").val(pageIndex);
+        var pageSize = $("#InventoryRecordPageSize").val();
+        $.post(inventoryQueryUrl, { pageSize: pageSize, pageIndex: pageIndex }, function (result) {
+            $("#InventoryRecordTable tbody").empty();
+            $(result.Items).each(function (index, item) {
+                var row = $(" <tr role='row'>");
+                row.append('<td>' + item.EntityId + '</td>');
+                row.append('<td>' + item.InventoryPerson + '</td>');
+                row.append('<td>' + item.InventoryDate + '</td>');
+                row.append('<td>' + item.InventoryDepartment + '</td>');
+                row.append('<td><a href="/AssetsFind/DoAssetsExport/DownloadInventoryPlan?doAssetsId=' + item.EntityId + '" class="btn btn-danger btn-sm btn-delete-inven">下载文件</button></td>');
+                row.append('<td><a href="/AssetsFind/DoAssets/DeleteInventoryPlanRecord?doAssetsId=' + item.EntityId + '" class="btn btn-danger btn-sm btn-delete-inven">删除</button></td>');
+                $("#InventoryRecordTable").append(row);
+            });
+            $("#InventoryRecordTable").DataTable();
+            $(".orderlist").click(function () {
+                var val = $(this).attr("data-id");
+                addToOrderList(val);
+            });
+        }, "json");
+    }
+
+    function addToOrderList(entityId) {
+        $.post("@Url.Action("Add", "OrderList", new {area = "Account"})", { EntityId: entityId }, function (result) {
+            if (result)
+                alert("添加成功");
+
+            else
+                alert("添加失败");
+        }, "json");
+    }
+
+    $(function () {
+        $("#InventoryRecordPerPageSize").change(function () {
+            $("#InventoryRecordPageSize").val($(this).val());
+            queryInventoryRecordData(1);
+        });
+
+        queryInventoryRecordData(1);
+    });
+</script>

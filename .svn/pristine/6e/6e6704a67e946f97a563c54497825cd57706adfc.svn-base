@@ -1,0 +1,1006 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using EAM.Data.Comm;
+using EAM.Data.Domain;
+using EAM.Data.Repositories;
+using EAM.Data.Services.Dto;
+using EAM.Data.Services.Query;
+using NPoco;
+using NPoco.Expressions;
+using System.Linq.Expressions;
+
+namespace EAM.Data.Services.Impl
+{
+    public class AssetsService : IAssetsService
+    {
+        #region 私有字段
+        private readonly IAssetsMainRepository _assetsMainRep;
+        private readonly IAnimalRepository _animalRep;
+        private readonly IBooksRepository _bookRep;
+        private readonly ICarRepository _carRep;
+        private readonly IHouseRepository _houseRep;
+        private readonly ILandRepository _landRep;
+        private readonly ICulturalrelicRepository _culturalrelicRep;
+        private readonly IBuildingRepository _buildingRep;
+        private readonly ISpecialRepository _specialRep;
+        private readonly IGeneralRepository _generalRep;
+        private readonly IAquairRepository _aquairRep;
+        private readonly IClassCodeRepository _classCodeRep;
+        private readonly IDiffResultRepository _diffResultRep;
+        private readonly IDepartmentRepository _deptRep;
+        private readonly IPlaceRepository _placeRep;
+        private readonly ILedGerCachRepository _ledGerCachRep;
+        private readonly IBorrowRepository _borrowRep;
+        private readonly IBorrowDetailRepository _borrowDetailRep;
+        private readonly IAquairDetailRepository _aquairDetailRep;
+        private readonly IReturnRepository _returnRep;
+        private readonly IReturnDetailRepository _returnDetailRep;
+        private readonly IRepairRepository _repairRep;
+        private readonly IRepairDetailRepository _repairDetailRep;
+        private readonly IScrapApllyRepository _scrapApllyRep;
+        private readonly IScrapApplyDetailRepository _srScrapApplyDetailRep;
+        private readonly IOrderListRepository _orderListRep;
+        private readonly IInventoryRepository _inventoryRep;
+        private readonly IInventoryDetailRepository _inventoryDetailRep;
+
+        #endregion
+
+        #region 构造
+        public AssetsService(IAssetsMainRepository assetsMainRep,
+            IAnimalRepository animalRep,
+            IBooksRepository bookRep,
+            ICarRepository carRep,
+            ILandRepository landRep,
+            IHouseRepository houseRep,
+            ICulturalrelicRepository culturalrelicRep,
+            IBuildingRepository buildingRep,
+            ISpecialRepository specialRep,
+            IGeneralRepository generalRep,
+            IAquairRepository aquairRep,
+            IClassCodeRepository classCodeRep,
+            IDiffResultRepository diffResultRep,
+            IDepartmentRepository deptRep,
+            IPlaceRepository placeRep,
+            ILedGerCachRepository ledGerCachRep,
+            IBorrowRepository borrowRep,
+            IBorrowDetailRepository borrowDetailRep,
+            IAquairDetailRepository aquairDetailRep,
+            IReturnDetailRepository returnDetailRep,
+            IRepairRepository repairRep,
+            IRepairDetailRepository repairDetailRep,
+            IScrapApllyRepository scrapApllyRep,
+            IScrapApplyDetailRepository srScrapApplyDetailRep,
+            IOrderListRepository orderListRep,
+            IInventoryRepository inventoryRep,
+            IInventoryDetailRepository inventoryDetailRep
+            )
+        {
+            _assetsMainRep = assetsMainRep;
+            _animalRep = animalRep;
+            _bookRep = bookRep;
+            _carRep = carRep;
+            _houseRep = houseRep;
+            _landRep = landRep;
+            _culturalrelicRep = culturalrelicRep;
+            _buildingRep = buildingRep;
+            _specialRep = specialRep;
+            _generalRep = generalRep;
+            _aquairRep = aquairRep;
+            _classCodeRep = classCodeRep;
+            _diffResultRep = diffResultRep;
+            _deptRep = deptRep;
+            _placeRep = placeRep;
+            _ledGerCachRep = ledGerCachRep;
+            _borrowRep = borrowRep;
+            _borrowDetailRep = borrowDetailRep;
+            _aquairDetailRep = aquairDetailRep;
+            _returnDetailRep = returnDetailRep;
+            _repairRep = repairRep;
+            _repairDetailRep = repairDetailRep;
+            _scrapApllyRep = scrapApllyRep;
+            _srScrapApplyDetailRep = srScrapApplyDetailRep;
+            _orderListRep = orderListRep;
+            _inventoryRep = inventoryRep;
+            _inventoryDetailRep = inventoryDetailRep;
+        }
+        #endregion
+
+        #region 新增
+
+        public void SaveAssets(AssetsMain main, AnimalandplantAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_ANIMAL";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _animalRep.Save(attr);
+        }
+
+        public int SaveAssetsEx(AssetsMain main, AnimalandplantAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_ANIMAL";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _animalRep.Save(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public int UpdateAssetsEx(AssetsMain main, AnimalandplantAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_ANIMAL";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _animalRep.Update(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public void SaveAssets(AssetsMain main, BooksAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_BOOK";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _bookRep.Save(attr);
+        }
+
+        public int UpdateAssetsEx(AssetsMain main, BooksAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_BOOK";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _bookRep.Update(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+        public int SaveAssetsEx(AssetsMain main, BooksAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_BOOK";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _bookRep.Save(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public void SaveAssets(AssetsMain main, CulturalrelicAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_CULTURALRELIC";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _culturalrelicRep.Save(attr);
+        }
+
+        public int SaveAssetsEx(AssetsMain main, CulturalrelicAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_CULTURALRELIC";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _culturalrelicRep.Save(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public int UpdateAssetsEx(AssetsMain main, CulturalrelicAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_CULTURALRELIC";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _culturalrelicRep.Update(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public void SaveAssets(AssetsMain main, BuildingAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_BUILDING";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _buildingRep.Save(attr);
+        }
+
+        public int SaveAssetsEx(AssetsMain main, BuildingAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_BUILDING";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _buildingRep.Save(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public int UpdateAssetsEx(AssetsMain main, BuildingAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_BUILDING";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _buildingRep.Update(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public void SaveAssets(AssetsMain main, CarAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_CAR";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _carRep.Save(attr);
+        }
+
+        public int SaveAssetsEx(AssetsMain main, CarAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_CAR";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _carRep.Save(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public int UpdateAssetsEx(AssetsMain main, CarAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_CAR";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _carRep.Update(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public void SaveAssets(AssetsMain main, HouseAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_HOUSE";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _houseRep.Save(attr);
+        }
+
+        public int SaveAssetsEx(AssetsMain main, HouseAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_HOUSE";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _houseRep.Save(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public int UpdateAssetsEx(AssetsMain main, HouseAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_HOUSE";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _houseRep.Update(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public void SaveAssets(AssetsMain main, LandAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_LAND";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _landRep.Save(attr);
+        }
+
+        public int SaveAssetsEx(AssetsMain main, LandAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_LAND";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _landRep.Save(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public int UpdateAssetsEx(AssetsMain main, LandAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_LAND";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _landRep.Update(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public void SaveAssets(AssetsMain main, SpecialAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_SPECIAL";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _specialRep.Save(attr);
+        }
+
+        public int SaveAssetsEx(AssetsMain main, SpecialAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_SPECIAL";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _specialRep.Save(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public int UpdateAssetsEx(AssetsMain main, SpecialAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_SPECIAL";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _specialRep.Update(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public void SaveAssets(AssetsMain main, GeneralAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_GENERAL";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _generalRep.Save(attr);
+        }
+
+        public int SaveAssetsEx(AssetsMain main, GeneralAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_GENERAL";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _generalRep.Save(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public int UpdateAssetsEx(AssetsMain main, GeneralAttribute attr)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_GENERAL";
+            _assetsMainRep.Save(main);
+            attr.AssetsNum = main.AssetsNum;
+            _generalRep.Update(attr);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public void SaveAssets(AssetsMain main)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_MAIN";
+            _assetsMainRep.Save(main);
+        }
+
+        public void UpdateAssets(AssetsMain main)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_MAIN";
+            _assetsMainRep.Update(main);
+        }
+
+        public int SaveAssetsEx(AssetsMain main)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_MAIN";
+            _assetsMainRep.Save(main);
+
+            var result = _assetsMainRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+            return result.EntityId;
+        }
+
+        public int ChangeInfo(int entityId, string item, string content)
+        {
+            return _assetsMainRep.ChangeInfo(entityId, item, content);
+        }
+
+        public void InsertAssets(AssetsMain main)
+        {
+            main.InputTime = DateTime.Now;
+            main.ExtDataTable = "ASSETS_MAIN";
+            _assetsMainRep.Add(main);
+        }
+
+        public void InsertAssetsEx(List<AssetsMain> main)
+        {
+            _assetsMainRep.Add(main);
+        }
+
+        public string GetNextAssetsNum(string catCode)
+        {
+            try { return _classCodeRep.GetClassCode(catCode).NextNum.ToString(); }
+            catch (Exception ex)
+            {
+                return catCode;
+            }
+
+        }
+
+        public int UpdateNextAssetsNum(string catCode)
+        {
+            return _classCodeRep.UpdateNextNum(catCode);
+        }
+
+        #endregion
+
+        #region 删除
+        public int LogicDelete(int entityId)
+        {
+            return _assetsMainRep.LogicDelete(entityId);
+        }
+
+        public int Delete(int entityId)
+        {
+            return _assetsMainRep.Remove(entityId);
+        }
+
+        public List<AssetsMain> Get(List<string> assetsNums)
+        {
+            return _assetsMainRep.Query(x => assetsNums.Contains(x.AssetsNum)).ToList();
+        }
+        #endregion
+
+        #region 查询
+
+        public AssetsMain Get(int entityId)
+        {
+            var result = _assetsMainRep.FirstOrDefault(x => x.EntityId == entityId);
+            return result;
+        }
+
+        public AssetsMain Get(string assetsNum)
+        {
+            //var result = _assetsMainRep.FirstOrDefault(x => x.EntityId == entityId);
+            //return result;
+            try
+            { return _assetsMainRep.FirstOrDefault(x => x.UsedNum2 == assetsNum); }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public AssetsMain Get2(string assetsNum)
+        {
+            //var result = _assetsMainRep.FirstOrDefault(x => x.EntityId == entityId);
+            //return result;
+            try
+            { return _assetsMainRep.FirstOrDefault(x => x.AssetsNum == assetsNum); }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public AssetsMain GetByMemo(string memo)
+        {
+            //var result = _assetsMainRep.FirstOrDefault(x => x.EntityId == entityId);
+            //return result;
+            try
+            { return _assetsMainRep.FirstOrDefault(x => x.Memo == memo); }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public AssetsMain GetByDynamicNum(string usedNum1)
+        {
+            //var result = _assetsMainRep.FirstOrDefault(x => x.EntityId == entityId);
+            //return result;
+            try
+            { return _assetsMainRep.FirstOrDefault(x => x.UsedNum1 == usedNum1); }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public List<AssetsMain> Find(Expression<Func<AssetsMain, bool>> laumdawhere)
+        {
+            return _assetsMainRep.Query(laumdawhere);
+        }
+
+        /// <summary>
+        /// 动态导入时通过导入文件备注来查询数据
+        /// 其中文件备注中存储的是系统编号
+        /// </summary>
+        /// <param name="usedNum1"></param>
+        /// <returns></returns>
+        public AssetsMain GetBySysNum(string memo)
+        {
+            //var result = _assetsMainRep.FirstOrDefault(x => x.EntityId == entityId);
+            //return result;
+            try
+            { return _assetsMainRep.FirstOrDefault(x => x.AssetsNum == memo); }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public List<AssetsMain> Get(List<int> entityIds)
+        {
+            var result = _assetsMainRep.Find(entityIds);
+            return result;
+        }
+
+        public AssetsResultDto GetResultDto(int entityId)
+        {
+            var main = Get(entityId);
+            if (null == main)
+                return null;
+
+            var result = new AssetsResultDto
+            {
+                AssetsMain = main,
+                AssetsType = main.CatCode.GetAssetsTypeByCatCode(),
+                AssetsTypeName = main.CatCode.GetAssetsTypeNameByCatCode()
+            };
+            switch (result.AssetsType)
+            {
+                case AssetsTypes.Land:
+                    result.Land = _landRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+                    break;
+                case AssetsTypes.House:
+                    result.House = _houseRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+                    break;
+                case AssetsTypes.Building:
+                    result.Building = _buildingRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+                    break;
+                case AssetsTypes.Car:
+                    result.Car = _carRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+                    break;
+                case AssetsTypes.GeneralEquipment:
+                    result.General = _generalRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+                    break;
+                case AssetsTypes.SpecialEquipment:
+                    result.Special = _specialRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+                    break;
+                case AssetsTypes.Culturalrelic:
+                    result.Culturalrelic = _culturalrelicRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+                    break;
+                case AssetsTypes.Book:
+                    result.Book = _bookRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+                    break;
+                case AssetsTypes.Animalandplant:
+                    result.Animalandplant = _animalRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+                    break;
+                /*case AssetsTypes.Furniture:
+                  result.f = _landRep.FirstOrDefault(x => x.AssetsNum == main.AssetsNum);
+                  break;*/
+                default:
+                    break;
+            }
+
+            return result;
+        }
+
+        public PagedList<AssetsMain> QueryPage(AssetsQuery query)
+        {
+            return _assetsMainRep.PagedList(query.PageIndex, query.PageSize, query.QuerySql);
+        }public PagedList<AssetsMain> QueryPage1(AssetsQuery query)
+        {
+            return _assetsMainRep.PagedList1(query.PageIndex, query.PageSize, query.QuerySql);
+        }
+        public PagedList<AssetsMain> QueryPage(AssetsScrapQuery query)
+        {
+            return _assetsMainRep.PagedList(query.PageIndex, query.PageSize, query.QuerySql);
+        }
+
+        public List<AssetsMain> QueryAsstesList(AssetsQuery query)
+        {
+            return _assetsMainRep.Query(query.QuerySql);
+        }
+
+        /// <summary>
+        /// 将资产查询结果存放到缓存表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public int QueryAsstesToCach(LedGerCachQuery query)
+        {
+            return _assetsMainRep.Execute(query.QuerySql);
+        }
+
+        /// <summary>
+        /// 资产清空
+        /// </summary>
+        public void ClearAllData()
+        {
+            //
+            // 清空资产主表
+            // 物理删除
+            //
+            _assetsMainRep.RemoveAll();
+
+            //
+            // 清空资产附表
+            //
+            _animalRep.RemoveAll();
+            _bookRep.RemoveAll();
+            _buildingRep.RemoveAll();
+            _carRep.RemoveAll();
+            _culturalrelicRep.RemoveAll();
+            _houseRep.RemoveAll();
+            _specialRep.RemoveAll();
+            _generalRep.RemoveAll();
+            _landRep.RemoveAll();
+
+            //
+            // 清空操作表
+            //
+            _aquairRep.RemoveAll();
+            _borrowRep.RemoveAll();
+            _ledGerCachRep.RemoveAll();
+            _borrowRep.RemoveAll();
+            _borrowDetailRep.RemoveAll();
+            _aquairDetailRep.RemoveAll();
+            _returnDetailRep.RemoveAll();
+            _repairRep.RemoveAll();
+            _repairDetailRep.RemoveAll();
+            _scrapApllyRep.RemoveAll();
+            _srScrapApplyDetailRep.RemoveAll();
+            _orderListRep.RemoveAll();
+            _inventoryRep.RemoveAll();
+            _inventoryDetailRep.RemoveAll();
+        }
+
+        /// <summary>
+        /// 数据比对结果表查询
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public PagedList<DiffResult> QueryPage(AllRecordQuery query)
+        {
+            return _diffResultRep.PagedList(query.PageIndex, query.PageSize, query.QuerySql);
+        }
+
+
+        /// <summary>
+        /// 获得所有比对结果
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public List<DiffResult> QueryAllDiffResult()
+        {
+            return _diffResultRep.Query(Sql.Builder.Where("1=1"));
+        }
+
+        public List<AssetsMain> QueryAssets(List<string> catCodePrixs)
+        {
+            return _assetsMainRep.QueryAssets(catCodePrixs);
+        }
+
+        #region 附加属性获取
+        public LandAttribute GetLand(string assetsNum)
+        {
+            try { return _landRep.FirstOrDefault(Sql.Builder.Where("ASSETSNUM=@0", assetsNum)); }
+            catch (Exception ex)
+            {
+                List<LandAttribute> _tempList = new List<LandAttribute>();
+                _tempList = _landRep.Query(Sql.Builder.Where("ASSETSNUM=@0", assetsNum));
+                return _tempList[0];
+            }
+        }
+        public HouseAttribute GetHouse(string assetsNum)
+        {
+            try { return _houseRep.FirstOrDefault(Sql.Builder.Where("ASSETSNUM=@0", assetsNum)); }
+            catch (Exception ex)
+            {
+                List<HouseAttribute> _tempList = new List<HouseAttribute>();
+                _tempList = _houseRep.Query(Sql.Builder.Where("ASSETSNUM=@0", assetsNum));
+                return _tempList[0];
+            }
+        }
+        public BuildingAttribute GetBuilding(string assetsNum)
+        {
+            try { return _buildingRep.FirstOrDefault(Sql.Builder.Where("ASSETSNUM=@0", assetsNum)); }
+            catch (Exception ex)
+            {
+                List<BuildingAttribute> _tempList = new List<BuildingAttribute>();
+                _tempList = _buildingRep.Query(Sql.Builder.Where("ASSETSNUM=@0", assetsNum));
+                return _tempList[0];
+            }
+        }
+        public CarAttribute GetCar(string assetsNum)
+        {
+            try { return _carRep.FirstOrDefault(Sql.Builder.Where("ASSETSNUM=@0", assetsNum)); }
+            catch (Exception ex)
+            {
+                List<CarAttribute> _tempList = new List<CarAttribute>();
+                _tempList = _carRep.Query(Sql.Builder.Where("ASSETSNUM=@0", assetsNum));
+                return _tempList[0];
+            }
+        }
+        public GeneralAttribute GetGeneral(string assetsNum)
+        {
+            try { return _generalRep.FirstOrDefault(Sql.Builder.Where("ASSETSNUM=@0", assetsNum)); }
+            catch (Exception ex)
+            {
+                List<GeneralAttribute> _tempList = new List<GeneralAttribute>();
+                _tempList = _generalRep.Query(Sql.Builder.Where("ASSETSNUM=@0", assetsNum));
+                return _tempList[0];
+            }
+        }
+        public SpecialAttribute GetSpecial(string assetsNum)
+        {
+            try { return _specialRep.FirstOrDefault(Sql.Builder.Where("ASSETSNUM=@0", assetsNum)); }
+            catch (Exception ex)
+            {
+                List<SpecialAttribute> _tempList = new List<SpecialAttribute>();
+                _tempList = _specialRep.Query(Sql.Builder.Where("ASSETSNUM=@0", assetsNum));
+                return _tempList[0];
+            }
+
+        }
+        public CulturalrelicAttribute GetCulturalrelic(string assetsNum)
+        {
+            try { return _culturalrelicRep.FirstOrDefault(Sql.Builder.Where("ASSETSNUM=@0", assetsNum)); }
+            catch (Exception ex)
+            {
+                List<CulturalrelicAttribute> _tempList = new List<CulturalrelicAttribute>();
+                _tempList = _culturalrelicRep.Query(Sql.Builder.Where("ASSETSNUM=@0", assetsNum));
+                return _tempList[0];
+            }
+        }
+        public BooksAttribute GetBook(string assetsNum)
+        {
+            try { return _bookRep.FirstOrDefault(Sql.Builder.Where("ASSETSNUM=@0", assetsNum)); }
+            catch (Exception ex)
+            {
+                List<BooksAttribute> _tempList = new List<BooksAttribute>();
+                _tempList = _bookRep.Query(Sql.Builder.Where("ASSETSNUM=@0", assetsNum));
+                return _tempList[0];
+            }
+        }
+        public AnimalandplantAttribute GetAnimalandplant(string assetsNum)
+        {
+            try { return _animalRep.FirstOrDefault(Sql.Builder.Where("ASSETSNUM=@0", assetsNum)); }
+            catch (Exception ex)
+            {
+                List<AnimalandplantAttribute> _tempList = new List<AnimalandplantAttribute>();
+                _tempList = _animalRep.Query(Sql.Builder.Where("ASSETSNUM=@0", assetsNum));
+                return _tempList[0];
+            }
+        }
+        #endregion
+
+        #endregion
+
+        #region 导入
+
+        public bool IsExistByStockNumber(string stockNumber)
+        {
+            var result = _assetsMainRep.Count(x => x.UsedNum2 == stockNumber);
+            return result > 0;
+        }
+
+        public bool IsExistByMemo(string memo)
+        {
+            var result = _assetsMainRep.Count(x => x.Memo == memo);
+            return result > 0;
+        }
+
+        public bool IsExistByDynamicMemo(string memo)
+        {
+            var result = _assetsMainRep.Count(x => x.AssetsNum == memo);
+            return result > 0;
+        }
+
+        public void AddAssets(AssetsMain main)
+        {
+            _assetsMainRep.Add(main);
+        }
+
+        public bool IsExistByAssetsNum(string assetsNum)
+        {
+            var result = _assetsMainRep.Count(x => x.UsedNum1 == assetsNum);
+            return result > 0;
+        }
+
+        public int UpdatePicPath(string assetsNum, string assetsPicPath)
+        {
+            return _assetsMainRep.UpdatePicPath(assetsNum, assetsPicPath);
+        }
+
+        public int UpdateIsBorrow(int isBorrow, IEnumerable<string> assetsNums)
+        {
+            return _assetsMainRep.UpdateIsBorrow(isBorrow, assetsNums);
+        }
+
+        public int UpdateIsUse(int isUse, IEnumerable<string> assetsNums)
+        {
+            return _assetsMainRep.UpdateIsUse(isUse, assetsNums);
+        }
+
+        #endregion
+
+        #region 比对结果写入
+        public void SaveDiffResult(DiffResult result)
+        {
+            _diffResultRep.Save(result);
+        }
+
+        public void ClearDiffResult()
+        {
+            _diffResultRep.RemoveAll();
+        }
+        #endregion
+
+        #region 查询资产概况
+        public AseetsGeneral GetAssetsGeneral()
+        {
+            //
+            // 将所有数据取回来
+            //
+            List<AssetsMain> allAssets = new List<AssetsMain>();
+            var sql = Sql.Builder.Where("1=1");
+            //
+            // 已删除资产不能被查出
+            //
+            sql.Where("IS_DELETE = @0", 0);
+
+            //
+            // 执行查询
+            //
+            allAssets = _assetsMainRep.Query(sql);
+
+            //
+            // 计算本库资产总额
+            //
+            decimal allMoney = allAssets.Sum(main => main.Money);
+
+            decimal bxMoney = allAssets.Where(x => x.ImportType == 1).Sum(x => x.Money);
+
+            decimal dtMoney = allAssets.Where(x => x.ImportType == 2).Sum(x => x.Money);
+
+            int bxCount = allAssets.Count(x => x.ImportType == 1);
+
+            int dtCount = allAssets.Count(x => x.ImportType == 2);
+
+
+            var general = new AseetsGeneral { LocalAllMoney = allMoney, LocalAllCounts = allAssets.Count, BxAllMoney = bxMoney, BxAllCounts = bxCount, DtAllMoney = dtMoney, DtAllCounts = dtCount };
+
+            return general;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 标记已经打印
+        /// </summary>
+        /// <param name="assetsNum"></param>
+        public int Printed(string assetsNum)
+        {
+            //_assetsMainRep.UpdateIsPrinted(1, assetsNum);
+            return _assetsMainRep.UpdateIsPrinted(1, assetsNum);
+        }
+
+        /// <summary>
+        /// 获取目标类别和其子类别
+        /// </summary>
+        /// <param name="entityIds"></param>
+        /// <returns></returns>
+        public List<ClassCode> GetClassCodeByParentCode(string parentClassCode)
+        {
+            //List<ClassCode> result = new List<ClassCode>();
+            //
+            // 根据父级ID查询出所有ClassCode
+            //
+            //result =_classCodeRep.Query("SELECT * FROM assets_class_code WHERE PARENT_ID = @0", parentClassCode);
+            //result.Add(_classCodeRep.FirstOrDefault("SELECT * FROM assets_class_code WHERE ID = @0", parentClassCode));
+
+            var sql = Sql.Builder.Append("SELECT DISTINCT e.ID,e.PARENT_ID,e.CLASS_NAME,e.UNIT,e.MEMO,e.NEXTNUM FROM assets_class_code AS a INNER JOIN assets_class_code AS b ON a.ID = b.PARENT_ID OR a.ID = b.ID INNER JOIN assets_class_code AS c ON b.ID = c.PARENT_ID OR b.ID = c.ID INNER JOIN assets_class_code AS d ON c.ID = d.PARENT_ID OR c.ID = d.ID INNER JOIN assets_class_code AS e ON d.ID = e.PARENT_ID OR d.ID = e.ID where a.ID=@0", parentClassCode);
+            return _classCodeRep.Query(sql);
+        }
+        /// <summary>
+        /// 获取柱状图需要的数据
+        /// </summary>
+        /// <param name="entityIds"></param>
+        /// <returns></returns>
+        public List<AssetsMain> GetEchars()
+        {
+            var sql = "SELECT POSTING_DATE AS 'POSTING_DATE', SUM(COUNTS) AS 'COUNTS' FROM ( SELECT POSTING_DATE AS 'POSTING_DATE', COUNTS AS 'COUNTS' FROM  assets_main ORDER BY POSTING_DATE DESC) AS t GROUP BY POSTING_DATE ORDER BY POSTING_DATE DESC LIMIT 0, 1000";
+            return _assetsMainRep.Query(sql);
+        }
+        /// <summary>
+        /// 获取目标部门和其子部门
+        /// </summary>
+        /// <param name="deptName"></param>
+        /// <returns></returns>
+        public List<Department> GetDepartment(string deptName)
+        {
+            if (deptName == null) return null;
+            //
+            // 根据部门名称获取部门ID
+            //
+            Department dept = _deptRep.FirstOrDefault("SELECT * FROM department WHERE DEPT_NAME=@0", deptName);
+
+            if (dept != null)
+            {
+                //
+                // 根据父级ID查询出所有ClassCode
+                //
+                //return _deptRep.Query("SELECT * FROM department WHERE PARENT_ID = @0", dept.EntityId);
+
+                var sql = Sql.Builder.Append("SELECT DISTINCT e.ID,e.PARENT_ID,e.DEPT_NAME FROM department AS a INNER JOIN department AS b ON a.ID = b.PARENT_ID OR a.ID = b.ID INNER JOIN department AS c ON b.ID = c.PARENT_ID OR b.ID = c.ID INNER JOIN department AS d ON c.ID = d.PARENT_ID OR c.ID = d.ID INNER JOIN department AS e ON d.ID = e.PARENT_ID OR d.ID = e.ID where a.ID=@0", dept.EntityId);
+                return _deptRep.Query(sql);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 获取目标存放地点和其子地点
+        /// </summary>
+        /// <param name="placeName"></param>
+        /// <returns></returns>
+        public List<Place> GetPlace(string placeName)
+        {
+            if (placeName == null) return null;
+            //
+            // 根据部门名称获取部门ID
+            //
+            Place place = _placeRep.FirstOrDefault("SELECT * FROM place WHERE PLACE_NAME=@0", placeName);
+
+            if (place != null)
+            {
+                //
+                // 根据父级ID查询出所有ClassCode
+                //
+                //return _placeRep.Query("SELECT * FROM place WHERE PARENT_ID = @0", place.EntityId);
+
+                var sql = Sql.Builder.Append("SELECT DISTINCT e.ID,e.PARENT_ID,e.PLACE_NAME FROM place AS a INNER JOIN place AS b ON a.ID = b.PARENT_ID OR a.ID = b.ID INNER JOIN place AS c ON b.ID = c.PARENT_ID OR b.ID = c.ID INNER JOIN place AS d ON c.ID = d.PARENT_ID OR c.ID = d.ID INNER JOIN place AS e ON d.ID = e.PARENT_ID OR d.ID = e.ID where a.ID=@0", place.EntityId);
+                return _placeRep.Query(sql);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 从资产库中查询资产并存储到缓存库中
+        /// </summary>
+        /// <param name="assetsList"></param>
+        public void WriteToCach(List<LedGerCach> assetsList)
+        {
+            _ledGerCachRep.RemoveAll();
+            _ledGerCachRep.Add(assetsList);
+        }
+    }
+}

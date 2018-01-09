@@ -1,0 +1,211 @@
+﻿@{
+    ViewBag.Title = "ScrapSet";
+    Layout = "~/Views/Shared/_AreasLayout.cshtml";
+}
+<style type="text/css">
+    .content {
+        min-height: 0px;
+    }
+</style>
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.core.js"></script>
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.exedit.js"></script>
+<script src="~/Assets/SelectTree.js"></script>
+<section>
+    <div class="row col-lg-12">
+        <div class="col-lg-6" id="TreeIndexPanel" style="display:none">
+            <div class="nav-tabs-custom">
+                <div class="tab-content">
+                    <!-- 资产类别树/.tab-pane -->
+                    <div class="tab-pane active" id="activity">
+                        <div class="box box-danger">
+                            <div class="box-body no-padding">
+                                <section class="sidebar">
+                                    <!-- 资产类别树 -->
+                                    <ul id="_classTree" class="ztree"></ul>
+                                </section>
+                                <script type="text/javascript">
+                                    var CatSetting = { callback: { onDblClick: onCatNodeDblClick,onClick:onNodeClick } };
+
+                                //
+                                // 资产类树点击回调函数
+                                //
+                                function onCatNodeDblClick(event, treeId, treeNode) {
+                                    
+                                    $("#ClassName").val(treeNode.name);
+                                    var serverUrl = '@Url.Action("GetAssetsScarp", "DoAssets", new { area = "AssetsFind" })';
+                                    $.ajax({
+                                        url:serverUrl,
+                                        dataType:"json",
+                                        type:"GET",
+                                        data:{catId:treeNode.id},
+                                        success:function(data){
+                                      
+                                         
+                                   
+                                                $("#ScrapYear").val(data.SCRAPYEAR);
+                                           
+                                   
+                                          
+                                        }
+                                    });
+                                }
+                                    function onNodeClick(event, treeId, treeNode)
+                                    {
+                                        selectPlaceNode=treeNode;
+                                    }
+                                    
+
+                                //
+                                // ajax呈现资产树
+                                //
+                                $(document).ready(function () {
+                                
+                                    //
+                                    // 从数据库取资产类别树
+                                    //
+                                    $.post("/Account/DeskTop/GetClassCodeTree?t=" + new Date(),
+                                        function (result) {
+                                         
+                                            //
+                                            // 根据取回来的数据创建资产树
+                                            //
+                                            $.fn.zTree.init($("#_classTree"), CatSetting, result);
+                                        }, "json");
+                                });
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6" id="ExpandPannel">
+            <!-- 条件检索面板 -->
+            <section class="content" id="IndexPanel" style="display:none">
+                <div class="row">
+                    <!-- 条件检索面板 -->
+                    <div class="col-lg-12">
+                        <!-- 条件检索面板 -->
+                        <div class="box box-danger">
+                            <!-- 表头 -->
+                            <div class="box-header new-box-header">
+                                <h3 class="box-title title-a">检索条件</h3>
+
+                                <div class="box-tools pull-right">
+                                    <button class="btn btn-box-tool" data-widget="collapse">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div><!-- /.box-header -->
+                            <!-- body -->
+                            <div class="box-body content" style="display: block;">
+                                <form>
+                                    <div class="row">
+                                        <!---->
+                                        <div class="col-lg-12">
+                                            <div class="col-lg-6" style="margin-left:25%;">
+                                                <br>
+                                                <label>资产类别：</label>
+                                                <input class="form-control" maxlength="20" name="ClassName" id="ClassName" placeholder="名称" type="text">
+                                                <br>
+                                                <label>报废年限：</label>
+                                                <input class="form-control" maxlength="20" name="ScrapYear" id="ScrapYear" placeholder="年限" type="number">
+                                            </div>
+                                        </div>
+                                      
+                                    </div>
+                                    <div class="row">
+                                        <br>
+                                        <div class="col-lg-5"></div><div class="col-lg-1">
+                                                                        <button type="button" id="saveScrapSet" class="btn btn-default btn-all">保存</button>
+                                        </div>
+                                        <div class="col-lg-5"></div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!--/.box -->
+                    </div>
+
+                </div>
+            </section>
+
+            <!--???-->
+            <div class="row" style="display:">
+                <div class="modal fade" id="ajax" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                            </div>
+                            <div class="modal-body">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+   
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+    var selectPlaceNode = null;
+    $(document).ready(function () {
+
+        document.getElementById("IndexPanel").style.display = ""; //显示
+        document.getElementById("TreeIndexPanel").style.display = ""; //显示
+
+        //
+        // 为筛选资产按钮添加函数
+        //
+
+
+ 
+
+    });
+    $("#saveScrapSet").click(function () {
+        var serverUrl = '@Url.Action("UpdateAssetsScarp", "DoAssets", new { area = "AssetsFind" })';
+        var scrapyear=$("#ScrapYear").val();
+        $.ajax({
+            url: serverUrl,
+        
+            type: "POST",
+            data: { catId: selectPlaceNode.id,scrapYear:scrapyear},
+            success: function (data) {
+
+                if (data=="ok") {
+                    alert("保存成功!");
+                }
+
+
+            }
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

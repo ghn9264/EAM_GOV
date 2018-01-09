@@ -1,0 +1,105 @@
+﻿<section class="content" style="background:red">
+    <div class="row">
+        <div class="box">
+            <!-- 表头 -->
+            <div class="box-header with-border">
+                <h3 class="box-title">资产领用单3232</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                </div>
+            </div><!-- /.box-header -->
+            <!-- box content -->
+            <div class="box-body content">
+                <form method="get">
+                    <!-- 检索条件输入区域 -->
+                    <div class="row">
+                        <!-- 第一列检索条件 -->
+                        <div class="col-lg-4">
+                            <div class="col-lg-12">
+                                <br />
+                                <label>资产名称：</label>
+                                <input class="form-control" type="text" placeholder="资产名称" maxlength="20" name="GoodsName" id="GoodsName"/>
+                                <br />
+                                <label>资产编号：</label>
+                                <input class="form-control" type="text" placeholder="资产编号" maxlength="20" name="AssetsNum" id="AssetsNum"/>
+                                <br />
+                                <label>取得方式：</label>
+                                <select class="form-control select2 select2-hidden-accessible" style="width: 100%;"
+                                        tabindex="-1" aria-hidden="true" name="GetWay" id="GetWay">
+                                    <option selected="selected">购置</option>
+                                    <option>调拨</option>
+                                    <option>自建</option>
+                                    <option>捐赠</option>
+                                    <option>划拨</option>
+                                    <option>置换</option>
+                                    <option>自行研制</option>
+                                    <option>其他</option>
+                                    <option>有偿取得</option>
+                                    <option>租凭</option>
+                                </select>
+                                <br />
+                                <label>经办人：</label>
+                                <input class="form-control" type="text" placeholder="经办人" maxlength="5" name="Agent" id="Agent"/>
+                            </div>
+                        </div>
+
+                        <!-- 第二列检索条件 -->
+                        <div class="col-lg-4">
+                            <div class="col-lg-12">
+                                <br />
+                                <label>使用状况：</label>
+                                <select class="form-control select2 select2-hidden-accessible" style="width: 100%;"
+                                        tabindex="-1" aria-hidden="true" name="UsingState" id="UsingState">
+                                    <option selected="selected">在用</option>
+                                    <option>闲置</option>
+                                    <option>摧毁待报废</option>
+                                    <option>其他</option>
+                                </select>
+                                <br />
+                                <label>存放地点：</label>
+                                <input class="form-control" type="text" placeholder="存放地点" maxlength="10" name="StorePlace" id="StorePlace" />
+                                <br />
+                                <label>会计凭证号：</label>
+                                <input class="form-control" type="text" placeholder="会计凭证号" maxlength="20" name="AcountDocNum" id="AcountDocNum" />
+                                <br />
+                                <label>入账日期：</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-clock-o"></i>
+                                    </div>
+                                    <input type="text" class="form-control pull-right" placeholder="入账日期" name="PostingDate" id="PostingDate" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 第三列检索条件 -->
+                        <div class="col-lg-4">
+                            <div class="col-lg-12">
+                                <br />
+                                <label>取得日期：</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-clock-o"></i>
+                                    </div>
+                                    <input type="text" class="form-control pull-right" id="reservationtime" />
+                                </div>
+                                <br />
+                                <label>价值范围：</label><input class="form-control" type="text" placeholder="价值范围" />
+                                <br />
+                                <label>使用人：</label><input class="form-control" type="text" placeholder="使用人" />
+                                <br />
+                                <label>使用属性：</label><input class="form-control" type="text" placeholder="使用属性" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <br />
+                        <button type="submit" class="btn btn-primary col-lg-offset-4">筛选资产</button>
+                        <button type="reset" class="btn btn-primary col-lg-offset-2">清除条件</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
