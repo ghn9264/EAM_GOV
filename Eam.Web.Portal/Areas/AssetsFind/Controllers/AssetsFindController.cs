@@ -267,9 +267,14 @@ namespace Eam.Web.Portal.Areas.AssetsFind.Controllers
                 //    }
                 //}
             }
-
-            var result = _assetsService.QueryPage1(model);
-            return Json(result);
+            PagedList<AssetsMain> resultmain = _assetsService.QueryPage(model);
+            decimal DeptPrice = _assetsService.QueryDeptPrice(model);
+            Dictionary<string, object> dict = new Dictionary<string, object>()
+                {
+                    {"Items",resultmain},
+                    {"DeptPrice",DeptPrice}
+                };
+            return Json(dict);
         }
 
         //逻辑删除资产

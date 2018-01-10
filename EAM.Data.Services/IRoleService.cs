@@ -23,7 +23,8 @@ namespace EAM.Data.Services
         void AddRole(Role item);
         void UpdateRole(Role item);
         void DeleteRole(int id);
+        decimal GetIDByRole(string roles);
 
-
+        int ifexitRole(int id);
     }
 }

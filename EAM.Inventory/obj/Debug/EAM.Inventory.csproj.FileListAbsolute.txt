@@ -42,6 +42,6 @@ G:\workspace\Dotnet-worksapce\EAM\EAM.Inventory\obj\Debug\EAM.Inventory.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Inventory\bin\Debug\EAM.Inventory.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Inventory\bin\Debug\EAM.Inventory.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Inventory\bin\Debug\System.Data.SQLite.dll
-G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Inventory\obj\Debug\EAM.Inventory.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Inventory\obj\Debug\EAM.Inventory.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Inventory\obj\Debug\EAM.Inventory.pdb
+G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Inventory\obj\Debug\EAM.Inventory.csprojResolveAssemblyReference.cache

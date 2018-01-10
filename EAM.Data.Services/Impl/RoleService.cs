@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Eam.Core.Utility;
 using EAM.Data.Comm;
 using EAM.Data.Domain;
@@ -68,7 +69,10 @@ namespace EAM.Data.Services.Impl
             userInfo.Permissions = item.Permissions;
             _userInfoRep.Update(userInfo);
         }
-
+        public decimal GetIDByRole(string roles)
+        {
+            return _roleRep.ExecuteScalar(new NPoco.Sql("SELECT ID FROM role WHERE role ='" + roles + "'"));
+        }
         /// <summary>
         /// 删除
         /// </summary>
@@ -78,5 +82,9 @@ namespace EAM.Data.Services.Impl
             _roleRep.Remove(id);
         }
 
+        public int ifexitRole(int id)
+        {
+            return _roleRep.Count("SELECT * FROM role WHERE ID ='" + id + "'");
+        }
     }
 }

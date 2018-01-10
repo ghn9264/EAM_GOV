@@ -125,6 +125,7 @@ namespace Eam.Web.Portal.Areas.Account.Controllers
             ViewBag.maxNum = maxNum;//柱状图y最大值
 
             ViewBag.interval = maxNum / 5;
+            ViewBag.role = Session["power"];
 
             return View(model);
         }

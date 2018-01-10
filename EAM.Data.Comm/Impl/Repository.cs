@@ -179,7 +179,10 @@ namespace EAM.Data.Comm
         {
             return Db.Execute(sql);
         }
-
+        public virtual decimal ExecuteScalar(Sql sql)
+        {
+            return Db.ExecuteScalar<decimal>(sql);
+        }
         /// <summary>
         /// Create By Liu 2017-1-16
         /// </summary>

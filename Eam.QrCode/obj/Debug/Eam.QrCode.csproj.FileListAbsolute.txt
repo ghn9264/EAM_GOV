@@ -42,6 +42,6 @@ G:\workspace\Dotnet-worksapce\EAM\Eam.QrCode\obj\Debug\Eam.QrCode.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.QrCode\bin\Debug\Eam.QrCode.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.QrCode\bin\Debug\Eam.QrCode.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.QrCode\bin\Debug\ThoughtWorks.QRCode.dll
-G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.QrCode\obj\Debug\Eam.QrCode.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.QrCode\obj\Debug\Eam.QrCode.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.QrCode\obj\Debug\Eam.QrCode.pdb
+G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.QrCode\obj\Debug\Eam.QrCode.csprojResolveAssemblyReference.cache

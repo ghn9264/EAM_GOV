@@ -368,7 +368,7 @@
                     <div class="modal-body">
                         <form id="roleForm" name="roleForm" method="post">
                             <div class="form-group">
-                                <label>部门名称</label>
+                                <label>角色名称</label>
                                 <input type="text" class="form-control" id="Roles" name="Roles" placeholder="角色名称" maxlength="20" />
                                 <input type="hidden" class="form-control" readonly="readonly" id="RoleId" name="RoleId" />
                                 <label>权限</label>
@@ -409,7 +409,7 @@
                 row.append('<td class="td-content">' + item.DepartMent + '</td>');
                 row.append('<td width="136px;">联系方式</td>');
                 row.append('<td class="td-content">' + item.Tel + '</td>');
-                row.append('<td width="214px;"><button type="button" class="btn btn-default btn-people-add" rel="' + item.EntityId + '">删除</button>' +
+                row.append('<td width="214px;"><button type="button" class="btn btn-default btn-people-add userdel" rel="' + item.EntityId + '">删除</button>' +
                     ' <a href="/SysManage/SysManage/EditUser?id=' + item.EntityId + '" class="btn btn-default btn-people-add">修改</a></td>');
                 $("#tableUser").append(row);
             });
@@ -488,7 +488,7 @@
             }
         };
         $.getJSON("/SysManage/SysManage/ListRole?t=" + new Date(), function (result) {
-            $.fn.zTree.init($("#roleTree"), setting, result);
+            $.fn.zTree.init($("#roleTree"), set, result);
         });
         ///////////////权限 end
     }

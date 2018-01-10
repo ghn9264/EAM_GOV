@@ -97,6 +97,7 @@ G:\workspace\Dotnet-worksapce\EAM\EAM.Data.Services\obj\Debug\EAM.Data.Services.
 G:\workspace\Dotnet-worksapce\EAM\EAM.Data.Services\obj\Debug\EAM.Data.Services.dll
 G:\workspace\Dotnet-worksapce\EAM\EAM.Data.Services\obj\Debug\EAM.Data.Services.pdb
 G:\workspace\Dotnet-worksapce\EAM\EAM.Data.Services\bin\Debug\System.Web.Mvc.dll
+G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Services\obj\Debug\EAM.Data.Services.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Services\bin\Debug\EAM.Data.Services.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Services\bin\Debug\EAM.Data.Services.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Services\bin\Debug\Eam.Core.Utility.dll
@@ -109,6 +110,5 @@ G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Services\
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Services\bin\Debug\EAM.Data.Comm.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Services\bin\Debug\EAM.Data.Domain.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Services\bin\Debug\EAM.Data.Repositories.pdb
-G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Services\obj\Debug\EAM.Data.Services.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Services\obj\Debug\EAM.Data.Services.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Services\obj\Debug\EAM.Data.Services.pdb

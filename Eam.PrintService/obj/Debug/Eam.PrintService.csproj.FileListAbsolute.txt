@@ -79,10 +79,10 @@ G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Publish\PrintServi
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Publish\PrintService\Eam.PrintService.application
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Publish\PrintService\Eam.PrintService.exe
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Publish\PrintService\Eam.PrintService.pdb
-G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.PrintService\obj\Debug\Eam.PrintService.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.PrintService\obj\Debug\Eam.PrintService.ProjectInstaller.resources
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.PrintService\obj\Debug\Eam.PrintService.csproj.GenerateResource.Cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.PrintService\obj\Debug\Eam.PrintService.exe.manifest
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.PrintService\obj\Debug\Eam.PrintService.application
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.PrintService\obj\Debug\Eam.PrintService.exe
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.PrintService\obj\Debug\Eam.PrintService.pdb
+G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.PrintService\obj\Debug\Eam.PrintService.csprojResolveAssemblyReference.cache

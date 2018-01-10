@@ -460,6 +460,7 @@ G:\workspace\Dotnet-worksapce\EAM\Eam.Web.Portal\bin\zh-Hans\System.Web.Http.Web
 G:\workspace\Dotnet-worksapce\EAM\Eam.Web.Portal\obj\Debug\Eam.Web.Portal.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\EAM\Eam.Web.Portal\obj\Debug\Eam.Web.Portal.dll
 G:\workspace\Dotnet-worksapce\EAM\Eam.Web.Portal\obj\Debug\Eam.Web.Portal.pdb
+G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Web.Portal\obj\Debug\Eam.Web.Portal.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Web.Portal\bin\Eam.Web.Portal.dll.config
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Web.Portal\bin\Eam.Web.Portal.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Web.Portal\bin\Eam.Web.Portal.pdb
@@ -523,6 +524,5 @@ G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Web.Portal\bin
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Web.Portal\bin\zh-Hans\System.Net.Http.Formatting.resources.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Web.Portal\bin\zh-Hans\System.Web.Http.resources.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Web.Portal\bin\zh-Hans\System.Web.Http.WebHost.resources.dll
-G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Web.Portal\obj\Debug\Eam.Web.Portal.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Web.Portal\obj\Debug\Eam.Web.Portal.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Web.Portal\obj\Debug\Eam.Web.Portal.pdb

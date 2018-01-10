@@ -40,7 +40,7 @@
       <publishTime>07/13/2017 10:13:42</publishTime>
     </File>
     <File Include="Areas/AssetsFind/Views/AssetsFind/_AssetsFindLayout.cshtml">
-      <publishTime>12/12/2017 16:08:10</publishTime>
+      <publishTime>01/10/2018 19:50:49</publishTime>
     </File>
     <File Include="Areas/AssetsFind/Views/AssetsMaintain/AcquireMaintian.cshtml">
       <publishTime>08/08/2017 11:08:48</publishTime>
@@ -70,7 +70,7 @@
       <publishTime>12/27/2017 11:30:18</publishTime>
     </File>
     <File Include="Areas/AssetsFind/Views/DoAssets/QueryAssets.cshtml">
-      <publishTime>01/08/2018 13:10:15</publishTime>
+      <publishTime>01/09/2018 13:37:56</publishTime>
     </File>
     <File Include="Areas/AssetsFind/Views/DoAssets/QueryAssetsEx.cshtml">
       <publishTime>07/13/2017 10:13:42</publishTime>
@@ -181,7 +181,7 @@
       <publishTime>07/13/2017 10:13:42</publishTime>
     </File>
     <File Include="Areas/SysManage/Views/SysManage/EditUser.cshtml">
-      <publishTime>08/14/2017 14:13:10</publishTime>
+      <publishTime>01/11/2018 00:07:39</publishTime>
     </File>
     <File Include="Areas/SysManage/Views/SysManage/Index.cshtml">
       <publishTime>07/13/2017 10:13:42</publishTime>
@@ -196,7 +196,7 @@
       <publishTime>07/13/2017 10:13:42</publishTime>
     </File>
     <File Include="Areas/SysManage/Views/SysManage/UserAndDepartmenManage.cshtml">
-      <publishTime>12/04/2017 11:22:10</publishTime>
+      <publishTime>01/11/2018 00:08:07</publishTime>
     </File>
     <File Include="Areas/SysManage/Views/web.config">
       <publishTime>07/13/2017 10:13:42</publishTime>
@@ -6271,40 +6271,40 @@
       <publishTime>08/04/2017 17:38:13</publishTime>
     </File>
     <File Include="bin/Eam.Core.Cache.dll">
-      <publishTime>01/08/2018 11:54:40</publishTime>
+      <publishTime>01/10/2018 14:27:50</publishTime>
     </File>
     <File Include="bin/Eam.Core.Config.dll">
-      <publishTime>01/08/2018 11:54:40</publishTime>
+      <publishTime>01/10/2018 14:27:50</publishTime>
     </File>
     <File Include="bin/Eam.Core.Utility.dll">
-      <publishTime>01/08/2018 11:54:39</publishTime>
+      <publishTime>01/10/2018 14:27:50</publishTime>
     </File>
     <File Include="bin/Eam.Core.Zip.dll">
-      <publishTime>01/08/2018 11:54:39</publishTime>
+      <publishTime>01/10/2018 14:27:50</publishTime>
     </File>
     <File Include="bin/EAM.Data.Comm.dll">
-      <publishTime>01/08/2018 11:54:39</publishTime>
+      <publishTime>01/10/2018 22:16:37</publishTime>
     </File>
     <File Include="bin/EAM.Data.Domain.dll">
-      <publishTime>01/08/2018 11:54:40</publishTime>
+      <publishTime>01/10/2018 22:16:37</publishTime>
     </File>
     <File Include="bin/EAM.Data.ImportAndExport.dll">
-      <publishTime>01/08/2018 11:54:40</publishTime>
+      <publishTime>01/11/2018 00:09:33</publishTime>
     </File>
     <File Include="bin/EAM.Data.Repositories.dll">
-      <publishTime>01/08/2018 11:54:40</publishTime>
+      <publishTime>01/10/2018 22:16:37</publishTime>
     </File>
     <File Include="bin/EAM.Data.Services.dll">
-      <publishTime>01/08/2018 11:54:40</publishTime>
+      <publishTime>01/11/2018 00:09:33</publishTime>
     </File>
     <File Include="bin/EAM.Inventory.dll">
-      <publishTime>01/08/2018 11:54:39</publishTime>
+      <publishTime>01/10/2018 14:27:50</publishTime>
     </File>
     <File Include="bin/Eam.QrCode.dll">
-      <publishTime>01/08/2018 11:54:39</publishTime>
+      <publishTime>01/10/2018 14:27:50</publishTime>
     </File>
     <File Include="bin/Eam.Web.Portal.dll">
-      <publishTime>01/08/2018 11:54:41</publishTime>
+      <publishTime>01/11/2018 00:09:34</publishTime>
     </File>
     <File Include="bin/ICSharpCode.SharpZipLib.dll">
       <publishTime>07/13/2017 10:13:12</publishTime>

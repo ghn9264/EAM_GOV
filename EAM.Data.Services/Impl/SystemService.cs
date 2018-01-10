@@ -36,7 +36,10 @@ namespace EAM.Data.Services.Impl
         {
             return _deptRep.Query("SELECT d.*,p.DEPT_NAME as PARENT_NAME from department d left JOIN department p on d.PARENT_ID=p.ID");
         }
-
+        public decimal GetDeptByName(string deptname)
+        {
+            return _deptRep.ExecuteScalar(new NPoco.Sql("select ID from department where DEPT_NAME = '" + deptname + "'"));
+        }
         #endregion
 
         #region Place

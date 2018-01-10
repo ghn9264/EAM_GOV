@@ -44,6 +44,7 @@ namespace EAM.Data.Services.Impl
         private readonly IOrderListRepository _orderListRep;
         private readonly IInventoryRepository _inventoryRep;
         private readonly IInventoryDetailRepository _inventoryDetailRep;
+        private readonly IServiceDetailRepository _IServiceDetailRep;
 
         #endregion
 
@@ -74,7 +75,8 @@ namespace EAM.Data.Services.Impl
             IScrapApplyDetailRepository srScrapApplyDetailRep,
             IOrderListRepository orderListRep,
             IInventoryRepository inventoryRep,
-            IInventoryDetailRepository inventoryDetailRep
+            IInventoryDetailRepository inventoryDetailRep,
+            IServiceDetailRepository IServiceDetailRep
             )
         {
             _assetsMainRep = assetsMainRep;
@@ -104,6 +106,7 @@ namespace EAM.Data.Services.Impl
             _orderListRep = orderListRep;
             _inventoryRep = inventoryRep;
             _inventoryDetailRep = inventoryDetailRep;
+            _IServiceDetailRep = IServiceDetailRep;
         }
         #endregion
 
@@ -630,6 +633,12 @@ namespace EAM.Data.Services.Impl
         public List<AssetsMain> QueryAsstesList(AssetsQuery query)
         {
             return _assetsMainRep.Query(query.QuerySql);
+        }
+        public decimal QueryDeptPrice(AssetsQuery query)
+        {
+            var sql = query.QueryMoney;
+
+            return _IServiceDetailRep.ExecuteScalar(sql);
         }
 
         /// <summary>

@@ -7,6 +7,10 @@
 }
 <link href="~/Assets/css/search_main.css" rel="stylesheet" />
 <link href="~/Assets/css/peopleMa-main.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.core.js"></script>
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.exedit.js"></script>
+<script src="~/Assets/SelectTree.js"></script>
 <!-- Content Header (Page header) -->
 @*<section class="content-header">
 
@@ -69,53 +73,65 @@
                                     <label>登陆密码</label>
                                     <input type="password" class="form-control" id="Password" name="Password" maxlength="20" placeholder="登陆密码" />
                                 </div>
-
+                                <div class="form-group">
+                                    <label>角色</label><br />
+                                    <div id="">
+                                        <input type="text" class="form-control" id="Role" name="Role" placeholder="角色" maxlength="20" readonly="readonly" value="@Model.Role" />
+                                        <script>
+                                                buildTree("treediv4", "placeTree4", "Role", "/SysManage/SysManage/ListRole?t=" + new Date(), "name");
+                                        </script>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-lg-4">
-                                <div class="row">
-                                    <div class="form-group">
-                                        <label>权限</label><br />
-                                        <div id="PermissionList">
-                                            @Html.CheckBoxList("BusinessPermissionList")
+                            @*<div class="col-lg-4">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <label>权限</label><br />
+                                            <div id="PermissionList">
+                                                @Html.CheckBoxList("BusinessPermissionList")
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <button type="button" id="SelectAllItem" name="SelectAllItem">全选</button>
-                                    <button type="button" id="CancelSelectAllItem" name="CancelSelectAllItem">反选</button>
-                                    <script>
-                                        $("#SelectAllItem").click(function () {
-                                            var coll = document.getElementsByName("BusinessPermissionList")
+                                    <div class="row">
+                                        <button type="button" id="SelectAllItem" name="SelectAllItem">全选</button>
+                                        <button type="button" id="CancelSelectAllItem" name="CancelSelectAllItem">反选</button>
+                                        <script>
+                                            $("#SelectAllItem").click(function () {
+                                                var coll = document.getElementsByName("BusinessPermissionList")
 
-                                            for (var i = 0; i < coll.length; i++)
-                                                coll[i].checked = true;
-                                        });
-                                        $("#CancelSelectAllItem").click(function () {
-                                            var coll = document.getElementsByName("BusinessPermissionList")
+                                                for (var i = 0; i < coll.length; i++)
+                                                    coll[i].checked = true;
+                                            });
+                                            $("#CancelSelectAllItem").click(function () {
+                                                var coll = document.getElementsByName("BusinessPermissionList")
 
-                                            for (var i = 0; i < coll.length; i++)
-                                                coll[i].checked = !coll[i].checked;
-                                        });
-                                    </script>
-                                </div>
+                                                for (var i = 0; i < coll.length; i++)
+                                                    coll[i].checked = !coll[i].checked;
+                                            });
+                                        </script>
+                                    </div
 
-                                <br />
-                                <br />
-                                <br />
-                                <div class="row">
-                                    <div class="form-group">
-                                        <label>角色</label><br />
-                                        <div id="">
-                                            <select class="form-control" id="Role" name="Role">
-                                                <option>资产管理员</option>
-                                                <option>部门负责人</option>
-                                                <option>普通用户</option>
-                                            </select>
+                                    <br />
+                                    <br />
+                                    <br />
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <label>角色</label><br />
+                                            <div id="">
+                                                <input type="text" class="form-control" id="Role" name="Role" placeholder="角色" maxlength="20" readonly="readonly" value="@Model.Role" />
+                                                <script>
+                                                    buildTree("treediv4", "placeTree4", "Role", "/SysManage/SysManage/ListRole?t=" + new Date(), "name");
+                                                </script>
+                                                @*<select class="form-control" id="Role" name="Role">
+                                                    <option>资产管理员</option>
+                                                    <option>部门负责人</option>
+                                                    <option>普通用户</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                            </div><div class="col-lg-4"></div>
+                                </div><div class="col-lg-4"></div>>*@
                         </div><!-- /.box-body -->
 
                         <div class="box-footer">

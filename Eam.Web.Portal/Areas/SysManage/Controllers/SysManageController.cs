@@ -262,12 +262,13 @@ namespace Eam.Web.Portal.Areas.SysManage.Controllers
                 {
                     Roles = Roles,
                     Permissions = Permissions,
-                    EntityId = EntityId.Value
                 };
-                if (role.EntityId > 0)
+                decimal roleid = _roleService.GetIDByRole(Roles);
+                role.EntityId = Convert.ToInt32(roleid);
+                if (_roleService.ifexitRole(role.EntityId) > 0)
                 {
                     _roleService.UpdateRole(role);
-                    _userService.UpdateRole(role.Roles, role.Permissions);
+                    //_userService.UpdateRole(role.Roles, role.Permissions);
                 }
                 else
                     _roleService.AddRole(role);
@@ -343,7 +344,11 @@ namespace Eam.Web.Portal.Areas.SysManage.Controllers
             ViewBag.BusinessPermissionList = new SelectList(businessPermissionList, "Key", "Value");
             var model = new UserInfo();
             TryUpdateModel<UserInfo>(model);
-            model.DepartMent = model.DepartMent;// 2017-05-26 wnn
+            var deptid = _sysService.GetDeptByName(collection["DeptName"]);// 2017-05-26 wnn
+            Role role = _roleService.GetRole(collection["Role"]);
+            model.DeptId = Convert.ToInt32(deptid);
+            model.DepartMent = collection["DeptName"];
+            model.Permissions = role.Permissions;
             string error;
             if (!Validate(model, out error))
             {
@@ -356,7 +361,7 @@ namespace Eam.Web.Portal.Areas.SysManage.Controllers
                 return View("EditUser", model);
             }
             model.Password = _userService.GetEncryptPwd(model.Password);
-            model.Permissions = collection["BusinessPermissionList"];
+            //model.Permissions = collection["BusinessPermissionList"];
             _userService.AddUser(model);
             return base.PageReturn("操作成功", "/SysManage/SysManage/UserAndDepartmenManage");
         }
@@ -403,9 +408,14 @@ namespace Eam.Web.Portal.Areas.SysManage.Controllers
             var model = _userService.GetUser(id);
             var oldPwd = model.Password;
             TryUpdateModel<UserInfo>(model);
+            var deptid = _sysService.GetDeptByName(collection["DeptName"]);// 2017-05-26 wnn
+            Role role = _roleService.GetRole(collection["Role"]);
+            model.DeptId = Convert.ToInt32(deptid);
+            model.DepartMent = collection["DeptName"];
+            model.Permissions = role.Permissions;
             //model.DepartMent = model.DeptName; // 注释 2017-05-26 wnn
             model.Password = editPwd ? _userService.GetEncryptPwd(model.Password) : oldPwd;
-            model.Permissions = collection["BusinessPermissionList"];
+            //model.Permissions = collection["BusinessPermissionList"];
             _userService.UpdateUser(model);
             return base.PageReturn("操作成功", "/SysManage/SysManage/UserAndDepartmenManage");
         }

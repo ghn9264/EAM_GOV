@@ -42,6 +42,6 @@ G:\workspace\Dotnet-worksapce\EAM\Eam.Core.Zip\obj\Debug\Eam.Core.Zip.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Zip\bin\Debug\Eam.Core.Zip.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Zip\bin\Debug\Eam.Core.Zip.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Zip\bin\Debug\ICSharpCode.SharpZipLib.dll
-G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Zip\obj\Debug\Eam.Core.Zip.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Zip\obj\Debug\Eam.Core.Zip.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Zip\obj\Debug\Eam.Core.Zip.pdb
+G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Zip\obj\Debug\Eam.Core.Zip.csprojResolveAssemblyReference.cache

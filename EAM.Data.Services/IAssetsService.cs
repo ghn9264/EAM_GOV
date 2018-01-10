@@ -302,6 +302,7 @@ namespace EAM.Data.Services
 
         List<AssetsMain> QueryAsstesList(AssetsQuery query);
         List<AssetsMain> Find(Expression<Func<AssetsMain, bool>> laumdawhere);
+        decimal QueryDeptPrice(AssetsQuery query);
 
         /// <summary>
         /// 数据比对结果表查询

@@ -55,7 +55,6 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn btn-default btn-all" style="margin-left:20px;" id="printAll">批量打印</button>
     </div>
 </section>
 
@@ -83,7 +82,7 @@
                 } else {
                     row.append('<td>' + "未打印" + '</td>');
                 }
-                
+
                 row.append('<td><span class="btn btn-primay remove" data-id="' + item.EntityId + '">移除</span></td>');
                 var href = '"/AssetsFind/AssetsFind/CreateQrCodeEx?assetsNums=' + item.AssetsNum + '"';
 
@@ -92,7 +91,7 @@
                 } else {
                     row.append('<td><a target="_blank" onclick=' + "'Open(" + href + ")'" + '"  class="btn btn-primay prinet print" data-id="' + item.ASSETS_NUM + '">打印</a></td>');
                 }
-                
+
                 $("#tableOrderList tbody").append(row);
             });
             $(".remove").click(function() {
@@ -133,22 +132,24 @@
     }
     function simulateClick(el) {
         var evt;
-        if (document.createEvent) { // DOM Level 2 standard  
+        if (document.createEvent) { // DOM Level 2 standard
             evt = document.createEvent("MouseEvents");
             evt.initMouseEvent("click", true, true, window,
               0, 0, 0, 0, 0, false, false, false, false, 0, null);
 
             el.dispatchEvent(evt);
-        } else if (el.fireEvent) { // IE  
+        } else if (el.fireEvent) { // IE
             el.fireEvent('onclick');
         }
     }
     function RemoveFormOrderList() {
         $("#btnRemoveAll").click(function () {
+            if(confirm("是否确定要删除打印列表所有内容？")){
             var serviceUrlRemove = "@Url.Action("RemoveFormOrderList", "OrderList", new { area = "Account" })";
             $.post(serviceUrlRemove, { "type": "@ConstTag.Query" }, function () {
                 loadData();
             });
+            }
         });
     }
     //初始加载

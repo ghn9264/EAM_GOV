@@ -45,6 +45,6 @@ G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Comm\bin\
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Comm\bin\Debug\EAM.Data.Comm.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Comm\bin\Debug\NPoco.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Comm\bin\Debug\System.Web.Mvc.dll
-G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Comm\obj\Debug\EAM.Data.Comm.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Comm\obj\Debug\EAM.Data.Comm.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Comm\obj\Debug\EAM.Data.Comm.pdb
+G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.Comm\obj\Debug\EAM.Data.Comm.csprojResolveAssemblyReference.cache

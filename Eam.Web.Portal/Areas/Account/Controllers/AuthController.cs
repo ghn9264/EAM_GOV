@@ -107,6 +107,7 @@ namespace Eam.Web.Portal.Areas.Account.Controllers
                             Role = user.Role,
                             UserDept = user.DepartMent
                         };
+                        Session.Add("power", user.Role);
                         var data = (new JavaScriptSerializer()).Serialize(userSession);
                         var ticket = new FormsAuthenticationTicket(2, user.UserId, DateTime.Now, DateTime.Now.AddDays(1), false, data);
                         var cookieValue = FormsAuthentication.Encrypt(ticket);

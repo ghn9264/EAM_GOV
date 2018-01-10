@@ -5,6 +5,15 @@
 @{
     //ViewBag.Title = "资产操作";
     Layout = "~/Views/Shared/_AreasLayout.cshtml";
+    UserSession userSession = null;
+    if (HttpContext.Current.Request.IsAuthenticated)
+    {
+        if (null != ViewBag.UserSession)
+        {
+            userSession = ViewBag.UserSession as UserSession;
+        }
+        userSession = userSession ?? new UserSession();
+    }
 }
 
 <script type="text/javascript" src="~/Assets/zTree_v3-master/js/jquery.ztree.core.js"></script>
@@ -160,6 +169,13 @@
                                 </div><!-- /.box-header -->
                                 <!-- body -->
                                 <div class="box-body content">
+                                    <div class="box-header with-border">
+                                        <div id="navTitle"></div>
+                                        <!-- 隐藏条件 -->
+                                        <input type="hidden" id="AUserName" name="AUserName" value="@userSession.UserName" />
+                                        <input type="hidden" id="ARole" name="ARole" value="@userSession.Role" />
+                                        <input type="hidden" id="AUseDepartment" name="AUseDepartment" value="@userSession.UserDept" />
+                                    </div><!--/.box -->
                                     <form method="get" id="frmSearch" name="frmSearch">
                                         <input class="hidden" id="PageType" name="PageType" value="@ViewBag.DoAction" />
                                         <input class="hidden" id="IndexClass" name="IndexClass" value="" />
@@ -379,11 +395,11 @@
 
 
                         </div>
-                        @*<div class="row">
+                        <div class="row">
                                 <div class="col-sm-12">
                                     <div class="dataTables_info" id="PageMoneyInfo" role="status" aria-live="polite"></div>
                                 </div>
-                            </div>*@
+                        </div>
                     </div>
                 </div><!-- /.box-body -->
                 <div class="row exportBtn">
@@ -907,13 +923,13 @@
             var CurrentPageMoney = 0;
             var AllPageMoney = 0;
             $("#tableAssets tbody").empty();
-            if (result.AllItem != "" && result.AllItem.length > 0) {
-                $(result.AllItem).each(function (index, item) {
+            if (result.Items.AllItem != "" && result.Items.AllItem.length > 0) {
+                $(result.Items.AllItem).each(function (index, item) {
                     AllPageMoney += item.Money;
                 });
             }
-            if (result.Items != '' && result.Items.length > 0) {
-                $(result.Items).each(function (index, item) {
+            if (result.Items.Items != '' && result.Items.Items.length > 0) {
+                $(result.Items.Items).each(function (index, item) {
 
                     //
                     // 当前页面资产金额
@@ -949,7 +965,7 @@
             }
 
             //$("#example1_info").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + " , 总共 " + result.TotalItemCount);
-            $("#PageMoneyInfo").text("显示 " + result.StartRecordIndex + " 到 " + result.EndRecordIndex + "项 , 总共 " + result.TotalItemCount + "项，当前页金额： " + CurrentPageMoney + "元，所有页总金额：" + AllPageMoney + "元");
+            $("#PageMoneyInfo").text("显示 " + result.Items.StartRecordIndex + " 到 " + result.Items.EndRecordIndex + "项 , 总共 " + result.Items.TotalItemCount + "项，当前页金额： " + CurrentPageMoney + "元，所有页总金额：" + result.DeptPrice + "元");
 
             $(".orderlist").click(function () {
                 var val = $(this).attr("data-id");
@@ -965,8 +981,8 @@
             var options = {
                 bootstrapMajorVersion: 3, //版本
                 numberOfPages: 8,
-                currentPage: result.CurrentPageIndex,
-                totalPages: result.TotalPageCount,
+                currentPage: result.Items.CurrentPageIndex,
+                totalPages: result.Items.TotalPageCount,
                 itemTexts: function (type, page, current) {
                     switch (type) {
                         case "first":

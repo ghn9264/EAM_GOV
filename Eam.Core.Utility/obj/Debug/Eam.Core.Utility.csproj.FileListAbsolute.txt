@@ -50,6 +50,6 @@ G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Utility\b
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Utility\bin\Debug\Eam.Core.Utility.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Utility\bin\Debug\Newtonsoft.Json.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Utility\bin\Debug\Newtonsoft.Json.xml
-G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Utility\obj\Debug\Eam.Core.Utility.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Utility\obj\Debug\Eam.Core.Utility.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Utility\obj\Debug\Eam.Core.Utility.pdb
+G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\Eam.Core.Utility\obj\Debug\Eam.Core.Utility.csprojResolveAssemblyReference.cache

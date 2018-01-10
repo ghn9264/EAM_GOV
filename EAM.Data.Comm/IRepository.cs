@@ -50,7 +50,7 @@ namespace EAM.Data.Comm
         int Execute(string sql, params object[] args);
 
         int Execute(Sql sql);
-
+        decimal ExecuteScalar(Sql sql);
         int DeleteItemByAssetsNum(string tableName, string assetsum);
 
     }

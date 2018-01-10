@@ -160,6 +160,7 @@ G:\workspace\Dotnet-worksapce\EAM\EAM.Data.ImportAndExport\obj\Debug\EAM.Data.Im
 G:\workspace\Dotnet-worksapce\EAM\EAM.Data.ImportAndExport\obj\Debug\EAM.Data.ImportAndExport.dll
 G:\workspace\Dotnet-worksapce\EAM\EAM.Data.ImportAndExport\obj\Debug\EAM.Data.ImportAndExport.pdb
 G:\workspace\Dotnet-worksapce\EAM\EAM.Data.ImportAndExport\bin\Debug\System.Web.Mvc.dll
+G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.ImportAndExport\obj\Debug\EAM.Data.ImportAndExport.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.ImportAndExport\bin\Debug\EAM.Data.ImportAndExport.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.ImportAndExport\bin\Debug\EAM.Data.ImportAndExport.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.ImportAndExport\bin\Debug\Eam.Core.Utility.dll
@@ -181,6 +182,5 @@ G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.ImportAnd
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.ImportAndExport\bin\Debug\EAM.Data.Domain.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.ImportAndExport\bin\Debug\EAM.Data.Services.pdb
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.ImportAndExport\bin\Debug\EAM.Data.Repositories.pdb
-G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.ImportAndExport\obj\Debug\EAM.Data.ImportAndExport.csprojResolveAssemblyReference.cache
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.ImportAndExport\obj\Debug\EAM.Data.ImportAndExport.dll
 G:\workspace\Dotnet-worksapce\固资系统\EAM政府机关版\EAM.Data.ImportAndExport\obj\Debug\EAM.Data.ImportAndExport.pdb
